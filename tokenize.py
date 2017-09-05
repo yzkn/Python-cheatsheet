@@ -26,3 +26,9 @@ for token in tokens:
 
 # ファイルを閉じる
 f2.close()
+
+
+
+
+
+# Copyright (c) 2017 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
