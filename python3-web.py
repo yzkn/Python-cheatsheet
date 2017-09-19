@@ -12,6 +12,12 @@ req = urllib.request.Request(url)
 with urllib.request.urlopen(req) as response:
     html = response.read()
 
+# 文字コードを指定
+import urllib.request
+url = 'http://python.org/'
+with urllib.request.urlopen(url) as response:
+    html = response.read().decode('utf-8')
+
 # コンテンツをテンポラリファイルとして取得
 import urllib.request
 url = 'http://python.org/'
@@ -126,6 +132,38 @@ with urllib.request.urlopen(req) as response:
     print(headers)
     # charset=req.info().get_content_charset() # 応答ヘッダから文字コードを取得してデコードする例
     # content=req.read().decode(charset)
+
+# Cookie
+import urllib
+import urllib.request  # opener
+import urllib.parse  # urlencode
+import http
+import http.cookiejar
+
+opener = urllib.request.build_opener(
+    urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+
+u, p = 'id', 'pw'
+
+url1 = 'http://python.org/?login'
+url2 = 'http://python.org/?user=%s' % u
+
+post = {
+    'name': u,
+    'password': p
+}
+data = urllib.parse.urlencode(post).encode('utf-8')
+
+conn = opener.open(url1, data)
+ofs = open('out1.html', 'w', encoding='utf-8')
+ofs.write(conn.read().decode('utf-8'))
+ofs.close()
+
+conn = opener.open(url2)
+ofs = open('out2.html', 'w', encoding='euc-jp')
+ofs.write(conn.read().decode('euc-jp'))
+ofs.close()
+
 
 # 例外処理とレスポンスコード
 import urllib.parse

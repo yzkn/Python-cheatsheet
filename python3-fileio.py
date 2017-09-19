@@ -9,22 +9,25 @@ Path('test.txt').touch()
 # 読込み
 file = open('test.txt', 'r')
 string = file.read()
-print(string)
+print(string)  # 1つの文字列として読込み
 
 file = open('test.txt', 'r')
 string = file.readline()
 while string:
     print(string)
-    string = file.readline()
+    string = file.readline()  # 1行ずつ読込み
+
+file = open('test.txt', 'r')
+string = file.readlines()  # リストへ格納
 
 # 書込み
 file = open('test.txt', 'w')
 string = 'foobar hoge'
-file.write(string)
+file.write(string)  # 1行ずつ書込み
 
 file = open('test.txt', 'w')
 lst = ['foobar', 'hoge']
-file.writelines(lst)
+file.writelines(lst)  # リストを書込み
 
 # 追記
 file = open('test.txt', 'a')
@@ -142,6 +145,15 @@ data = {
 savepath = 'test.json'
 with open(savepath, 'w') as outfile:
     json.dump(data, outfile)
+
+# ARFFファイル
+
+# 読込み
+# import arff
+data = arff.load(open('test.arff', 'rb'))
+
+# 書込み
+arff.dumps(data)
 
 # ディレクトリ操作
 
