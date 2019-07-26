@@ -40,6 +40,18 @@ dirs = glob(os.path.join(DIRPATH, '**' + os.path.sep), recursive=True)
 
 > ['./test-glob/', './test-glob/test-glob-1/', './test-glob/test-glob-1/test-glob-1-1/', './test-glob/test-glob-2/']
 
+```py
+dirs = glob(os.path.join(DIRPATH, '*.*'), recursive=True)
+```
+
+> ['./test-glob/test-glob-3.dat']
+
+```py
+dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True)
+```
+
+> ['./test-glob/test-glob-3.dat', './test-glob/test-glob-1/test-glob-1-2.dat', './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat', './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat', './test-glob/test-glob-2/test-glob-2-2.dat']
+
 ## ログ
 
 標準出力をログファイルに書き出す
