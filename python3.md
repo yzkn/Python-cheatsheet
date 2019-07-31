@@ -365,7 +365,50 @@ print(haystack.translate(str.maketrans({'h': 'H', 'a': 'oo', 's': '', 'k': None}
 
 # I/O
 
+## カレントディレクトリ
+
+```py
+import os
+
+
+CURRENT_DIRECTORY = os.getcwd()
+os.chdir(CURRENT_DIRECTORY)
+```
+
+### スクリプトファイルのパスを取得
+
+```py
+import os
+
+print(os.getcwd())
+print(__file__)
+
+print(os.path.basename(__file__))
+print(os.path.abspath(__file__))
+print(os.path.dirname(os.path.abspath(__file__)))
+```
+
+> /mnt/c/Users/y/Documents/GitHub/Python-cheatsheet
+>
+> python3-cwd.py
+>
+> python3-cwd.py
+>
+> /mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/python3-cwd.py
+>
+> /mnt/c/Users/y/Documents/GitHub/Python-cheatsheet
+
+## ファイル・フォルダの存在チェック
+
+```
+FILEPATH = '.'
+print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
+print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
+```
+
 ## ファイル一覧
+
+[python3md-cwd.py](python3md-cwd.py)
 
 ```py
 from glob import glob
