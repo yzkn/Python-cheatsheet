@@ -75,9 +75,65 @@ type((0, 1, 2))
 >
 > <class 'tuple'>
 
+## 型の判定
+
+## isinstance()
+
+```py
+type('str') is str
+type(1) is not str
+
+def is_valid_type(v):
+    return type(v) in (int, str)
+
+print(is_valid_type(1))
+print(is_valid_type('1'))
+```
+
+> True
+>
+> True
+>
+> True
+>
+> True
+
+```py
+print(isinstance(1, str))
+print(isinstance('1', str))
+print(isinstance(100, (int, str)))
+```
+
+> False
+>
+> True
+>
+> True
+
+## type()とisinstance()の差異
+
+継承を考慮
+
+```py
+print(type(False) is bool)
+print(type(False) is int)
+
+# boolはintのサブクラス ⇒ isinstanceは継承元の型にもTrueを返す
+print(isinstance(False, bool))
+print(isinstance(False, int))
+```
+
+> True
+>
+> False
+>
+> True
+>
+> True
+
 # 演算子
 
-[演算子の優先順位](https://docs.python.org/ja/3/reference/expressions.html#operator-precedence)
+## [演算子の優先順位](https://docs.python.org/ja/3/reference/expressions.html#operator-precedence)
 
 |  演算子  |  意味  |
 | --- | --- |
@@ -96,18 +152,18 @@ type((0, 1, 2))
 |  not x  |  NOT  |
 |  and  |  AND  |
 |  or  |  OR  |
-|  if -- else  |  条件式  |
+|  if -- else  |  条件式(三項演算子)  |
 |  lambda  |  ラムダ式  |
 
-# boolean
+## boolean
 
 |  True  |  False  |
 | ---- | ---- |
 |  bool(1)<br>bool(2)<br>bool(-3)<br>bool(.1)<br>bool(1j)<br>bool('a')<br>bool([0])<br>bool((0,))<br>bool({0})  |  bool(0)<br><br><br>bool(0.)<br>bool(0j)<br>bool('')<br>bool([])<br>bool(())<br>bool({})  |
 
-# str
+## str
 
-## format
+### format
 
 ```py
 print('{}'.format(1))
@@ -115,7 +171,7 @@ print('{}'.format(1))
 
 > 1
 
-### datetimeからstr
+#### datetimeからstr
 
 ```py
 from datetime import datetime
@@ -125,7 +181,7 @@ print(now)
 
 > 20190730121658
 
-### strからdatetime、date
+#### strからdatetime、date
 
 ```py
 from datetime import date
@@ -141,7 +197,7 @@ print(tdate)
 >
 > 2019-07-30
 
-#### [format文字列に埋め込むディレクティブ](https://docs.python.org/ja/3/library/time.html#time.strftime)
+##### [日付時刻のformat文字列に埋め込むディレクティブ](https://docs.python.org/ja/3/library/time.html#time.strftime)
 
 |  ディレクティブ  |  意味  |  注釈  |
 | ---- | ---- | ---- |
@@ -172,7 +228,64 @@ print(tdate)
 1. 値の幅は実際に 0 から 61 です; 60 は うるう秒<leap seconds> を表し、 61 は歴史的理由によりサポートされています。
 1. strptime() 関数で使う場合、%U および %W を計算に使うのは曜日と年を指定したときだけです。
 
-## 置換
+### 検索
+
+#### 単純な検索
+
+#### 正規表現による検索
+
+### 置換
+
+#### 単純な置換
+
+```py
+haystack = 'haystack'
+needle = 'a'
+replacement = 'replacement'
+content = haystack.replace(needle, replacement)
+content = haystack.replace(needle, replacement, 1)
+```
+
+> 'hreplacementystreplacementck'
+> 'hreplacementystack'
+
+##### 改行文字を除去
+
+```py
+haystack = 'haystack\nhaystack\r\nhaystack'
+replacement = ''
+replacement.join(haystack.splitlines())
+```
+
+> 'haystackhaystackhaystack'
+
+#### 正規表現による置換
+
+```py
+import re
+haystack = 'haystack'
+needle = r'[a-rt-z]+'
+replacement = 'replacement'
+content = re.sub(needle, replacement, haystack)
+print(content)
+content = re.sub(needle, replacement, haystack, 1)
+print(content)
+
+needle = r'[A-RT-Z]+'
+content = re.sub(needle, replacement, haystack, flags=re.IGNORECASE)
+print(content)
+
+###
+print(content)
+```
+
+> 'replacementsreplacement'
+>
+> 'replacementstack'
+>
+> 'replacementsreplacement'
+>
+> \#\#\#
 
 # I/O
 
