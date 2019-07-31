@@ -163,6 +163,25 @@ print(isinstance(False, int))
 
 ## str
 
+```py
+print('str\nstr')
+print("str\nstr")
+print(r'str\nstr')
+print(R'str\nstr')
+```
+
+> str
+>
+> str
+
+> str
+>
+> str
+
+> str\nstr
+
+> str\nstr
+
 ### format
 
 ```py
@@ -225,7 +244,7 @@ print(tdate)
 |  %%  |  文字 “%” 自体の表現。  |    |
 
 1. strptime() 関数で使う場合、%p ディレクティブが出力結果の時刻フィールドに影響を及ぼすのは、時刻を解釈するために %I を使ったときのみです。
-1. 値の幅は実際に 0 から 61 です; 60 は うるう秒<leap seconds> を表し、 61 は歴史的理由によりサポートされています。
+1. 値の幅は実際に 0 から 61 です; 60 は うるう秒\<leap seconds\> を表し、 61 は歴史的理由によりサポートされています。
 1. strptime() 関数で使う場合、%U および %W を計算に使うのは曜日と年を指定したときだけです。
 
 ### 検索
@@ -263,29 +282,86 @@ replacement.join(haystack.splitlines())
 
 ```py
 import re
+
 haystack = 'haystack'
-needle = r'[a-rt-z]+'
-replacement = 'replacement'
+needle = '([a-rt-z]+)'
+replacement = 'replacement[\\1]'
 content = re.sub(needle, replacement, haystack)
 print(content)
 content = re.sub(needle, replacement, haystack, 1)
 print(content)
+```
 
-needle = r'[A-RT-Z]+'
+> replacement[hay]sreplacement[tack]
+>
+> replacement[hay]stack
+
+```py
+import re
+
+haystack = 'haystack'
+needle = '([A-RT-Z]+)'
+replacement = r'replacement[\1]'
 content = re.sub(needle, replacement, haystack, flags=re.IGNORECASE)
-print(content)
-
-###
 print(content)
 ```
 
-> 'replacementsreplacement'
+> replacement[hay]sreplacement[tack]
+
+```py
+import re
+
+haystack = 'foobar\nhoge\npiyo'
+needle = '(^h)|(e$)'
+replacement = '#'
+content = re.sub(needle, replacement, haystack)
+print(content)
+content = re.sub(needle, replacement, haystack, flags=re.MULTILINE)
+print(content)
+```
+
+> foobar
 >
-> 'replacementstack'
+> hoge
 >
-> 'replacementsreplacement'
+> piyo
+
+> foobar
 >
-> \#\#\#
+> #og#
+>
+> piyo
+
+```py
+import re
+
+haystack = 'foobar\nhoge\npiyo'
+needle = 'r.h'
+replacement = '#'
+content = re.sub(needle, replacement, haystack)
+print(content)
+content = re.sub(needle, replacement, haystack, flags=re.DOTALL)
+print(content)
+```
+
+> foobar
+>
+> hoge
+>
+> piyo
+
+> fooba#oge
+>
+> piyo
+
+#### 一文字ごとの置換
+
+```py
+haystack = 'haystack'
+print(haystack.translate(str.maketrans({'h': 'H', 'a': 'oo', 's': '', 'k': None})))
+```
+
+> Hooytooc
 
 # I/O
 
