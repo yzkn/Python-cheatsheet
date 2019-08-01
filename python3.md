@@ -161,36 +161,111 @@ print(isinstance(False, int))
 | ---- | ---- |
 |  bool(1)<br>bool(2)<br>bool(-3)<br>bool(.1)<br>bool(1j)<br>bool('a')<br>bool([0])<br>bool((0,))<br>bool({0})  |  bool(0)<br><br><br>bool(0.)<br>bool(0j)<br>bool('')<br>bool([])<br>bool(())<br>bool({})  |
 
-## str
+## datetime
 
 ```py
-print('str\nstr')
-print("str\nstr")
-print(r'str\nstr')
-print(R'str\nstr')
+import datetime
+
+dt = datetime.datetime.now()
+print(dt)
+
+print(type(dt))
+
+print(dt.year)
+print(dt.month)
+print(dt.day)
+print(dt.hour)
+print(dt.minute)
+print(dt.second)
+print(dt.microsecond)
 ```
 
-> str
+> \<class 'datetime.datetime'\>
 >
-> str
-
-> str
+> 2019
 >
-> str
-
-> str\nstr
-
-> str\nstr
-
-### format
+> 8
+>
+> 2
+>
+> 8
+>
+> 34
+>
+> 17
+>
+> 354115
 
 ```py
-print('{}'.format(1))
+from datetime import datetime
+# 年・月・日は必須
+dt = datetime(2019, 8, 2)
+print(dt)
+dt = datetime(2019, 8, 2, 1, 2, 3)
+print(dt)
+dt = datetime(2019, 8, 2, 1, 1, 63)
+print(dt)
 ```
 
-> 1
+> 2019-08-02 00:00:00
+>
+> 2019-08-02 01:02:03
+>
+> ValueError: second must be in 0..59
 
-#### datetimeからstr
+```py
+from datetime import datetime
+from datetime import timedelta
+
+dt = datetime(2019, 8, 2)
+dt += timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
+print(dt)
+```
+
+> 2019-08-11 03:04:05.006007
+
+```py
+from datetime import datetime
+from datetime import timedelta
+
+td = datetime(2019, 12, 24) - datetime(2019, 8, 2, 9, 0, 0)
+print(td)
+```
+
+> 143 days, 15:00:00
+
+### 日付のリスト
+
+```py
+from datetime import date
+from datetime import timedelta
+
+f = '%Y-%m-%d'
+n = 5
+d = date(2019, 8, 2)
+td = timedelta(weeks=1)
+
+l = [(d + i * td).strftime(f) for i in range(n)]
+print(l)
+```
+
+> ['2019-08-02', '2019-08-09', '2019-08-16', '2019-08-23', '2019-08-30']
+
+### datetimeからdate
+
+```py
+from datetime import datetime
+
+dt = datetime(2019, 8, 2)
+print(dt.date())
+print(type(dt.date()))
+```
+
+> 2019-08-02
+>
+> \<class 'datetime.date'\>
+
+### datetimeからstr
 
 ```py
 from datetime import datetime
@@ -200,7 +275,7 @@ print(now)
 
 > 20190730121658
 
-#### strからdatetime、date
+### strからdatetime、date
 
 ```py
 from datetime import date
@@ -216,7 +291,7 @@ print(tdate)
 >
 > 2019-07-30
 
-##### [日付時刻のformat文字列に埋め込むディレクティブ](https://docs.python.org/ja/3/library/time.html#time.strftime)
+#### [日付時刻のformat文字列に埋め込むディレクティブ](https://docs.python.org/ja/3/library/time.html#time.strftime)
 
 |  ディレクティブ  |  意味  |  注釈  |
 | ---- | ---- | ---- |
@@ -246,6 +321,35 @@ print(tdate)
 1. strptime() 関数で使う場合、%p ディレクティブが出力結果の時刻フィールドに影響を及ぼすのは、時刻を解釈するために %I を使ったときのみです。
 1. 値の幅は実際に 0 から 61 です; 60 は うるう秒\<leap seconds\> を表し、 61 は歴史的理由によりサポートされています。
 1. strptime() 関数で使う場合、%U および %W を計算に使うのは曜日と年を指定したときだけです。
+
+## str
+
+```py
+print('str\nstr')
+print("str\nstr")
+print(r'str\nstr')
+print(R'str\nstr')
+```
+
+> str
+>
+> str
+
+> str
+>
+> str
+
+> str\nstr
+
+> str\nstr
+
+### format
+
+```py
+print('{}'.format(1))
+```
+
+> 1
 
 ### 検索
 
@@ -323,7 +427,7 @@ print(haystack.rfind(needle, 4,30))
 import re
 
 haystack = 'haystack'
-needle = '([a-rt-z]+)'
+needle = '([abd-jl-z]+)([ck]+)'
 
 # コンパイル有
 pattern = re.compile(needle)
@@ -331,28 +435,130 @@ matched = pattern.match(haystack)
 print(matched)
 
 # コンパイル無
-matched = re.match(pattern, haystack)
+matched = re.match(needle, haystack)
 print(matched)
 
 # 結果を取得
 if matched:
-    print(matched.group())
-    print(matched.start())
-    print(matched.end())
-    print(matched.span())
+    if matched.group() != '': # パターンが空文字とマッチするのを防ぐ場合
+        print(matched.group())
+        print(matched.start())
+        print(matched.end())
+        print(matched.span())
+
+        ###
+
+        print(matched.groups())
+        for g in matched.groups():
+            print(g)
+
+        ###
+
+        print(matched.group(0))
+        print(matched.group(1))
+        print(matched.group(2))
+        print(matched.group(0, 1))
+
+        ###
+
+        print(matched.start(0))
+        print(matched.end(1))
+        print(matched.span(2))
 ```
 
-> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+> <_sre.SRE_Match object; span=(0, 8), match='haystack'>
 >
-> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+> <_sre.SRE_Match object; span=(0, 8), match='haystack'>
 >
-> hay
+> haystack
 >
 > 0
 >
-> 3
+> 8
 >
-> (0, 3)
+> (0, 8)
+>
+> \#\#\#
+>
+> ('haysta', 'ck')
+>
+> haysta
+>
+> ck
+>
+> \#\#\#
+>
+> haystack
+>
+> haysta
+>
+> ck
+>
+> ('haystack', 'haysta')
+>
+> \#\#\#
+>
+> 0
+>
+> 6
+>
+> (6, 8)
+
+###### グループ化
+
+```py
+import re
+
+haystack = 'haystack'
+needle = '(h)([abd-gijl-z]+)([ck]+)'
+
+matched = re.match(needle, haystack)
+print(matched.groups())
+
+print(matched.group(0))
+print(matched.group(1))
+print(matched.group(2))
+print(matched.group(3))
+```
+
+> ('h', 'aysta', 'ck')
+>
+> haystack
+>
+> h
+>
+> aysta
+>
+> ck
+
+```py
+import re
+
+haystack = 'haystack'
+needle = r'(?P<ONE>h)(?P<two>[abd-gijl-z]+)(?P<three>[ck]+)'
+
+matched = re.match(needle, haystack)
+print(matched.group('ONE'))
+print(matched.group('two'))
+print(matched.group('three'))
+print(matched.group(0, 'three'))
+
+###
+
+print(matched.groupdict())
+```
+
+> h
+>
+> aysta
+>
+> ck
+>
+> ('haystack', 'ck')
+>
+> \#\#\#
+>
+> {'ONE': 'h', 'two': 'aysta', 'three3': 'ck'}
 
 ##### 文字列の途中でマッチした最初の箇所
 
@@ -368,7 +574,7 @@ searched = pattern.search(haystack)
 print(searched)
 
 # コンパイル無
-searched = re.search(pattern, haystack)
+searched = re.search(needle, haystack)
 print(searched)
 
 # 結果を取得
@@ -405,7 +611,7 @@ allfound = pattern.findall(haystack)
 print(allfound)
 
 # コンパイル無
-allfound = re.findall(pattern, haystack)
+allfound = re.findall(needle, haystack)
 print(allfound)
 
 # 結果を取得
@@ -433,7 +639,7 @@ allfound = pattern.finditer(haystack)
 print(allfound)
 
 # コンパイル無
-allfound = re.finditer(pattern, haystack)
+allfound = re.finditer(needle, haystack)
 print(allfound)
 
 # 結果を取得
@@ -464,15 +670,38 @@ for found in allfound:
 >
 > (4, 8)
 
-#### フラグを利用
+##### フラグを利用
+
+[モジュールコンテンツ](https://docs.python.org/ja/3/library/re.html#contents-of-module-re)
+
+|  フラグ  |  効果  |
+| --- | --- |
+|  re.ASCII<br>re.A  |  \w 、\W 、\b 、\B 、\d 、\D 、\s 、および \S に、完全な Unicode マッチングではなく ASCII 限定マッチングを行わせます  |
+|  re.DOTALL<br>re.S  | '.' 特殊文字を、改行を含むあらゆる文字にマッチさせます
+|  re.IGNORECASE<br>re.I  |  大文字・小文字を区別しないマッチングを行います
+|  re.MULTILINE<br>re.M  |  パターン文字 '^' は文字列の先頭で、および各行の先頭 (各改行の直後) で、マッチします。そしてパターン文字 '$' は文字列の末尾で、および各行の末尾 (各改行の直前) で、マッチします
+|  re.VERBOSE<br>re.X  | 正規表現を、パターンの論理的な節を視覚的に分割し、コメントを加えることで、見た目よく読みやすく書けるようにします
 
 ```py
+haystack = 'a12345.67890b'
+patternA = re.compile(r"""\d +  # the integral part
+                   \.    # the decimal point
+                   \d *  # some fractional digits""", re.X)
+patternB = re.compile(r"\d+\.\d*")
+allfoundA = patternA.findall(haystack)
+allfoundB = patternB.findall(haystack)
 
+# 結果を取得
+if allfoundA:
+    print(allfoundA)
+
+if allfoundB:
+    print(allfoundB)
 ```
 
+> ['12345.67890']
 >
->
->
+> ['12345.67890']
 
 ### 置換
 
