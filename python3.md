@@ -251,7 +251,228 @@ print(tdate)
 
 #### 単純な検索
 
+```py
+# -----:    0000000000111111111122222222223333333333444444444455
+# count:    0123456789012345678901234567890123456789012345678901
+haystack = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
+needle = 'e'
+```
+
+```py
+print(needle in haystack)
+```
+
+> True
+
+```py
+print(haystack.count(needle))
+```
+
+> 2
+
+```py
+print(haystack.find(needle))
+print(haystack.find(needle, 4))
+print(haystack.find(needle, 5))
+print(haystack.find(needle, 5,30))
+print(haystack.index(needle, 5,30))
+print(haystack.find(needle, 5,31))
+```
+
+> 4
+>
+> 4
+>
+> 30
+>
+> -1
+>
+> ValueError: substring not found
+>
+> 30
+
+```py
+print(haystack.rfind(needle))
+print(haystack.rfind(needle, None, 30))
+print(haystack.rfind(needle, None, 31))
+print(haystack.rfind(needle, 5,30))
+print(haystack.rindex(needle, 5,30))
+print(haystack.rfind(needle, 4,30))
+```
+
+
+> 30
+>
+> 4
+>
+> 30
+>
+> -1
+>
+> ValueError: substring not found
+>
+> 4
+
+
+
 #### 正規表現による検索
+
+##### 文字列の先頭でマッチ
+
+```py
+import re
+
+haystack = 'haystack'
+needle = '([a-rt-z]+)'
+
+# コンパイル有
+pattern = re.compile(needle)
+matched = pattern.match(haystack)
+print(matched)
+
+# コンパイル無
+matched = re.match(pattern, haystack)
+print(matched)
+
+# 結果を取得
+if matched:
+    print(matched.group())
+    print(matched.start())
+    print(matched.end())
+    print(matched.span())
+```
+
+> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+>
+> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+>
+> hay
+>
+> 0
+>
+> 3
+>
+> (0, 3)
+
+##### 文字列の途中でマッチした最初の箇所
+
+```py
+import re
+
+haystack = 'haystack'
+needle = '([a-rt-z]+)'
+
+# コンパイル有
+pattern = re.compile(needle)
+searched = pattern.search(haystack)
+print(searched)
+
+# コンパイル無
+searched = re.search(pattern, haystack)
+print(searched)
+
+# 結果を取得
+if searched:
+    print(searched.group())
+    print(searched.start())
+    print(searched.end())
+    print(searched.span())
+```
+
+> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+>
+> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+>
+> hay
+>
+> 0
+>
+> 3
+>
+> (0, 3)
+
+##### 文字列の途中でマッチした全ての箇所のリスト
+
+```py
+import re
+
+haystack = 'haystack'
+needle = '([a-rt-z]+)'
+
+# コンパイル有
+pattern = re.compile(needle)
+allfound = pattern.findall(haystack)
+print(allfound)
+
+# コンパイル無
+allfound = re.findall(pattern, haystack)
+print(allfound)
+
+# 結果を取得
+if allfound:
+    print(allfound)
+```
+
+> ['hay', 'tack']
+>
+> ['hay', 'tack']
+>
+> ['hay', 'tack']
+
+##### 文字列の途中でマッチした全ての箇所のイテレーター
+
+```py
+import re
+
+haystack = 'haystack'
+needle = '([a-rt-z]+)'
+
+# コンパイル有
+pattern = re.compile(needle)
+allfound = pattern.finditer(haystack)
+print(allfound)
+
+# コンパイル無
+allfound = re.finditer(pattern, haystack)
+print(allfound)
+
+# 結果を取得
+for found in allfound:
+    print(found.group())
+    print(found.start())
+    print(found.end())
+    print(found.span())
+```
+
+> \<callable_iterator object at 0x7fd0e8dd4da0\>
+>
+> \<callable_iterator object at 0x7fd0e8cc8a20\>
+>
+> hay
+>
+> 0
+>
+> 3
+>
+> (0, 3)
+>
+> tack
+>
+> 4
+>
+> 8
+>
+> (4, 8)
+
+#### フラグを利用
+
+```py
+
+```
+
+>
+>
+>
 
 ### 置換
 
@@ -261,6 +482,7 @@ print(tdate)
 haystack = 'haystack'
 needle = 'a'
 replacement = 'replacement'
+
 content = haystack.replace(needle, replacement)
 content = haystack.replace(needle, replacement, 1)
 ```
@@ -273,6 +495,7 @@ content = haystack.replace(needle, replacement, 1)
 ```py
 haystack = 'haystack\nhaystack\r\nhaystack'
 replacement = ''
+
 replacement.join(haystack.splitlines())
 ```
 
@@ -286,6 +509,7 @@ import re
 haystack = 'haystack'
 needle = '([a-rt-z]+)'
 replacement = 'replacement[\\1]'
+
 content = re.sub(needle, replacement, haystack)
 print(content)
 content = re.sub(needle, replacement, haystack, 1)
@@ -302,6 +526,7 @@ import re
 haystack = 'haystack'
 needle = '([A-RT-Z]+)'
 replacement = r'replacement[\1]'
+
 content = re.sub(needle, replacement, haystack, flags=re.IGNORECASE)
 print(content)
 ```
@@ -314,6 +539,7 @@ import re
 haystack = 'foobar\nhoge\npiyo'
 needle = '(^h)|(e$)'
 replacement = '#'
+
 content = re.sub(needle, replacement, haystack)
 print(content)
 content = re.sub(needle, replacement, haystack, flags=re.MULTILINE)
@@ -338,6 +564,7 @@ import re
 haystack = 'foobar\nhoge\npiyo'
 needle = 'r.h'
 replacement = '#'
+
 content = re.sub(needle, replacement, haystack)
 print(content)
 content = re.sub(needle, replacement, haystack, flags=re.DOTALL)
@@ -353,6 +580,20 @@ print(content)
 > fooba#oge
 >
 > piyo
+
+##### ファイル名に使用できない文字を除去
+
+```py
+import re
+
+haystack = 'foobar/hoge!piyo'
+replacement = '-'
+
+content = re.sub(r'[\\|/|:|?|.|"|<|>|\|]', replacement, haystack)
+print(content)
+```
+
+> foobar-hoge!piyo
 
 #### 一文字ごとの置換
 
@@ -401,10 +642,32 @@ print(os.path.dirname(os.path.abspath(__file__)))
 ## ファイル・フォルダの存在チェック
 
 ```
+import os
+
 FILEPATH = '.'
 print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
 print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
+
+FILEPATH = './'
+print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
+print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
+
+FILEPATH = './Python3.md'
+print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
+print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
 ```
+
+> True
+>
+> False
+
+> True
+>
+> False
+
+> False
+>
+> True
 
 ## ファイル一覧
 
