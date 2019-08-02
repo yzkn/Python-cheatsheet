@@ -22,6 +22,115 @@
 |  if -- else  |  条件式(三項演算子)  |
 |  lambda  |  ラムダ式  |
 
+## 比較
+
+```py
+x = 1234567890
+y = 1234567890
+z = 12345678901
+
+print(x == x)
+print(x == y)
+print(x != z)
+
+print(x is x)
+print(x is y)
+print(x is z)
+```
+
+> True
+>
+> True
+>
+> True
+
+> True
+>
+> False
+>
+> False
+
+`is` での比較で、オブジェクトが同一でなくてもTrueが返る場合もある
+
+```py
+x = '1234567890'
+print(len(x) is 10)
+```
+
+> True
+
+```py
+x = '1234567890'
+y = '1234567890'
+z = '12345678901'
+
+print(x == x)
+print(x == y)
+print(x != z)
+
+print(len(x) == 10)
+print(len(x) != 11)
+
+print(x is x)
+print(x is y)
+print(x is z)
+
+print(1 < len(x) < 20)
+print(1 < len(x) and len(x) < 20)
+```
+
+> True
+>
+> True
+>
+> True
+
+> True
+>
+> True
+
+> True
+>
+> True
+>
+> False
+
+> True
+>
+> True
+
+```py
+def isNullOrEmpty(s): # string.isNullOrEmpty()
+    if s is None or s == '':
+        return True
+    else:
+        return False
+
+isNullOrEmpty(None)
+isNullOrEmpty('')
+isNullOrEmpty('a')
+```
+
+> True
+>
+> True
+>
+> False
+
+## 複数条件
+
+```py
+content = 'foobarhogepiyo'
+
+# if "foo" in s and "bar" in s:
+if all(map(content.__contains__, ('foo', 'bar'))):
+    print("found")
+
+# if "foo" in s or "hoge" in s:
+if any(map(content.__contains__, ('foo', 'hoge'))):
+    print("found")
+```
+
 # データ型
 
 ```py
@@ -174,6 +283,7 @@ print(type(dt))
 print(dt.year)
 print(dt.month)
 print(dt.day)
+print(dt.weekday)
 print(dt.hour)
 print(dt.minute)
 print(dt.second)
@@ -259,11 +369,15 @@ from datetime import datetime
 dt = datetime(2019, 8, 2)
 print(dt.date())
 print(type(dt.date()))
+
+print(dt.date().weekday())
 ```
 
 > 2019-08-02
 >
 > \<class 'datetime.date'\>
+>
+> 4
 
 ### datetimeからstr
 
@@ -684,10 +798,10 @@ for found in allfound:
 
 ```py
 haystack = 'a12345.67890b'
-patternA = re.compile(r"""\d +  # the integral part
+patternA = re.compile(r'''\d +  # the integral part
                    \.    # the decimal point
-                   \d *  # some fractional digits""", re.X)
-patternB = re.compile(r"\d+\.\d*")
+                   \d *  # some fractional digits''', re.X)
+patternB = re.compile(r'\d+\.\d*')
 allfoundA = patternA.findall(haystack)
 allfoundB = patternB.findall(haystack)
 
@@ -702,6 +816,66 @@ if allfoundB:
 > ['12345.67890']
 >
 > ['12345.67890']
+
+#### 文字種のフィルタリング
+
+##### 文字列全体が半角英数だけ含まれているか検査
+
+```py
+import re
+
+def validate(content):
+    p = re.compile('[a-zA-Z0-9]+')
+    if p.fullmatch(content):
+        print('valid')
+    else:
+        print('invalid')
+
+validate('abcdefg')
+
+validate('abcdefgあいう')
+```
+
+> valid
+>
+> invalid
+
+##### 半角カナなどが含まれていないか検査
+
+```py
+import re
+
+def validate(content):
+    p = re.compile('[｡-ﾟ]+') # 句読点などが不要であれば[ｦ-ﾟ]
+    if p.search(content):
+        print('found')
+    else:
+        print('valid')
+
+validate('abcdefgあいう')
+validate('abcdefgｱｲｳ')
+```
+
+> valid
+>
+> found
+
+##### 文字種別のパターン
+
+|  文字種  |  パターン  |  例  |
+| --- | --- | --- |
+|  半角英字  |  `'[a-zA-Z]+'`  |    |
+|  半角数字  |  `'[0-9]+'`  |    |
+|  ASCII文字  |  `'[\u0000-\u007F]+'`  |  `ABCabc!"#$%&`  |
+|  半角記号  |  `'[\u0020-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E]+'`  |  `!"#$%&`  |
+|  全角英字  |  `'[ａ-ｚＡ-Ｚ]+'`  |    |
+|  全角数字  |  `'[０-９]+'`  |    |
+|  ローマ数字  |  `'[\u2160-\u217F]+'`  |  `ⅠⅡⅢ`  |
+|  漢数字  |  `'[〇一二三四五六七八九十百千万億兆]+'`  |    |
+|  ひらがな  |  `'[\u3041-\u309F]+'`  |    |
+|  全角カタカナ  |  `'[\u30A1-\u30FF]+'`  |    |
+|  半角カタカナ  |  `'[\uFF66-\uFF9F]+'`  |    |
+|  漢字 (CJK統合漢字)  |  `'[\u4E00-\u9FFF]+'`  |    |
 
 ### 置換
 
@@ -833,7 +1007,220 @@ print(haystack.translate(str.maketrans({'h': 'H', 'a': 'oo', 's': '', 'k': None}
 
 > Hooytooc
 
+## リスト
+
+### リストが空か検査
+
+```py
+a = []
+if not a:
+  print('empty')
+
+if len(a)==0:
+  print('empty')
+
+if a == []:
+  print('empty')
+```
+
+## 辞書
+
+### 追加・置換・削除
+
+```py
+dct = { 1:'first', 2:'second', 3:'third'}
+
+# 追加
+dct[4] = 'fourth'
+
+# 置換
+dct[2] = 'secondsecond'
+
+# 検索
+if 1 in dct:
+    print(dct[1])
+    print(dct.get(1))
+
+print(dct.get(999)) # 指定したキーが存在しなければNoneを返す
+print(dct.get(999, 'not found')) # 指定したキーが存在しなければ引数2を返す
+
+dct.keys()
+list(dct.keys())
+dct.values()
+list(dct.values())
+dct.items()
+list(dct.items())
+
+# 要素を削除
+del dct[1]
+
+print(dct)
+
+# 初期化
+dct.clear()
+dct = {}
+```
+
+> first
+>
+> first
+
+> None
+>
+> not found
+
+> dict_keys([1, 2, 3, 4])
+>
+> [1, 2, 3, 4]
+>
+> dict_values(['first', 'secondsecond', 'third', 'fourth'])
+>
+> ['first', 'secondsecond', 'third', 'fourth']
+>
+> ict_items([(1, 'first'), (2, 'secondsecond'), (3, 'third'), (4, 'fourth')])
+>
+> [(1, 'first'), (2, 'secondsecond'), (3, 'third'), (4, 'fourth')]
+
+> {2: 'secondsecond', 3: 'third', 4: 'fourth'}
+
+### 初期化(リスト・タプルから変換)
+
+```py
+dct = {}
+dct = { 1:'first', 2:'second', 3:'third', }
+print(dct)
+
+lst = [[1, 'first'], [2, 'second'], [3, 'third']]
+dct = dict(lst)
+print(dct)
+```
+
+> {1: 'first', 2: 'second', 3: 'third'}
+>
+> {1: 'first', 2: 'second', 3: 'third'}
+
+```py
+lst = [(1, 'first'), (2, 'second'), (3, 'third')]
+dct = dict(lst)
+
+tpl = ([1, 'first'], [2, 'second'], [3, 'third'])
+dct = dict(tpl)
+
+lst = ['1f', '2s', '3t']
+dct = dict(lst)
+
+tpl = ('1f', '2s', '3t')
+dct = dict(tpl)
+```
+
+### リストを結合
+
+```py
+dct1 = dict(('1f', '2s', '3t'))
+dct2 = dict(('4f', '5f', '6s'))
+dct3 = dict(('4x', '8e', '9n'))
+
+dct1.update(dct2)
+
+print(dct1)
+print(dct2)
+
+dct1.update(dct3)
+
+print(dct1)
+print(dct3)
+```
+
+> {'1': 'f', '2': 's', '3': 't', '4': 'f', '5': 'f', '6': 's'}
+>
+> {'4': 'f', '5': 'f', '6': 's'}
+
+> {'1': 'f', '2': 's', '3': 't', '4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'}
+>
+> {'4': 'x', '8': 'e', '9': 'n'}
+
+### 辞書のコピー
+
+```py
+dct1 = dict(('1f', '2s', '3t'))
+
+dct2 = dct1
+dct1['1'] = 'z'
+print(dct1)
+print(dct2)
+
+dct1 = dict(('1f', '2s', '3t'))
+dct2 = dct1.copy()
+dct1['1'] = 'z'
+print(dct1)
+print(dct2)
+```
+
+> {'1': 'z', '2': 's', '3': 't'}
+>
+> {'1': 'z', '2': 's', '3': 't'}
+
+> {'1': 'z', '2': 's', '3': 't'}
+>
+> {'1': 'f', '2': 's', '3': 't'}
+
+### 辞書のキーと値を交換
+
+```py
+dct1 = dict(('1f', '2s', '3t'))
+dct2 = {v: k for k, v in dct1.items()}
+print(dct2)
+```
+
+> {'f': '1', 's': '2', 't': '3'}
+
+### 辞書の値でソート
+
+```py
+dct1 = dict(('1f', '4s', '3t'))
+dct2 = sorted(dct1.items(), key=lambda x: x[1], reverse=True)
+print(dct2)
+```
+
+> [('3', 't'), ('4', 's'), ('1', 'f')]
+
 # I/O
+
+## パス文字列の操作
+
+```py
+import os
+
+joined = os.path.join('.', 'test' + '-' + 'join', 'test.txt')
+print(joined)
+
+basename = os.path.basename('./test-join/test.txt')
+print(basename)
+
+dirname = os.path.dirname('./test-join/test.txt')
+print(dirname)
+
+root, ext = os.path.splitext('./test-join/test.txt')
+print(root, ext)
+splitext = os.path.splitext('./test-join/test.txt')
+print(splitext[0], splitext[1])
+
+abspath = os.path.abspath('./test-join/test.txt')
+print(abspath)
+if os.path.isabs(abspath): # パス文字列が絶対パスか検査する
+    print('ABSPATH')
+
+```
+
+> './test-join/test.txt'
+>
+> test.txt
+>
+> ./test-join
+>
+> ./test-join/test .txt
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-join/test.txt'
 
 ## カレントディレクトリ
 
@@ -868,7 +1255,7 @@ print(os.path.dirname(os.path.abspath(__file__)))
 >
 > /mnt/c/Users/y/Documents/GitHub/Python-cheatsheet
 
-## ファイル・フォルダの存在チェック
+## ファイル・フォルダを存在チェック
 
 ```
 import os
@@ -898,7 +1285,7 @@ print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
 >
 > True
 
-## ファイル一覧
+## ファイル・フォルダの一覧を取得
 
 [python3md-cwd.py](python3md-cwd.py)
 
@@ -1113,6 +1500,137 @@ dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*-[0-1].???')), recursive=
 >   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'
 >
 > ]
+
+## ファイル情報を取得
+
+```py
+import math
+
+def roundstr(size):
+    return '{}'.format(round(size, 1))
+
+def human_readable(bytesize):
+    if bytesize < 1024:
+        return str(bytesize) + ' B'
+    elif bytesize < 1024 ** 2:
+        return roundstr(bytesize / 1024.0) + ' KB'
+    elif bytesize < 1024 ** 3:
+        return roundstr(bytesize / (1024.0 ** 2)) + ' MB'
+    elif bytesize < 1024 ** 4:
+        return roundstr(bytesize / (1024.0 ** 3)) + ' GB'
+    elif bytesize < 1024 ** 5:
+        return roundstr(bytesize / (1024.0 ** 4)) + ' TB'
+    else:
+        return str(bytesize) + ' B'
+
+```
+
+```py
+from datetime import datetime, timezone, timedelta
+import os
+
+filepath = './Python3.md'
+
+# 最終アクセス日時
+# datetime.fromtimestamp(os.path.getatime(filepath))
+atime = datetime.fromtimestamp(os.path.getatime(filepath), timezone(timedelta(hours=9)))
+print(atime)
+print(atime.tzinfo)
+
+# 最終更新日時
+# datetime.fromtimestamp(os.path.getmtime(filepath))
+mtime = datetime.fromtimestamp(os.path.getmtime(filepath), timezone(timedelta(hours=9)))
+print(mtime)
+print(mtime.tzinfo)
+
+# ファイルサイズ
+size = os.path.getsize(filepath)
+print(human_readable(size))
+```
+
+> 2019-08-02 21:40:27.305819+09:00
+>
+> UTC+09:00
+>
+> 2019-08-02 21:43:47.294729+09:00
+>
+> UTC+09:00
+>
+> 27661
+
+## ファイルを作成
+
+### touch()
+
+```py
+from pathlib import Path
+def touch(filepath):
+    Path(filepath).touch()
+
+
+
+import os
+def touch(filepath):
+    if os.path.isfile(filepath):
+        pass
+    else:
+        with open(filepath, 'w', encoding='UTF-8') as f:
+            pass
+```
+
+### 既存のファイルがある場合はバックアップを作成して再作成
+
+```py
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+FILEPATH = './test-file'
+
+bkup_dt = datetime.now().strftime('%Y%m%d%H%M%S')
+NEW_FILEPATH = os.path.splitext(FILEPATH)[0] + bkup_dt + os.path.splitext(FILEPATH)[1]
+
+if os.path.exists(FILEPATH):
+    RESULT_FILEPATH = shutil.move(
+        FILEPATH,
+        NEW_FILEPATH
+        )
+    print(RESULT_FILEPATH)
+
+touch(FILEPATH)
+```
+
+## フォルダを作成
+
+### 既存のフォルダがある場合はバックアップを作成して再作成
+
+```py
+import os
+import shutil
+
+DIRPATH = './test-folder/'
+
+NEW_DIRPATH = os.path.dirname(DIRPATH) # './test-folder' # 末尾のスラッシュなし
+bkup_dt = datetime.now().strftime('%Y%m%d%H%M%S')
+NEW_DIRPATH += bkup_dt
+
+if os.path.exists(DIRPATH):
+    RESULT_DIRPATH = shutil.move(
+        DIRPATH,
+        NEW_DIRPATH
+        )
+    print(RESULT_DIRPATH)
+
+# os.makedirs(DIRPATH), exist_ok=True
+os.makedirs(DIRPATH)
+```
+
+## ファイル・フォルダをコピー
 
 ## ログ
 
