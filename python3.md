@@ -25,6 +25,15 @@
 ## 比較
 
 ```py
+x = None
+
+if x is None: # Null判定
+    print('True')
+```
+
+> True
+
+```py
 x = 1234567890
 y = 1234567890
 z = 12345678901
@@ -273,9 +282,12 @@ print(isinstance(False, int))
 ## datetime
 
 ```py
-import datetime
+from datetime import datetime
 
-dt = datetime.datetime.now()
+dt = datetime.today()
+print(dt)
+
+dt = datetime.now()
 print(dt)
 
 print(type(dt))
@@ -290,6 +302,10 @@ print(dt.second)
 print(dt.microsecond)
 ```
 
+> 2019-08-02 08:34:17.354115 \# today()
+>
+> 2019-08-02 08:34:17.354115 \# now()
+>
 > \<class 'datetime.datetime'\>
 >
 > 2019
@@ -1221,6 +1237,47 @@ if os.path.isabs(abspath): # パス文字列が絶対パスか検査する
 > ./test-join/test .txt
 >
 > '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-join/test.txt'
+
+### 親ディレクトリのパスを取得
+
+```py
+import os
+
+def get_parent(path='.', lev=0):
+    return str((os.path.sep).join(os.path.abspath(path).split(os.path.sep)[0:-1-lev]))
+
+get_parent('__file__')
+get_parent('__file__', 1)
+```
+
+> '/mnt/c/Users/y/Documents/GitHub'
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet'
+
+```py
+from pathlib import Path
+
+def get_parent(path='.', lev=0):
+    return Path(path).resolve().parents[lev]
+
+get_parent('__file__')
+get_parent('__file__', 1)
+```
+
+> PosixPath('/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet')
+>
+> PosixPath('/mnt/c/Users/y/Documents/GitHub')
+
+### Linux上でWindows形式のパスを操作
+
+```py
+import ntpath
+
+bname = ntpath.basename('\\path\\to\\file')
+print(bname)
+```
+
+> file
 
 ## カレントディレクトリ
 
