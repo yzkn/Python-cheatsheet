@@ -1766,6 +1766,208 @@ glob('./test-dirtree/**', recursive=True)
 >
 > ['./test-dirtree/', './test-dirtree/dir1', './test-dirtree/dir1/file1.txt', './test-dirtree/dir2', './test-dirtree/dir2/file1.txt']
 
+## ファイルをリネーム
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+dirpath = './test-rename/'
+srcpath = './test-rename/file1.txt'
+dstpath = './test-rename/file2.txt'
+
+os.makedirs(dirpath, exist_ok=True)
+touch(srcpath)
+
+os.rename(srcpath, dstpath)
+glob('./test-rename/**', recursive=True)
+
+touch(srcpath)
+glob('./test-rename/**', recursive=True)
+
+os.rename(srcpath, dstpath) # dstpathのファイルが既に存在すると、上書きされる
+glob('./test-rename/**', recursive=True)
+```
+
+> ['./test-rename/', './test-rename/file2.txt']
+>
+> ['./test-rename/', './test-rename/file1.txt', './test-rename/file2.txt']
+>
+> ['./test-rename/', './test-rename/file2.txt'] \# dstpathのファイルが既に存在すると、上書きされる
+
+## フォルダをリネーム
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-rename/dir1'
+srcfpath = './test-rename/dir1/file1.txt'
+dstpath = './test-rename/dir2'
+dstfpath = './test-rename/dir2/file1.txt'
+
+# 移動元ディレクトリと配下のファイルが存在
+shutil.rmtree(srcpath, ignore_errors=True)
+shutil.rmtree(dstpath, ignore_errors=True)
+os.makedirs(srcpath, exist_ok=True)
+# os.makedirs(dstpath, exist_ok=True)
+touch(srcfpath)
+# touch(dstfpath)
+
+os.rename(srcpath, dstpath)
+glob('./test-rename/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+shutil.rmtree(srcpath, ignore_errors=True)
+shutil.rmtree(dstpath, ignore_errors=True)
+os.makedirs(srcpath, exist_ok=True)
+os.makedirs(dstpath, exist_ok=True)
+touch(srcfpath)
+# touch(dstfpath)
+
+os.rename(srcpath, dstpath)
+glob('./test-rename/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+shutil.rmtree(srcpath, ignore_errors=True)
+shutil.rmtree(dstpath, ignore_errors=True)
+os.makedirs(srcpath, exist_ok=True)
+os.makedirs(dstpath, exist_ok=True)
+touch(srcfpath)
+touch(dstfpath)
+
+os.rename(srcpath, dstpath) # OSError: [Errno 39] Directory not empty: './test-rename/dir1' -> './test-rename/dir2'
+```
+
+> \# 移動元ディレクトリと配下のファイルが存在
+>
+> ['./test-rename/', './test-rename/dir2', './test-rename/dir2/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+>
+> ['./test-rename/', './test-rename/dir2', './test-rename/dir2/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+>
+> OSError: [Errno 39] Directory not empty: './test-rename/dir1' -> './test-rename/dir2'
+
+## ファイルを移動
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-move/dir1'
+srcfpath = './test-move/dir1/file1.txt'
+dstpath = './test-move/dir2'
+dstfpath = './test-move/dir2/file2.txt'
+
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+os.makedirs(dstpath, exist_ok=True)
+
+result_path = shutil.move(srcfpath, dstpath)
+print(result_path)
+
+touch(srcfpath)
+
+result_path = shutil.move(srcfpath, dstfpath)
+print(result_path)
+```
+
+> ./test-move/dir2/file1.txt
+>
+> ./test-move/dir2/file2.txt
+
+## フォルダを移動
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-move/dir1'
+srcfpath = './test-move/dir1/file1.txt'
+dstpath = './test-move/dir2'
+dstdpath = './test-move/dir2/dir1'
+dstfpath = './test-move/dir2/file1.txt'
+dstfpath2 = './test-move/dir2/dir1/file1.txt'
+
+
+# 移動元ディレクトリと配下のファイルが存在
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+shutil.rmtree(dstpath, ignore_errors=True)
+
+result_path = shutil.move(srcpath, dstpath)
+print(result_path)
+
+glob('./test-move/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+os.remove(dstfpath)
+
+result_path = shutil.move(srcpath, dstpath)
+print(result_path)
+
+glob('./test-move/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+shutil.rmtree(dstdpath, ignore_errors=True)
+touch(dstfpath2)
+
+result_path = shutil.move(srcpath, dstpath)
+
+glob('./test-move/**', recursive=True) # shutil.Error: Destination path './test-move/dir2/dir1' already exists
+```
+
+> \# 移動元ディレクトリと配下のファイルが存在
+>
+> ./test-move/dir2
+>
+> ['./test-move/', './test-move/dir2', './test-move/dir2/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+>
+> ./test-move/dir2/dir1
+>
+> ['./test-move/', './test-move/dir2', './test-move/dir2/dir1', './test-move/dir2/dir1/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+>
+> shutil.Error: Destination path './test-move/dir2/dir1' already exists
+
 ## ファイルを削除
 
 ### 特定のファイルを削除
@@ -1840,6 +2042,7 @@ os.makedirs(path, exist_ok=True)
 touch(fpath)
 
 # 中身ごとフォルダを削除
+# shutil.rmtree(path, ignore_errors=True)
 shutil.rmtree(path)
 
 if not os.path.exists(path):
