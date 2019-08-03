@@ -1630,7 +1630,223 @@ if os.path.exists(DIRPATH):
 os.makedirs(DIRPATH)
 ```
 
-## ファイル・フォルダをコピー
+## ファイルをコピー
+
+```py
+from pathlib import Path
+import os
+import shutil
+
+srcpath = './test-copy1.txt'
+dstpath = './test-copy2.txt'
+
+Path(srcpath).touch()
+
+# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+result_path = shutil.copyfile(srcpath, dstpath)
+print(result_path)
+
+# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+result_path = shutil.copy(srcpath, dstpath)
+print(result_path)
+
+dst1 = os.path.join(os.path.dirname(dstpath), 'test-copy2')
+result_path = shutil.copy(srcpath, dst1)
+print(result_path)
+
+# ファイル→フォルダ (同名のファイルが既に存在すればエラー)
+#  コピー先として指定されたディレクトリが予め存在し、その中に同名の既存ファイルが存在しなければコピーされる
+dst2 = os.path.join(os.path.dirname(dstpath), 'test-copy2/') # dst1との差異は、末尾の'/'のみ
+os.makedirs(dst2, exist_ok=True) # 予めディレクトリを作成しておかないとIsADirectoryError
+
+dst_file_path = os.path.join(os.path.dirname(dst2), os.path.basename(srcpath))
+if os.path.exists(dst_file_path):
+    os.remove(dst_file_path)
+
+result_path = shutil.copy(srcpath, dst2)
+print(result_path)
+
+# ファイル→ファイル (ファイル情報を保持)
+result_path = shutil.copy2(srcpath, dstpath)
+print(result_path)
+
+result_path = shutil.copy2(srcpath, dst2) # 予めディレクトリを作成しておかないとIsADirectoryError
+print(result_path)
+```
+
+> \# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+>
+> ./test-copy2.txt
+
+> \# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+>
+> ./test-copy2.txt
+>
+>　./test-copy2
+
+> \# ファイル→フォルダ (同名のファイルが既に存在すればエラー)
+>
+> ./test-copy2/test-copy1.txt
+
+> \# ファイル→ファイル (ファイル情報を保持)
+>
+> ./test-copy2.txt
+>
+> ./test-copy2/test-copy1.txt
+
+## フォルダをコピー
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-dirtree/dir1'
+srcfpath = './test-dirtree/dir1/file1.txt'
+dstpath = './test-dirtree/dir2'
+
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+
+result_path = shutil.copytree(srcpath, dstpath) # ディレクトリが既に存在するとFileExistsError
+print(result_path)
+
+glob('./test-dirtree/**', recursive=True)
+```
+
+> './test-dirtree/dir2'
+>
+> [
+>
+>   './test-dirtree/',
+>
+>   './test-dirtree/dir1',
+>
+>   './test-dirtree/dir1/file1.txt',
+>
+>   './test-dirtree/dir2',
+>
+>   './test-dirtree/dir2/file1.txt'
+>
+> ]
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+from distutils.dir_util import copy_tree
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-dirtree/dir1'
+srcfpath = './test-dirtree/dir1/file1.txt'
+dstpath = './test-dirtree/dir2'
+
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+os.makedirs(dstpath, exist_ok=True)
+
+# distutils.dir_util
+result_path = copy_tree(srcpath, dstpath) # ディレクトリが既に存在してもコピーされる
+print(result_path)
+
+glob('./test-dirtree/**', recursive=True)
+```
+
+> ['./test-dirtree/dir2/file1.txt']
+>
+> ['./test-dirtree/', './test-dirtree/dir1', './test-dirtree/dir1/file1.txt', './test-dirtree/dir2', './test-dirtree/dir2/file1.txt']
+
+## ファイルを削除
+
+### 特定のファイルを削除
+
+```py
+from pathlib import Path
+import os
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+path = './test-remove.txt'
+touch(path)
+
+# ファイルを削除
+os.remove(path)
+
+if not os.path.exists(path):
+    print('removed')
+```
+
+> removed
+
+### ファイルを検索して削除
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+path = './test-remove'
+fpath = './test-remove/test1.txt'
+os.makedirs(path, exist_ok=True)
+touch(fpath)
+
+# ファイルを検索して削除
+[os.remove(f) for f in glob("./test-remove/*.txt")]
+
+os.rmdir(path)
+```
+
+## フォルダを削除
+
+```py
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+path = './test-remove'
+fpath = './test-remove/test1.txt'
+
+os.makedirs(path, exist_ok=True)
+
+os.remove(path) # IsADirectoryError
+
+# 空フォルダを削除
+os.rmdir(path)
+
+os.makedirs(path, exist_ok=True)
+touch(fpath)
+
+# 中身ごとフォルダを削除
+shutil.rmtree(path)
+
+if not os.path.exists(path):
+    print('removed')
+```
+
+> removed
 
 ## ログ
 
