@@ -1039,6 +1039,103 @@ if a == []:
   print('empty')
 ```
 
+### リストを生成
+
+```py
+# リストをコピー
+oldlist = ['foo', 'bar', 'hoge']
+newlist = list(oldlist)
+print(newlist)
+
+# タプルからリストを生成
+tpllist = list(('foo', 'bar', 'hoge'))
+print(tpllist)
+
+# range()を使って連番の要素を持つリストを生成
+rnglist = list(range(5))
+print(rnglist)
+
+# 文字列からリストを生成
+strlist = list('abcdefg')
+print(strlist)
+```
+
+> \# newlist
+>
+> ['foo', 'bar', 'hoge']
+>
+> \# tpllist
+>
+> ['foo', 'bar', 'hoge']
+>
+> \# rnglist
+>
+> [0, 1, 2, 3, 4]
+>
+> \# strlist
+>
+> ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+
+### リストに要素を追加
+
+```py
+# append
+lst = ['foo', 'bar', 'hoge']
+lst.append('piyo')
+print(lst)
+
+lst.append(['fu', 'ga']) # appendの引数にリストを指定すると、リスト自体が新たな要素になる
+print(lst)
+
+# スライス
+lst = ['foo', 'bar', 'hoge']
+print(lst[0:len(lst)-1])
+print(lst[0:len(lst)])
+
+lst[len(lst):len(lst)] = ['fu', 'ga']
+print(lst)
+
+# 別のリスト(別のイテラブルオブジェクト)の要素を追加(連結)する
+lst1 = ['foo', 'bar', 'hoge']
+lst2 = ['fu', 'ga']
+lst1.extend(lst2)
+print(lst1)
+
+lst1 = ['foo', 'bar', 'hoge']
+lst2 = ['fu', 'ga']
+lst1 = lst1 + lst2
+print(lst1)
+
+# リストの要素を繰り返す
+lst = ['foo', 'bar', 'hoge']
+lst= lst * 3
+print(lst)
+```
+
+> \# append
+>
+> ['foo', 'bar', 'hoge', 'piyo']
+>
+> ['foo', 'bar', 'hoge', 'piyo', ['fu', 'ga']]
+>
+> \# スライス
+>
+> ['foo', 'bar']
+>
+> ['foo', 'bar', 'hoge']
+>
+> ['foo', 'bar', 'hoge', 'fu', 'ga']
+>
+> \# 別のリスト(別のイテラブルオブジェクト)の要素を追加(連結)する
+>
+> ['foo', 'bar', 'hoge', 'fu', 'ga']
+>
+> ['foo', 'bar', 'hoge', 'fu', 'ga']
+>
+> \# リストの要素を繰り返す
+>
+> ['foo', 'bar', 'hoge', 'foo', 'bar', 'hoge', 'foo', 'bar', 'hoge']
+
 ## 辞書
 
 ### 追加・置換・削除
