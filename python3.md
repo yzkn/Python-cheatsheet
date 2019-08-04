@@ -1207,36 +1207,65 @@ print(dct2)
 ```py
 import os
 
+# パス文字列を組み立てる
+print(os.path.sep)
+
 joined = os.path.join('.', 'test' + '-' + 'join', 'test.txt')
 print(joined)
 
+# ファイル名を取得する
 basename = os.path.basename('./test-join/test.txt')
 print(basename)
 
+# ディレクトリ名を取得する
 dirname = os.path.dirname('./test-join/test.txt')
 print(dirname)
 
+# 拡張子を取得する
 root, ext = os.path.splitext('./test-join/test.txt')
 print(root, ext)
 splitext = os.path.splitext('./test-join/test.txt')
 print(splitext[0], splitext[1])
 
+# 絶対パスを取得する
 abspath = os.path.abspath('./test-join/test.txt')
 print(abspath)
 if os.path.isabs(abspath): # パス文字列が絶対パスか検査する
     print('ABSPATH')
 
+# 2つのパス間の相対パスを取得する
+relpath = os.path.relpath(abspath, '.')
+print(relpath)
+
 ```
 
+> \# パス文字列を組み立てる
+>
+> /
+>
 > './test-join/test.txt'
+>
+> \# ファイル名を取得する
 >
 > test.txt
 >
+> \# ディレクトリ名を取得する
+>
 > ./test-join
+>
+> \# 拡張子を取得する
 >
 > ./test-join/test .txt
 >
+> \# 絶対パスを取得する
+>
 > '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-join/test.txt'
+>
+> ABSPATH
+>
+> \# 2つのパス間の相対パスを取得する
+>
+> test-join/test.txt'
 
 ### 親ディレクトリのパスを取得
 
@@ -2107,6 +2136,174 @@ if not os.path.exists(path):
 ```
 
 > removed
+
+## ファイル圧縮
+
+### shutilを使ってフォルダごと圧縮
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+import zipfile
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+archive_path = './test-archive/archive' # 拡張子なし : './test-archive/archive.zip'が作成される
+
+srcdpath1 = './test-archive/dir1'
+srcdpath2 = './test-archive/dir1/dir2'
+srcfpath1 = './test-archive/dir1/file1.txt'
+srcfpath2 = './test-archive/dir1/dir2/file2.txt'
+
+os.makedirs(srcdpath1, exist_ok=True)
+os.makedirs(srcdpath2, exist_ok=True)
+touch(srcfpath1)
+touch(srcfpath2)
+
+# base_dirを指定しない
+shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=None)
+
+with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
+    print(zip_contents.namelist())
+
+# base_dirを指定する
+rlpath = os.path.relpath(srcdpath2, srcdpath1) # dir2
+shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=rlpath) # 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+
+with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
+    print(zip_contents.namelist())
+
+```
+
+> \# base_dirを指定しない
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
+>
+> ['dir2/', 'file1.txt', 'dir2/file2.txt']
+
+> \# base_dirを指定する
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
+>
+> ['dir2/', 'dir2/file2.txt']
+
+### 個別にファイルを追加して圧縮ファイルを作成
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import zipfile
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+archive_path = './test-archive/archive.zip'
+
+srcdpath1 = './test-archive/dir1'
+srcdpath2 = './test-archive/dir1/dir2'
+srcfpath1 = './test-archive/dir1/file1.txt'
+srcfpath2 = './test-archive/dir1/dir2/file2.txt'
+
+os.makedirs(srcdpath1, exist_ok=True)
+os.makedirs(srcdpath2, exist_ok=True)
+touch(srcfpath1)
+touch(srcfpath2)
+
+
+
+with zipfile.ZipFile(archive_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath1, arcname=srcfpath1)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+with zipfile.ZipFile(archive_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath2, arcname=srcfpath2)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+# 既存の圧縮ファイルに、ファイルを追加する
+with zipfile.ZipFile(archive_path, 'a', compression=zipfile.ZIP_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath1, arcname=srcfpath1)
+    z.write(srcfpath2, arcname=srcfpath2)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+```
+
+> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/file1.txt']
+>
+> \# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+>
+> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/dir2/file2.txt']
+>
+> \# 既存の圧縮ファイルに、ファイルを追加する
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/'
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/dir2/'
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/dir2/file2.txt'
+>
+> [
+>   'test-archive/dir1/',
+>   'test-archive/dir1/dir2/',
+>   'test-archive/dir1/dir2/file2.txt',
+>   'test-archive/dir1/',
+>   'test-archive/dir1/dir2/',
+>   'test-archive/dir1/file1.txt',
+>   'test-archive/dir1/dir2/file2.txt'
+> ]
+
+## ファイル解凍
+
+```py
+import zipfile
+
+
+archive_path = './test-archive/archive.zip'
+extract_path = '.'
+
+
+# 内容を確認
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    zip_contents.extractall(extract_path)
+
+# 特定のファイルのみ解凍
+with zipfile.ZipFile(archive_path) as zip_contents:
+    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path)
+    print(result_path)
+
+
+# パスワードつきzipファイルを解凍
+pw = 'Password'
+with zipfile.ZipFile(archive_path) as zip_contents:
+    zip_contents.extractall(extract_path, pwd=pw)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path, pwd=pw)
+    print(result_path)
+```
 
 ## ログ
 
