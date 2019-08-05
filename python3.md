@@ -2655,3 +2655,43 @@ if __name__ == '__main__':
 ```py
 
 ```
+
+# モジュール
+
+## 外部スクリプトの読み込み
+
+* test-import/main.py
+
+```py
+import subfile
+subfile.hello()
+
+import subdir.main
+subdir.main.hello()
+
+from subdir import main
+main.hello()
+
+```
+
+* test-import/subfile.py
+
+```py
+def hello():
+    print('test-import/subdir.py hello()')
+```
+
+* test-import/subdir/main.py
+
+```py
+def hello():
+    print('test-import/subdir/main.py hello()')
+```
+
+>
+>
+>
+
+# エラーメッセージ
+
+##
