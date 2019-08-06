@@ -1164,6 +1164,80 @@ print(lst)
 >
 > ['foo', 'bar', 'hoge', 'foo', 'bar', 'hoge', 'foo', 'bar', 'hoge']
 
+### リストの反復処理
+
+#### インデックスを取得
+
+```py
+l = list(range(5, 10))
+for (index, item) in enumerate(l):
+    print(index, item)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 8
+>
+> 4 9
+
+#### 複数のリストを同時に繰り返す
+
+```py
+l1 = list(range(5))
+l2 = list(range(5,10))
+
+for (i1, i2) in zip(l1, l2):
+    print(i1, i2)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 8
+>
+> 4 9
+
+```py
+l1 = list(range(5))
+l2 = list(range(5,8))
+
+# 要素数の少ないリストの要素数分だけ繰り返す
+for (i1, i2) in zip(l1, l2):
+    print(i1, i2)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+
+#### 多次元リスト
+
+```py
+l = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+
+for (a, b, c) in zip(*l):
+    print(a, b, c)
+```
+
+> 1 4 7
+>
+> 2 5 8
+>
+> 3 6 9
+
 ### リストの重複する要素を除去
 
 ```py
@@ -1221,10 +1295,6 @@ print(df)
 # Python 3.5以前
 sk = sorted([x for x in set(l) if l.count(x) > 1], key=l.index)
 print(ss)
-
-
-
-
 ```
 
 > \# 順番を無視
@@ -1514,6 +1584,26 @@ print(fivedict)
 > {0: '0', 5: '5', 10: '10', 15: '15', 20: '20', 25: '25', 30: '30', 35: '35', 40: '40', 45: '45', 50: '50'}
 >
 > {0: '0', 1: -1, 2: -1, 3: -1, 4: -1, 5: '5', 6: -1, 7: -1, 8: -1, 9: -1, 10: '10', 11: -1, 12: -1, 13: -1, 14: -1, 15: '15', 16: -1, 17: -1, 18: -1, 19: -1, 20: '20', 21: -1, 22: -1, 23: -1, 24: -1, 25: '25', 26: -1, 27: -1, 28: -1, 29: -1, 30: '30', 31: -1, 32: -1, 33: -1, 34: -1, 35: '35', 36: -1, 37: -1, 38: -1, 39: -1, 40: '40', 41: -1, 42: -1, 43: -1, 44: -1, 45: '45', 46: -1, 47: -1, 48: -1, 49: -1, 50: '50', 51: -1, 52: -1, 53: -1, 54: -1, 55: -1, 56: -1, 57: -1, 58: -1, 59: -1, 60: -1, 61: -1, 62: -1, 63: -1, 64: -1, 65: -1, 66: -1, 67: -1, 68: -1, 69: -1, 70: -1, 71: -1, 72: -1, 73: -1, 74: -1, 75: -1, 76: -1, 77: -1, 78: -1, 79: -1, 80: -1, 81: -1, 82: -1, 83: -1, 84: -1, 85: -1, 86: -1, 87: -1, 88: -1, 89: -1, 90: -1, 91: -1, 92: -1, 93: -1, 94: -1, 95: -1, 96: -1, 97: -1, 98: -1, 99: -1}
+
+## タプル
+
+```py
+
+```
+
+>
+>
+>
+
+## セット
+
+```py
+
+```
+
+>
+>
+>
 
 # I/O
 
@@ -2663,15 +2753,32 @@ if __name__ == '__main__':
 * test-import/main.py
 
 ```py
+# subfile.py
 import subfile
 subfile.hello()
 
+
+# subdir/main.py
 import subdir.main
 subdir.main.hello()
+
+# or
 
 from subdir import main
 main.hello()
 
+
+# subdir/subfile.py
+import subdir.subfile
+subdir.subfile.hello()
+```
+
+* test-import/main2.py
+
+```py
+from subdir import *
+main.hello()
+subfile.hello()
 ```
 
 * test-import/subfile.py
@@ -2688,9 +2795,120 @@ def hello():
     print('test-import/subdir/main.py hello()')
 ```
 
+* test-import/subdir/subfile.py
+
+```py
+def hello():
+    print('test-import/subdir/subfile.py hello()')
+```
+
+* test-import/subdir/__init__.py
+
+```py
+from glob import glob
+from importlib import import_module
+import os
+import re
+import sys
+
+def main():
+    myself = sys.modules[__name__]
+    mod_paths = glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), '*.py'))
+    for py_file in mod_paths:
+        mod_name = os.path.splitext(os.path.basename(py_file))[0]
+        if re.search('.*__init__.*',mod_name) is None:
+            mod = import_module(__name__+ '.' + mod_name)
+            for m in mod.__dict__.keys():
+                if not m in ['__builtins__', '__doc__', '__file__', '__name__', '__package__']:
+                    myself.__dict__[m] = mod.__dict__[m]
+main()
+```
+
+```sh
+$ python test-import/main.py
+```
+
+> test-import/subdir.py hello()
 >
+> test-import/subdir/main.py hello()
 >
+> test-import/subdir/main.py hello()
 >
+> test-import/subdir/subfile.py hello()
+
+```sh
+$ python test-import/main2.py
+```
+
+> test-import/subdir/main.py hello()
+>
+> test-import/subdir/subfile.py hello()
+
+## 一時的にモジュール検索パスを追加
+
+```py
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+```
+
+## 恒久的にモジュール検索パスを追加
+
+```sh
+export PYTHONPATH="/path/to/module:$PYTHONPATH"`
+```
+
+site-packagesフォルダの中に、`*.pth`ファイル(ファイル名は任意)を作成し、各行にパスを追加
+
+* example.ptn
+
+```py
+# foo package configuration
+
+path/to/module
+```
+
+# pydoc
+
+* python3md-pydoc.py
+
+```py
+#!/usr/bin/python
+# coding: UTF-8
+
+'''
+ファイルの説明
+'''
+__author__ = 'YA-androidapp<ya.androidapp@gmail.com>'
+# __status__ = 'production'
+__status__ = 'dev'
+__version__ = '0.0.1'
+__date__    = '01 Aug. 2019'
+class Util():
+    '''
+    クラスの説明
+    '''
+    def init():
+        '''
+        メソッドの説明
+        '''
+        pass
+
+def main():
+    print('main')
+
+if __name__ == '__main__':
+    main()
+```
+
+```sh
+# コンソールに出力
+$ pydoc python3md-pydoc
+
+# HTMLファイルを生成
+$ pydoc python3md-pydoc
+```
 
 # エラーメッセージ
 
