@@ -2748,6 +2748,33 @@ if __name__ == '__main__':
 
 # モジュール
 
+## モジュールの読み込み
+
+```py
+# import <モジュール名>
+import os
+
+print(type(os))
+
+print(os)
+
+print(type(os.path.join))
+
+print(type(os.sep))
+```
+
+> \<class 'module'\>
+>
+> \<module 'os' from '/home/y/.pyenv/versions/3.6.8/lib/python3.6/os.py'\>
+>
+> \<class 'function'\>
+>
+> <class 'str'>
+
+```py
+from glob import glob, iglob
+```
+
 ## 外部スクリプトの読み込み
 
 * test-import/main.py
