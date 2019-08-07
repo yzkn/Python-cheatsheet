@@ -309,6 +309,8 @@ math.ceil(7 / 3) # 切り上げ
 
 ## datetime
 
+### 現在日時
+
 ```py
 from datetime import datetime
 
@@ -323,7 +325,8 @@ print(type(dt))
 print(dt.year)
 print(dt.month)
 print(dt.day)
-print(dt.weekday)
+print(dt.weekday())  # 0:月曜; 6:日曜
+print(dt.isoweekday())  # 1:月曜; 7:日曜
 print(dt.hour)
 print(dt.minute)
 print(dt.second)
@@ -350,6 +353,8 @@ print(dt.microsecond)
 >
 > 354115
 
+### 日付の生成
+
 ```py
 from datetime import datetime
 # 年・月・日は必須
@@ -367,28 +372,36 @@ print(dt)
 >
 > ValueError: second must be in 0..59
 
+#### 一定期間後の日付を生成
+
 ```py
 from datetime import datetime
 from datetime import timedelta
 
 dt = datetime(2019, 8, 2)
+
+# 一定期間後の日付を生成する場合はtimedeltaを使用
 dt += timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
 print(dt)
 ```
 
 > 2019-08-11 03:04:05.006007
 
+#### 日時の要素を置換
+
 ```py
 from datetime import datetime
 from datetime import timedelta
 
-td = datetime(2019, 12, 24) - datetime(2019, 8, 2, 9, 0, 0)
-print(td)
+dt = datetime(2019, 8, 2)
+
+# 日時の要素を置換
+print(dt.replace(day=22))
 ```
 
-> 143 days, 15:00:00
+> 2019-08-22 00:00:00
 
-### 日付のリスト
+#### 日付のリスト
 
 ```py
 from datetime import date
@@ -404,6 +417,18 @@ print(l)
 ```
 
 > ['2019-08-02', '2019-08-09', '2019-08-16', '2019-08-23', '2019-08-30']
+
+### 指定日までの残り期間を取得
+
+```py
+from datetime import datetime
+from datetime import timedelta
+
+td = datetime(2019, 12, 24) - datetime(2019, 8, 2, 9, 0, 0)
+print(td)
+```
+
+> 143 days, 15:00:00
 
 ### datetimeからdate
 
@@ -429,9 +454,13 @@ print(dt.date().weekday())
 from datetime import datetime
 now = datetime.now().strftime('%Y%m%d%H%M%S')
 print(now)
+
+print(datetime.now().isoformat()) # ISO形式
 ```
 
 > 20190730121658
+>
+> 2019-07-30T12:16:58.427664
 
 ### strからdatetime、date
 
@@ -479,6 +508,68 @@ print(tdate)
 1. strptime() 関数で使う場合、%p ディレクティブが出力結果の時刻フィールドに影響を及ぼすのは、時刻を解釈するために %I を使ったときのみです。
 1. 値の幅は実際に 0 から 61 です; 60 は うるう秒\<leap seconds\> を表し、 61 は歴史的理由によりサポートされています。
 1. strptime() 関数で使う場合、%U および %W を計算に使うのは曜日と年を指定したときだけです。
+
+### タイムゾーンを考慮したdatetime
+
+#### datetimeパッケージのtimezoneモジュールを使用する場合
+
+UTCからの時間差を指定して最低限の処理をすればよい場合
+
+```py
+from datetime import datetime, timedelta, timezone
+
+print(datetime(2019, 8, 7, 6, 54, 32, 1000))
+# 2019-08-07 06:54:32.001000
+
+print(datetime(2019, 8, 7, 6, 54, 32, 1000).tzinfo)
+# None
+
+print(datetime(2019, 8, 7, 6, 54, 32, 1000, tzinfo=timezone.utc))
+# 2019-08-07 06:54:32.001000+00:00
+
+print(datetime(2019, 8, 7, 6, 54, 32, 1000, tzinfo=timezone.utc).tzinfo)
+# UTC
+
+print(datetime(2019, 8, 7, 6, 54, 32, 1000, tzinfo=timezone(timedelta(hours=9))))
+# 2019-08-07 06:54:32.001000+09:00
+```
+
+#### pytzを使用する場合
+
+```py
+#  $ pip install pytz
+
+from pytz import timezone
+from datetime import datetime
+
+# datetime.now()で取得した日時をJSTとする
+
+print(datetime.now())
+# 2019-08-07 12:45:18.487441
+
+print(datetime.now(timezone('UTC')))
+# 2019-08-07 03:45:18.553981+00:00
+
+print(datetime.now(tz=timezone('Asia/Tokyo')))
+# 2019-08-07 12:45:18.613778+09:00
+
+print(datetime.now(timezone('UTC')).astimezone(timezone('Asia/Tokyo')))
+# 2019-08-07 12:45:18.754351+09:00
+
+print(datetime.now(timezone('UTC')).astimezone(timezone('Europe/London')))
+# 2019-08-07 04:45:18.634371+01:00
+
+print(timezone('Asia/Tokyo').localize(datetime.now()))
+# 2019-08-07 12:45:20.011410+09:00
+
+#
+
+print(timezone('UTC').localize(datetime.now()))
+# 2019-08-07 12:45:18.760637+00:00
+
+print(timezone('UTC').localize(datetime.now()).astimezone(timezone('Asia/Tokyo')))
+# 2019-08-07 21:47:29.529403+09:00
+```
 
 ## str
 
