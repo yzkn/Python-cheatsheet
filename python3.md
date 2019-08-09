@@ -576,11 +576,26 @@ print(tdate)
 tstr = '2019-07-30T12:16:58.001000'
 tdatetime = datetime.fromisoformat(tstr) # ISO形式 (Python3.7以降)
 print(tdatetime)
+
+#      '2019-07-30T12:16:58.001000+00:00'
+tstr = '2019-07-30T12:16:58.001000Z'
+tdatetime = datetime.fromisoformat(tstr.replace('Z', '+00:00')) # ISO形式 (Python3.7以降) 末尾にUTCを示すZがついているとエラーになるので置換する
+print(tdatetime)
+
+tstr = '2019-07-30T12:16:58.001000+09:00'
+tdatetime = datetime.fromisoformat(tstr) # ISO形式 (Python3.7以降)
+print(tdatetime)
 ```
 
 > 2019-07-30 12:16:58
 >
 > 2019-07-30
+>
+> 2019-07-30 12:16:58.001000
+>
+> 2019-07-30 12:16:58.001000+00:00
+>
+> 2019-07-30 12:16:58.001000+09:00
 
 #### タイムゾーンを考慮したstrからdatetime
 
@@ -2265,9 +2280,9 @@ print(human_readable(size))
 from pathlib import Path
 def touch(filepath):
     Path(filepath).touch()
+```
 
-
-
+```py
 import os
 def touch(filepath):
     if os.path.isfile(filepath):
@@ -2750,9 +2765,13 @@ if not os.path.exists(path):
 
 > removed
 
-## ファイル圧縮
+## タイプ別のファイル読み書き
 
-### shutilを使ってフォルダごと圧縮
+### ZIPファイル
+
+#### ZIPファイル圧縮
+
+##### shutilを使ってフォルダごと圧縮
 
 ```py
 from glob import glob
@@ -2805,7 +2824,7 @@ with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
 >
 > ['dir2/', 'dir2/file2.txt']
 
-### 個別にファイルを追加して圧縮ファイルを作成
+##### 個別にファイルを追加して圧縮ファイルを作成
 
 ```py
 from glob import glob
@@ -2884,7 +2903,7 @@ with zipfile.ZipFile(archive_path) as zip_contents:
 >   'test-archive/dir1/dir2/file2.txt'
 > ]
 
-## ファイル解凍
+#### ZIPファイル解凍
 
 ```py
 import zipfile
@@ -2918,7 +2937,7 @@ with zipfile.ZipFile(archive_path) as zip_contents:
     print(result_path)
 ```
 
-## ログ
+### ログファイル(テキストファイル・追記)
 
 標準出力をログファイルに書き出す
 
@@ -2942,12 +2961,98 @@ if __name__ == '__main__':
         sys.stdout = sys.__stdout__
 ```
 
-```py
+### テキストファイル
 
+#### 読み込み
+
+##### 単一の文字列として読込み
+
+```py
+import os
+with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
+    string = file.read()
+    print(string)
+```
+
+##### 1行ずつ読込み
+
+```py
+import os
+with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
+    string = file.readline()
+    while string:
+        print(string)
+        string = file.readline()
+```
+
+##### リストへ格納
+
+```py
+import os
+with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
+    strings = file.readlines()
+    print(strings)
+```
+
+#### 書込み
+
+##### 1行ずつ書込み(上書き)
+
+```py
+import os
+string = 'foobar hoge'
+with open(os.path.join('test-fileio', 'output.txt'), 'w') as file:
+    file.write(string)
+```
+
+##### リストを書込み(上書き)
+
+```py
+import os
+lst = ['foobar', 'hoge']
+with open(os.path.join('test-fileio', 'output.txt'), 'w') as file:
+    file.writelines(lst)
+```
+
+##### 1行ずつ書込み(追記)
+
+```py
+import os
+string = 'foobar hoge'
+with open(os.path.join('test-fileio', 'output.txt'), 'a') as file:
+    file.write(string)
+```
+
+##### リストを書き込み(追記)
+
+```py
+import os
+lst = ['foobar', 'hoge']
+with open(os.path.join('test-fileio', 'output.txt'), 'a') as file:
+    file.writelines(lst)
+```
+
+### CSV
+
+#### 読み込み
+
+Windows環境の場合は、明示的にUTF-8を指定しないとSJISとして読み書きされる
+
+```py
+import csv
+import os
+
+with open(os.path.join('test-fileio', 'output.csv'), encoding='utf_8', newline='') as csvfile:
+    for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
+        print(', '.join(row))
 ```
 
 ```py
-
+import csv
+with open(os.path.join('test-fileio', 'output.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
 ```
 
 ```py

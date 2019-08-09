@@ -1,69 +1,14 @@
-# ファイル操作
-
-# touch
-from pathlib import Path
-Path('test.txt').touch()
-
-# テキストファイル
-
-# 読込み
-file = open('test.txt', 'r')
-string = file.read()
-print(string)  # 1つの文字列として読込み
-
-file = open('test.txt', 'r')
-string = file.readline()
-while string:
-    print(string)
-    string = file.readline()  # 1行ずつ読込み
-
-file = open('test.txt', 'r')
-string = file.readlines()  # リストへ格納
-
-# 書込み
-file = open('test.txt', 'w')
-string = 'foobar hoge'
-file.write(string)  # 1行ずつ書込み
-
-file = open('test.txt', 'w')
-lst = ['foobar', 'hoge']
-file.writelines(lst)  # リストを書込み
-
-# 追記
-file = open('test.txt', 'a')
-string = 'foobar hoge'
-file.write(string)
-
-file = open('test.txt', 'a')
-lst = ['foobar', 'hoge']
-file.writelines(lst)
-
-# ファイルを閉じる
-file.close()
-
-# ファイルを閉じる(不要になったら自動的に解放)
-with open('test.txt', 'r') as file:  # with句
-    string = 'foobar hoge'
-    file.write(string)
-
 # CSV
 
 # 読込み
-import csv
-with open('test.csv', newline='') as csvfile:
-    csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-    for row in csvreader:
-        print(', '.join(row))
-csvfile.close()
+
 
 # 書込み
 import csv
-with open('test.csv', 'w', newline='') as csvfile:
-    spamwriter = csv.writer(csvfile, delimiter=',',
-                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+with open(os.path.join('test-fileio', 'utf8.csv'), 'w', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     spamwriter.writerow(['foo', 'bar', 'hoge'])
     spamwriter.writerow(['foo', 'bar', 'hoge'])
-csvfile.close()
 csvfile.close()
 
 # 追記
