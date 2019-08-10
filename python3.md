@@ -1,3 +1,15 @@
+# おまじない
+
+## shebang
+
+```py
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# #から行末まではコメント
+# 1行目または2行目のコメントで、正規表現coding[=:]\s*([-\w.]+)にマッチする場合はエンコーディング宣言として扱われる
+```
+
 # 演算子
 
 ## [演算子の優先順位](https://docs.python.org/ja/3/reference/expressions.html#operator-precedence)
@@ -21,6 +33,13 @@
 |  or  |  OR  |
 |  if -- else  |  条件式(三項演算子)  |
 |  lambda  |  ラムダ式  |
+
+```py
+# 三項演算子
+t = 'True'
+f = 'False'
+c = t if 1 == 1 else f  # 'True'
+```
 
 ## 比較
 
@@ -129,6 +148,10 @@ isNullOrEmpty('a')
 ## 複数条件
 
 ```py
+1 < a < 5
+```
+
+```py
 content = 'foobarhogepiyo'
 
 # if "foo" in s and "bar" in s:
@@ -139,6 +162,27 @@ if all(map(content.__contains__, ('foo', 'bar'))):
 if any(map(content.__contains__, ('foo', 'hoge'))):
     print("found")
 ```
+
+# 変数
+
+```py
+name = 3
+
+# 異なる方の値を代入
+name = "Suzuki"
+
+# 変数の削除
+del name
+
+print(name)
+```
+
+```py
+# 多重代入
+x = y = z = 0
+```
+
+> NameError: name 'name' is not defined
 
 # データ型
 
@@ -279,7 +323,26 @@ print(isinstance(False, int))
 | ---- | ---- |
 |  bool(1)<br>bool(2)<br>bool(-3)<br>bool(.1)<br>bool(1j)<br>bool('a')<br>bool([0])<br>bool((0,))<br>bool({0})  |  bool(0)<br><br><br>bool(0.)<br>bool(0j)<br>bool('')<br>bool([])<br>bool(())<br>bool({})  |
 
+```py
+True == 1  # True
+False == 0  # True
+True + False  # 1
+```
+
 ## int
+
+```py
+i = 123          # 10整数
+i = 0b11111111  # 2進数
+i = 0o777  # 8進数
+i = 0xffff       # 16進数
+i = int("1")  # 文字列型からの変換
+
+
+# long(Python3ではint型として扱う)
+# l = 1234567890123456789012345678901234567890123456789012345678901234567890L # Python 2
+l = 1234567890123456789012345678901234567890123456789012345678901234567890
+```
 
 ### 数値の切り上げ・切り捨て
 
@@ -306,6 +369,21 @@ math.ceil(7 / 3) # 切り上げ
 > 2
 >
 > 3
+
+## float
+
+```py
+f = 1.23
+f = 1.2e3     # 1.2 * 10 ** 3
+f = 1.2E-3    # 1.2 * 10 ** -3
+```
+
+## complex(虚数)
+
+```py
+c = 1j
+c = 2.3J
+```
 
 ## datetime
 
@@ -708,8 +786,10 @@ print(parse('2019-08-07T03:04:05.432100JST').astimezone(JST))
 ```py
 print('str\nstr')
 print("str\nstr")
-print(r'str\nstr')
-print(R'str\nstr')
+print(r'str\nstr') # エスケープシーケンスが無視される
+print(R'str\nstr') # エスケープシーケンスが無視される
+print(str(123))
+print('cq' * 3) # 文字列の繰り返し
 ```
 
 > str
@@ -723,6 +803,10 @@ print(R'str\nstr')
 > str\nstr
 
 > str\nstr
+
+> 123
+
+> cqcqcq
 
 ### format
 
@@ -1829,6 +1913,12 @@ print(fivedict)
 >
 
 # I/O
+
+## 標準出力
+
+```py
+print("Hello Python!")
+```
 
 ## パス文字列の操作
 
@@ -3111,7 +3201,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') 
     file.writelines(lst)
 ```
 
-### CSV
+### CSVファイル
 
 #### 読み込み
 
@@ -3130,6 +3220,10 @@ with open(os.path.join('test-fileio', 'inpututf8.csv'), encoding='utf_8', newlin
         print(', '.join(row))
 ```
 
+#### 書き込み
+
+##### 上書き
+
 ```py
 import csv
 with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
@@ -3141,6 +3235,8 @@ with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', 
 > 14
 >
 > 14
+
+##### 追記
 
 ```py
 import csv
@@ -3154,8 +3250,147 @@ with open(os.path.join('test-fileio', 'outpututf8.csv'), 'a', encoding='utf_8', 
 >
 > 14
 
+
+### JSONファイル
+
+#### ファイルから読み込み
+
+```py
+import json
+
+with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
+    string = file.read()
+    print(string)
+    json_dict = json.load(file)
+    print('json_dict:{}'.format(type(json_dict)))
+```
+
+> {
+>
+>     "key1":"val1",
+>
+>     "key2":"val2"
+>
+> }
+>
+> json_dict:\<class 'dict'\>
+
+#### 文字列から読み込み
+
+```py
+import json
+
+json_str = '''
+{
+    "key1":"val1",
+    "key2":"val2"
+}
+'''
+
+json_dict = json.loads(json_str)
+print('json_dict:{}'.format(type(json_dict)))
+```
+
+> json_dict:\<class 'dict'\>
+
+#### 文字列から読み込み(順序を保つ)
+
+```py
+import collections
+import json
+
+json_str = '''
+{
+    "key1":"val1",
+    "key2":"val2"
+}
+'''
+
+decoder = json.JSONDecoder(object_pairs_hook=collections.OrderedDict)
+print(decoder.decode(json_str))
+```
+
+> OrderedDict([('key1', 'val1'), ('key2', 'val2')])
+
+#### 要素の読み込み
+
+```py
+import json
+
+json_str = '''
+{
+    "key1":"val1",
+    "key2":{
+        "key2-1":"val2-1",
+        "key2-2":"val2-2"
+    }
+}
+'''
+
+json_dict = json.loads(json_str)
+print('json_dict:{}'.format(type(json_dict)))
+
+for x in json_dict:
+    print('{0}:{1}'.format(x, json_dict[x]))
+
+for x in json_dict:
+    print(json_dict[x])
+    for y in json_dict[x]:
+        if isinstance(y, dict):
+            print('{0}:{1}'.format(y, json_dict[y]))
+```
+
+> json_dict:<class 'dict'>
+>
+> key1:val1
+>
+> key2:{'key2-1': 'val2-1', 'key2-2': 'val2-2'}
+>
+> val1
+>
+> {'key2-1': 'val2-1', 'key2-2': 'val2-2'}
+
+#### 書き込み
+
+```py
+import json
+import os
+
+# 書き出すオブジェクト
+jsondata = {
+    'title': 'foobar',
+    'items': [
+        {
+            'title': '1',
+            'description': 'hoge'
+        },
+        {
+            'title': '2',
+            'description': 'hogehoge'
+        }
+    ]
+}
+
+savepath = os.path.join('test-fileio', 'outpututf8.json')
+with open(savepath, 'w', encoding='utf_8') as outfile:
+    json.dump(jsondata, outfile)
+```
+
+### ARFFファイル
+
+#### 読み込み
+
+```py
+import arff
+data = arff.load(open('test.arff', 'rb'))
+```
+
+#### 書き込み
+
 ```py
 
+import arff
+arff.dumps(data)
 ```
 
 # モジュール
