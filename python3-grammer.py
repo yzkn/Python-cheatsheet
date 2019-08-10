@@ -96,108 +96,32 @@ for k, v in testOrderedDict:
     print(k, v)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 制御構文
 
-# if
-if x < 0:
-    print('N')
-elif x == 0:    # else if
-    print('0')
-else:
-    print('P')
-
-# for
-for i in range(3):
-    j = i + 1
-    print(" " + str(i) + " ,")
-
-for i in range(5, 8):
-    j = i + 1
-    print(" " + str(i) + " ,")
-
-# Pythonではループ変数やループ内で定義された変数を、ループの外でも参照できる
-print(", " + str(i) + " " + str(j))
-
-# for(リストを与える場合)
-l = ['foo', 'bar', 123, 456]
-for x in l:
-    print(str(x))
-
-# for(タプルを与える場合)
-t = ('foo', 'bar', 123, 456)
-for x in t:
-    print(str(x))
-
-# for(辞書を与える場合)
-d = {'key1': 'foo', 'key2': 'bar', 'key3': 123, 'key4': 456}
-for k in d:
-    print(str(k))
-
-for k, v in d.items():
-    print(str(k), str(v))
-
-for k in d.keys():
-    print(str(k), str(d[k]))
-
-for v in d.values():
-    print(str(v))
-
-# for k, v in d.iteritems():  # Python2
-#     print(str(k), str(v))   # Python3では、items()が関数を返すためiteritemsは廃止
-
-# for(試行回数を与える場合)
-for i in range(4):
-    print(i)    # 0 1 2 3
-for i in range(5, 21, 5):
-    print(i)    # 5 10 15 20
-
-# for文のelse節
-for i in range(5):
-    print(i)
-else:
-    # ループを抜けたときに実行される
-    print('else')
-# 0 1 2 3 4 else
-
-for i in (0, 1, 2):
-    print(i)
-# 0, 1, 2
-for k in {'k1': 1, 'k2': 2, 'k3': 3}:
-    print(k)
-# k2, k3, k1
-for c in "012":
-    print(c)
-# 0, 1, 2
-for line in open("grammer.py", encoding='utf8'):
-    print(line)
-# 1行ずつ標準出力
-
-# keyとvalueを一緒に取得する
-for k, v in enumerate(['v1', 'v2', 'v3']):
-    print(k, v)
-# 0 v1
-# 1 v2
-# 2 v3
-
-# 途中でループから脱出
-for i in range(5):
-    if i > 3:
-        break
-    print(i)                  # 0, 1, 2, 3
-
-# スキップする(continue)
-for i in range(5):
-    if i == 3:
-        continue
-    print(i)                  # 0, 1, 2, 4
-
-# while
-i = 0
-while i < 10:
-    print(str(i))
-    i += 1
-else:
-    print('-1')
 
 # 例外処理
 str = 'ABC'
