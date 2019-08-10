@@ -790,6 +790,7 @@ print(r'str\nstr') # エスケープシーケンスが無視される
 print(R'str\nstr') # エスケープシーケンスが無視される
 print(str(123))
 print('cq' * 3) # 文字列の繰り返し
+print('cq' 'cq' 'cq') # 文字列を演算子なしでつなげる
 ```
 
 > str
@@ -807,6 +808,41 @@ print('cq' * 3) # 文字列の繰り返し
 > 123
 
 > cqcqcq
+>
+> cqcqcq
+
+### ヒアドキュメント
+
+```py
+hoge = """abc
+def
+ghi"""
+
+print(hoge)
+```
+
+> abc
+>
+> def
+>
+> ghi
+
+```py
+piyo = 'abc \
+def'
+
+print(piyo)
+
+fuga = ('abc'
+    'def'
+    'ghi')
+
+print(fuga)
+```
+
+> abc def
+>
+> abcdefghi
 
 ### format
 
@@ -815,6 +851,129 @@ print('{}'.format(1))
 ```
 
 > 1
+
+```py
+print("%s" % "ABC")  # 文字列： ABC
+print("%d" % 123)  # 整数　： 123
+print("%f" % 1.23)  # 実数　： 1.23
+print("%x" % 255)  # 16進数： ff
+print("%o" % 255)  # 8進数： 377
+print("%d%%" % 100)  # %自体： 100%
+
+print("|%5s|" % 'ABC')  # => |  ABC| : 右寄せ
+print("|%-5s|" % 'ABC')  # => |ABC  | : 左寄せ
+print("|%5d|" % 123)  # => |  123| : 右寄せ
+print("|%-5d|" % 123)  # => |123  | : 左寄せ
+print("|%+5d|" % 123)  # => | +123| : ±符号付き
+print("|%5.2f|" % 1.23)  # => | 1.23| : 整数部の桁数.小数部の桁数
+print("|%05d|" % 123)  # => |00123| : 0埋め
+```
+
+### エスケープシーケンス
+
+| 項目 | 内容 |
+| --- | --- |
+| "\\" | \ |
+| "\'" | ' |
+| "\"" | " |
+| "\a" | ベル |
+| "\b" | バックスペース |
+| "\f" | フォームフィード |
+| "\n" | LF |
+| "\r" | CR |
+| "\t" | タブ |
+| "\v" | 垂直タブ |
+| "\nnn" | 8進表記文字(nは0～7) |
+| "\xnn" | 16進表記文字(nは0～f) |
+| "\uxxxx" | ユニコード文字xxxx (xxxxは10進数　例: u"\u3042"→'あ') |
+| "\Uxxxxxxxx" | ユニコード文字xxxxxxxx (xxxxxxxxは10進数　例: U"\U00003042"→'あ') |
+| "\N{name}" | Unicodeデータベース文字 (例: u"\N{HIRAGANA LETTER A}"→'あ') |
+
+### バイト列(byte), Unicode
+
+#### Python 2
+
+```py
+print u'あいうえお'
+print len(u'あいうえお')
+print 'あいうえお'
+print len('あいうえお')        # バイト列として扱われる
+```
+
+> あいうえお
+>
+> 5
+>
+> あいうえお
+>
+> 15
+
+#### Python 3
+
+```py
+print('あいうえお')
+print(len('あいうえお'))        # uをつけなくてもUnicodeとして扱われる
+print(b'あいうえお')
+print(len(b'あいうえお'))       # バイト列として扱われる
+print(r"あいう\nえお")
+print(len(r"あいう\nえお"))
+```
+
+> あいうえお
+>
+> 5
+>
+> SyntaxError: bytes can only contain ASCII literal characters.
+>
+> SyntaxError: bytes can only contain ASCII literal characters.
+>
+> あいう\nえお
+>
+> 7
+
+### 区切り文字による分割
+
+```py
+hoge = 'abc\ndef\nghi\njkl\nmno\npqr\nstu\nvwx\nyz'
+parts = hoge.split('\n')
+for key, value in enumerate(parts):
+    print('{0}:{1}'.format(key, value))
+```
+
+> 0:abc
+>
+> 1:def
+>
+> 2:ghi
+>
+> 3:jkl
+>
+> 4:mno
+>
+> 5:pqr
+>
+> 6:stu
+>
+> 7:vwx
+>
+> 8:yz
+
+### 部分文字列
+
+```py
+hoge = 'abcdefghi'
+print(hoge[1:3])    # bc
+print(hoge[:3])     # abc
+print(hoge[8:])     # i
+print(hoge[-2:])    # hi
+print(hoge[0:7:2])  # acdf
+
+# index #################################
+# 0   1   2   3   4   5   6   7   8   9 #
+# | A | B | C | D | E | f | g | h | i | #
+# -9  -8  -7  -6  -5  -4  -3  -2  -1  0 #
+#########################################
+```
 
 ### 検索
 
@@ -1360,6 +1519,12 @@ print(haystack.translate(str.maketrans({'h': 'H', 'a': 'oo', 's': '', 'k': None}
 
 ## リスト
 
+```
+[ ]:リスト, ( ):タプル, { }:セット/辞書
+リストは変更可能
+タプルは変更不可
+```
+
 ### リストが空か検査
 
 ```py
@@ -1414,9 +1579,13 @@ print(strlist)
 ### リストに要素を追加
 
 ```py
-# append
-lst = ['foo', 'bar', 'hoge']
+# append(末尾に追加)
+lst = ['foo', 'hoge']
 lst.append('piyo')
+print(lst)
+
+# insert(添え字と要素の値を指定)
+lst.insert(1, 'bar')
 print(lst)
 
 lst.append(['fu', 'ga']) # appendの引数にリストを指定すると、リスト自体が新たな要素になる
@@ -1445,9 +1614,20 @@ print(lst1)
 lst = ['foo', 'bar', 'hoge']
 lst= lst * 3
 print(lst)
+
+lst.remove('foo')
+print(lst)
+lst.remove('foo')
+print(lst)
+lst.remove('foo')
+print(lst)
+lst.remove('foo')
+print(lst)  # 存在しない値を指定するとエラーが発生
 ```
 
 > \# append
+>
+> ['foo', 'hoge', 'piyo']
 >
 > ['foo', 'bar', 'hoge', 'piyo']
 >
@@ -1470,6 +1650,16 @@ print(lst)
 > \# リストの要素を繰り返す
 >
 > ['foo', 'bar', 'hoge', 'foo', 'bar', 'hoge', 'foo', 'bar', 'hoge']
+>
+> ['bar', 'hoge', 'foo', 'bar', 'hoge', 'foo', 'bar', 'hoge']
+>
+> ['bar', 'hoge', 'bar', 'hoge', 'foo', 'bar', 'hoge']
+>
+> ['bar', 'hoge', 'bar', 'hoge', 'bar', 'hoge']
+>
+> ValueError: list.remove(x): x not in list
+>
+> ['bar', 'hoge', 'bar', 'hoge', 'bar', 'hoge']
 
 ### リストの反復処理
 
@@ -1544,6 +1734,24 @@ for (a, b, c) in zip(*l):
 > 2 5 8
 >
 > 3 6 9
+
+### リストをソート
+
+```py
+lst = ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
+sortedlist = sorted(lst)
+print(lst)
+print(sortedlist)
+
+lst.sort(key=None, reverse=False)
+print(lst)
+```
+
+> ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
+>
+> ['bar', 'bar', 'foo', 'foo', 'hoge', 'hoge', 'piyo', 'piyo']
+
+> ['bar', 'bar', 'foo', 'foo', 'hoge', 'hoge', 'piyo', 'piyo']
 
 ### リストの重複する要素を除去
 
@@ -1894,13 +2102,42 @@ print(fivedict)
 
 ## タプル
 
-```py
+### タプルを生成
 
+タプルは変更不可
+
+```py
+# 空のタプル
+empty = ()
+
+# 1要素のタプルを宣言するときは後ろにカンマをつける
+t = 'hoge',
+t = 'hoge'  # カンマをつけないとただの変数
+
+t = 'foo', 'bar', 123, 456
+t[2]
 ```
 
+> 123
+
+### タプルの入れ子
+
+```py
+t = t, ('piyo', 789)
+print(t)
+```
+
+> (('foo', 'bar', 123, 456), ('piyo', 789))
+
+```py
+# リストからタプルを生成
+print(tuple([1, 2, 3]))  # リストからタプル
+print(list((1, 2, 3))  # タプルからリスト
+```
+
+> (1, 2, 3)
 >
->
->
+> [1, 2, 3]
 
 ## セット
 
@@ -1911,6 +2148,100 @@ print(fivedict)
 >
 >
 >
+
+# 関数
+
+## 引数なし
+
+```py
+# 定義
+def func1():
+    print("hello")
+
+# 呼出
+func1()
+```
+
+## 引数あり
+
+```py
+# 定義
+def func2(arg):
+    print(arg)
+
+# 呼出
+func2("hello")
+```
+
+## 既定値を持つ引数あり
+
+```py
+# 定義
+def func3(arg="bye"):
+    print(arg)
+
+# 呼出
+func3()
+func3(arg="hi")
+```
+
+## 戻り値あり
+
+```py
+# 定義
+def func4(arg):
+    return arg
+
+# 呼出
+print(func4("hello"))
+```
+
+## docstringあり
+
+```py
+# 定義
+def func5():
+    """helloと表示する関数"""
+    print("hello")
+
+# 呼出
+func5()
+```
+
+### ヘルプを表示
+
+```py
+help(func5)
+```
+
+## タプルと辞書を受け取る
+
+```py
+# 定義
+def func_vl(arg, *t, **d):
+    for val in t:
+        print(val)
+    keys = sorted(d.keys())
+    for val in keys:
+        print(val)
+
+# 呼出
+func_vl("foobar",
+        "t1",
+        "t2",
+        dk1="dv1",
+        dk2="dv2",
+        dk3="dv3")
+```
+
+## 引数のアンパック
+
+```py
+args = [1, 5]
+list(range(*args))
+
+list(range(1, 5))   # と同じ
+```
 
 # I/O
 
@@ -3393,6 +3724,138 @@ import arff
 arff.dumps(data)
 ```
 
+# クラス
+
+```py
+class MyClass:
+    """docstring of MyClass"""
+
+    # クラス変数
+    publicClassVariable = 10
+
+    # プライベートクラス変数
+    __privateClassVariable = 20
+
+    # コンストラクタ
+    def __init__(self, iv1, iv2):
+        self.publicInstanceVariable = iv1       # インスタンス変数
+        self.__privateInstanceVariable = iv2    # プライベートインスタンス変数
+
+    # デストラクタ
+    def __del__(self):
+        del(self.publicInstanceVariable)
+        del(self.__privateInstanceVariable)
+
+    # 文字列化
+    def __str__(self):
+        return "MyClass: " + self.__privateInstanceVariable
+
+    def getName(self):          # getter
+        return self.__privateInstanceVariable
+
+    def setName(self, name):    # setter
+        self.__privateInstanceVariable = name
+
+    # 通常メソッド
+    def Calc(self):
+        self.publicInstanceVariable2 = 3
+        print("パブリックメソッド")
+
+    def __MyCalc(self):
+        print("プライベートメソッド")
+
+    @classmethod
+    def SelfName(cls):
+        publicClassVariable2 = 30
+        print("パブリックメソッド")
+
+    @classmethod
+    def __PrivateSelfName(cls):
+        print("プライベートクラスメソッド")
+
+
+# インスタンス変数
+myClass1.publicInstanceVariable = 3
+
+# インスタンス変数の追加
+myClass1.publicInstanceVariable3 = 4
+
+# プライベートインスタンス変数にアクセス
+# インスタンス._クラス名__変数名
+print myClass1._MyClass__publicInstanceVariable
+
+# パプリッククラス変数へアクセス
+# インスタンス名でもクラス名でも可
+# 　インスタンス変数が存在しない場合は「インスタンス.変数名」はクラス変数を参照するが、
+# 　値を代入するとインスタンス変数が追加されるため、それ以降はインスタンス変数が参照される)
+print Widget.classVal
+print w.classVal
+
+# クラス変数の追加
+MyClass.publicClassVariable3 = 40
+
+# プライベートクラス変数にアクセス
+# インスタンス._クラス名__変数名
+print myClass1._MyClass__privateInstanceVariable
+
+
+myClass1 = MyClass(1, 2)    # インスタンス化
+myClass1.getName()          # メソッド実行
+mg = myClass1.getName       # 別名
+mg()                        # メソッド実行
+
+
+# クラスの継承
+class MySubClass(MyClass):
+    def Calc(self):  # オーバーロード
+        print('sub  a')
+
+# 多重継承
+
+
+class A(object):
+    def __init__(self):
+        print 'Initialize A.'
+
+    def method(self):
+        print 'Call A method.'
+
+
+class B(object):
+    def __init__(self):
+        print 'Initialize B.'
+
+    def method(self):
+        print 'Call B method.'
+
+
+class C(object):
+    def __init__(self):
+        print 'Initialize C.'
+
+    def method(self):
+        print 'Call C method.'
+
+
+class Main(A, B, C):
+    def __init__(self):
+        print('Initialize Main.')
+        super(Main, self).__init__()
+        super(A, self).__init__()
+        super(B, self).__init__()
+
+    def method(self):
+        print('Call Main method')
+        super(Main, self).method()
+        super(A, self).method()
+        super(B, self).method()
+
+
+m = Main()
+m.method()
+
+```
+
 # モジュール
 
 ## モジュールの読み込み
@@ -3587,3 +4050,7 @@ $ pydoc python3md-pydoc
 # エラーメッセージ
 
 ##
+
+
+
+# Copyright (c) 2019 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
