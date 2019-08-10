@@ -1,25 +1,3 @@
-# CSV
-
-# 読込み
-
-
-# 書込み
-import csv
-with open(os.path.join('test-fileio', 'utf8.csv'), 'w', newline='') as csvfile:
-    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    spamwriter.writerow(['foo', 'bar', 'hoge'])
-    spamwriter.writerow(['foo', 'bar', 'hoge'])
-csvfile.close()
-
-# 追記
-import csv
-with open('test.csv', 'a', newline='') as csvfile:
-    spamwriter = csv.writer(csvfile, delimiter=',',
-                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    spamwriter.writerow(['foo', 'bar', 'hoge'])
-    spamwriter.writerow(['foo', 'bar', 'hoge'])
-csvfile.close()
-csvfile.close()
 
 # JSON
 

@@ -2967,18 +2967,88 @@ if __name__ == '__main__':
 
 ##### 単一の文字列として読込み
 
+###### SHIFT-JIS
+
 ```py
 import os
-with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='sjis') as file:
     string = file.read()
     print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='shiftjis') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='shift-jis') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='shift_jis') as file:
+    string = file.read()
+    print(string)
+```
+
+###### UTF-8 BOMなし
+
+```
+あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf8') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf-8') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') as file:
+    string = file.read()
+    print(string)
+```
+
+```
+﻿あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
+```
+
+###### UTF-8 BOMあり
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8_sig') as file:
+    string = file.read()
+    print(string)
+```
+
+```
+あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
 ```
 
 ##### 1行ずつ読込み
 
 ```py
 import os
-with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') as file:
     string = file.readline()
     while string:
         print(string)
@@ -2989,9 +3059,16 @@ with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
 
 ```py
 import os
-with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') as file:
     strings = file.readlines()
     print(strings)
+```
+
+```
+[
+    '\ufeffあいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD\n',
+    'かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC\n'
+]
 ```
 
 #### 書込み
@@ -3001,17 +3078,19 @@ with open(os.path.join('test-fileio', 'input.txt'), 'r') as file:
 ```py
 import os
 string = 'foobar hoge'
-with open(os.path.join('test-fileio', 'output.txt'), 'w') as file:
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') as file:
     file.write(string)
 ```
+
+> 11
 
 ##### リストを書込み(上書き)
 
 ```py
 import os
 lst = ['foobar', 'hoge']
-with open(os.path.join('test-fileio', 'output.txt'), 'w') as file:
-    file.writelines(lst)
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') as file:
+    file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
 ##### 1行ずつ書込み(追記)
@@ -3019,7 +3098,7 @@ with open(os.path.join('test-fileio', 'output.txt'), 'w') as file:
 ```py
 import os
 string = 'foobar hoge'
-with open(os.path.join('test-fileio', 'output.txt'), 'a') as file:
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') as file:
     file.write(string)
 ```
 
@@ -3028,7 +3107,7 @@ with open(os.path.join('test-fileio', 'output.txt'), 'a') as file:
 ```py
 import os
 lst = ['foobar', 'hoge']
-with open(os.path.join('test-fileio', 'output.txt'), 'a') as file:
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') as file:
     file.writelines(lst)
 ```
 
@@ -3042,18 +3121,38 @@ Windows環境の場合は、明示的にUTF-8を指定しないとSJISとして�
 import csv
 import os
 
-with open(os.path.join('test-fileio', 'output.csv'), encoding='utf_8', newline='') as csvfile:
+with open(os.path.join('test-fileio', 'inputsjis.csv'), encoding='shift_jis', newline='') as csvfile:
+    for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
+        print(', '.join(row))
+
+with open(os.path.join('test-fileio', 'inpututf8.csv'), encoding='utf_8', newline='') as csvfile:
     for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
         print(', '.join(row))
 ```
 
 ```py
 import csv
-with open(os.path.join('test-fileio', 'output.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
     spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     spamwriter.writerow(['foo', 'bar', 'hoge'])
     spamwriter.writerow(['foo', 'bar', 'hoge'])
 ```
+
+> 14
+>
+> 14
+
+```py
+import csv
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'a', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+```
+
+> 14
+>
+> 14
 
 ```py
 
