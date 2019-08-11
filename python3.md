@@ -10,6 +10,16 @@
 # 1行目または2行目のコメントで、正規表現coding[=:]\s*([-\w.]+)にマッチする場合はエンコーディング宣言として扱われる
 ```
 
+# 命名規則
+
+| 項目 | 文字種 | 区切り文字 |
+| --- | --- | --- |
+| パッケージ | 英数小文字 | - |
+| モジュール | 英数小文字 | アンダースコア |
+| クラス, 例外, 型変数 | 英数大小文字 | 大文字 |
+| メソッド, 関数,変数 | 英数小文字 | アンダースコア |
+| 定数 | 英数大文字 | アンダースコア |
+
 # 演算子
 
 ## [演算子の優先順位](https://docs.python.org/ja/3/reference/expressions.html#operator-precedence)
@@ -5142,6 +5152,48 @@ if __name__ == '__main__':
         sys.stdout.close()
         sys.stdout = sys.__stdout__
 ```
+
+#### 設定ファイル(configparser)
+
+* config.ini
+
+```ini
+[settings]
+user = foobar
+pw = 12345
+```
+
+```py
+import configparser
+import os
+
+# save
+config = configparser.ConfigParser()
+config['settings'] = {'user': 'foobar',
+                     'pw': '12345'}
+with open('config.ini', 'w') as configfile:
+    config.write(configfile)
+
+# read
+inifile = configparser.ConfigParser()
+inifile.read(os.path.join('.', 'config.ini'), 'UTF-8')
+
+print(inifile.get('settings', 'user'))
+print(inifile.get('settings', 'pw'))
+
+print(config['settings']['user'])
+print(config['settings']['pw'])
+```
+
+> ['./config.ini']
+>
+> foobar
+>
+> 12345
+>
+> foobar
+>
+> 12345
 
 #### テキストファイル
 
