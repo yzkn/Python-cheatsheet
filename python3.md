@@ -3795,6 +3795,26 @@ b = Bar()
 del s, i, b
 ```
 
+## exit(プログラム実行を終了)
+
+```py
+import sys
+sys.exit()  # SystemExit例外を出して終了
+
+import sys
+sys.exit('error!') # 引数をstderrに出力し、SystemExit例外を出して終了
+
+import os
+status = 1
+os._exit(status) # 例外を出さずに終了
+
+raise exception # 例外を投げて終了
+```
+
+>
+>
+>
+
 ## pass
 
 空の関数や空の型を定義する
