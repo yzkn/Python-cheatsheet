@@ -3644,23 +3644,25 @@ else:
 ## try(例外処理)
 
 ```py
+import traceback
+
 str = 'ABC'
 try:
     # 範囲外の文字が指定し、IndexError例外を発生させる
     c = str[5]
-except IOError:
+except IOError as err:
     print("I/O error: {0}".format(err))
-except IndexError:
+except IndexError as err:
     print("IndexError: {0}".format(err))
-except (UnicodeEncodeError, UnicodeDecodeError, UnicodeTranslateError):
+except (UnicodeEncodeError, UnicodeDecodeError, UnicodeTranslateError) as err:
     # 複数の例外をまとめて扱う
     print("UnicodeError: {0}".format(err))
 except:
     # その他の例外
     print(sys.exc_info())   # 現在処理中の例外(type, value, traceback)
 
-    import traceback
     traceback.print_exc()   # 例外情報とスタックトレース項目
+    traceback.format_exc()
 else:
     # 例外が発生しない場合
     print('Success')
@@ -3910,6 +3912,77 @@ list(range(1, 5))   # と同じ
 ```
 
 # I/O
+
+## コマンドライン引数
+
+```py
+import sys
+
+args = sys.argv
+print(args)
+
+for i, arg in enumerate(args):
+    print('第{}引数: {}'.format(i, args[i]))
+```
+
+> ['python3md-arg.py', 'aaa', 'bbb', 'ccc']
+>
+> 第1引数: python3md-arg.py
+>
+> 第2引数: aaa
+>
+> 第3引数: bbb
+>
+> 第4引数: ccc
+
+## 標準入力
+
+```py
+s = input('Enter your name:').strip() # stripで空白文字を除去
+print(s)
+
+# 数値の場合
+if s.isnumeric():
+    print(int(s))
+```
+
+```
+aaaaa
+```
+
+> aaaaa
+
+```py
+s = input() # splitで空白文字ごとに分割
+ss = s.split()
+for item in ss:
+    print(item)
+```
+
+```
+aaa bbb ccc
+```
+
+> aaa
+>
+> bbb
+>
+> ccc
+
+```py
+s = input()
+num = int(s) if s.isnumeric() else 1 # 引数の要求数
+ss = [input() for i in range(num)]
+print(ss)
+```
+
+```
+aaa
+bbb
+ccc
+```
+
+> ['aaa', 'bbb', 'ccc']
 
 ## 標準出力
 
@@ -6174,7 +6247,23 @@ $ pydoc python3md-pydoc
 
 # エラーメッセージ
 
-##
+## シンタックスハイライト
+
+```sh
+pip install colored-traceback
+pip install colorama    # Windows環境下の場合
+```
+
+```py
+import colored_traceback.always
+1/0
+```
+
+> Traceback (most recent call last):
+>
+>   File "<stdin>", line 1, in <module>
+>
+> ZeroDivisionError: division by zero
 
 ---
 
