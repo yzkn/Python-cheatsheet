@@ -164,13 +164,13 @@ isNullOrEmpty('a')
 ```py
 content = 'foobarhogepiyo'
 
-# if "foo" in s and "bar" in s:
+# if 'foo' in s and 'bar' in s:
 if all(map(content.__contains__, ('foo', 'bar'))):
-    print("found")
+    print('found')
 
-# if "foo" in s or "hoge" in s:
+# if 'foo' in s or 'hoge' in s:
 if any(map(content.__contains__, ('foo', 'hoge'))):
-    print("found")
+    print('found')
 ```
 
 # 変数
@@ -179,7 +179,7 @@ if any(map(content.__contains__, ('foo', 'hoge'))):
 name = 3
 
 # 異なる方の値を代入
-name = "Suzuki"
+name = 'Suzuki'
 
 # 変数の削除
 del name
@@ -342,17 +342,147 @@ True + False  # 1
 ## int
 
 ```py
-i = 123          # 10整数
-i = 0b11111111  # 2進数
-i = 0o777  # 8進数
-i = 0xffff       # 16進数
-i = int("1")  # 文字列型からの変換
+i = 123 # 10整数
+i = 0b11111111 # 2進数
+i = 0o777 # 8進数
+i = 0xffff # 16進数
 
 
 # long(Python3ではint型として扱う)
 # l = 1234567890123456789012345678901234567890123456789012345678901234567890L # Python 2
 l = 1234567890123456789012345678901234567890123456789012345678901234567890
 ```
+
+### 文字列型からのキャスト
+
+```py
+s = '1'
+if s.isnumeric():
+    i = int(s)  # 文字列型からのキャスト
+    print('{}'.format(i))
+
+s = '１２３' # 全角数字文字列からint型へのキャスト(－や．は全角だとエラーとなる)
+if s.isnumeric():
+    i = int(s)  # 文字列型からのキャスト
+    print('{}'.format(i))
+
+s = '10,000'
+s = s.replace(',', '') # 桁区切りのカンマが含まれていると isnumeric() は False を返し、キャストにも失敗する
+if s.isnumeric():
+    i = int(s)  # 文字列型からのキャスト
+    print('{}'.format(i))
+
+s = '一五一十'
+if s.isnumeric():
+    print('isNumeric')
+    i = int(s)  # 文字列型からのキャスト
+```
+
+> \# '1'
+>
+> 1
+>
+> \# '１２３'
+>
+> 123
+>
+> \# '10,000'
+>
+> 10000
+>
+> \# '一五一十'
+>
+> isNumeric \# 漢数字だけしか含まれていないためTrueが返る
+>
+> ValueError: invalid literal for int() with base 10: '一五一十' \# キャストには失敗する
+
+* `isnumeric()` が `True` となる文字
+
+```
+零 一 二 三 四 五 六 七 八 九 十 百 千 万 億 兆
+```
+
+#### 10進数以外のキャスト
+
+```py
+print(int('0b11111111', 2)) # 2進数
+print(int('0o777', 8)) # 8進数
+print(int('0xffff', 16)) # 16進数
+
+# 接頭辞(0b, 0o, 0x)がついていれば、基数に0を指定しても変換される
+print(int('0b11111111', 0)) # 2進数
+print(int('0o777', 0)) # 8進数
+print(int('0xffff', 0)) # 16進数
+```
+
+> 255
+>
+> 511
+>
+> 65535
+
+> 255
+>
+> 511
+>
+> 65535
+
+#### 1文字の漢数字のキャスト
+
+```py
+import unicodedata
+
+print(unicodedata.numeric('五')) # 漢数字1文字ごとにキャスト
+```
+
+> 5.0
+
+##### 2文字以上の漢数字のキャスト(漢数字をアラビア数字に変換してからint型にキャスト)
+
+```py
+import re
+
+
+re_num = re.compile(r'[十拾百千万億兆\d]+')
+re_units = re.compile(r'[十拾百千]|\d+')
+re_unitm = re.compile(r'[万億兆]|[^万億兆]+')
+
+TRANSUNIT = {'十': 10, '拾': 10, '百': 100, '千': 1000}
+TRANSMANS = {'万': 10000, '億': 100000000, '兆': 1000000000000}
+
+
+def transformNum(kstring: str, sep=False):
+    def _transvalue(sj: str, re_obj=re_units, transdic=TRANSUNIT):
+        unit = 1
+        result = 0
+        for piece in reversed(re_obj.findall(sj)):
+            if piece in transdic:
+                if unit > 1:
+                    result += unit
+                unit = transdic[piece]
+            else:
+                val = int(piece) if piece.isdecimal() else _transvalue(piece)
+                result += val * unit
+                unit = 1
+        if unit > 1:
+            result += unit
+        return result
+    transuji = kstring.translate(str.maketrans('一二三四五六七八九〇壱弐参', '1234567890123'))
+    for suji in sorted(set(re_num.findall(transuji)), key=lambda s: len(s),
+                           reverse=True):
+        if not suji.isdecimal():
+            arabic = _transvalue(suji, re_unitm, TRANSMANS)
+            arabic = '{:,}'.format(arabic) if sep else str(arabic)
+            transuji = transuji.replace(suji, arabic)
+        elif sep and len(suji) > 3:
+            transuji = transuji.replace(suji, '{:,}'.format(int(suji)))
+    return transuji
+
+
+int(transformNum('１億２３４万５千六百七十八'))
+```
+
+> 102345678
 
 ### 数値の切り上げ・切り捨て
 
@@ -387,6 +517,34 @@ f = 1.23
 f = 1.2e3     # 1.2 * 10 ** 3
 f = 1.2E-3    # 1.2 * 10 ** -3
 ```
+
+### 文字列型からのキャスト
+
+```py
+s = '1.23'
+if s.isnumeric():
+    f = float(s)  # 文字列型からのキャスト
+    print('{}'.format(f))
+
+s = '.23'
+if s.isnumeric():
+    f = float(s)  # 文字列型からのキャスト
+    print('{}'.format(f))
+```
+
+> \# '1'
+>
+> 1
+>
+> \# '10,000'
+
+#### 指数表記のキャスト
+
+```py
+print(float('1.23e-4'))
+```
+
+> 0.000123
 
 ## complex(虚数)
 
@@ -944,9 +1102,9 @@ print('cq' 'cq' 'cq') # 文字列を演算子なしでつなげる
 ### ヒアドキュメント
 
 ```py
-hoge = """abc
+hoge = '''abc
 def
-ghi"""
+ghi'''
 
 print(hoge)
 ```
@@ -974,6 +1132,12 @@ print(fuga)
 >
 > abcdefghi
 
+### キャスト
+
+```py
+
+```
+
 ### format
 
 ```py
@@ -983,41 +1147,41 @@ print('{}'.format(1))
 > 1
 
 ```py
-print("%s" % "ABC")  # 文字列： ABC
-print("%d" % 123)  # 整数　： 123
-print("%f" % 1.23)  # 実数　： 1.23
-print("%x" % 255)  # 16進数： ff
-print("%o" % 255)  # 8進数： 377
-print("%d%%" % 100)  # %自体： 100%
+print('%s' % 'ABC')  # 文字列： ABC
+print('%d' % 123)  # 整数　： 123
+print('%f' % 1.23)  # 実数　： 1.23
+print('%x' % 255)  # 16進数： ff
+print('%o' % 255)  # 8進数： 377
+print('%d%%' % 100)  # %自体： 100%
 
-print("|%5s|" % 'ABC')  # => |  ABC| : 右寄せ
-print("|%-5s|" % 'ABC')  # => |ABC  | : 左寄せ
-print("|%5d|" % 123)  # => |  123| : 右寄せ
-print("|%-5d|" % 123)  # => |123  | : 左寄せ
-print("|%+5d|" % 123)  # => | +123| : ±符号付き
-print("|%5.2f|" % 1.23)  # => | 1.23| : 整数部の桁数.小数部の桁数
-print("|%05d|" % 123)  # => |00123| : 0埋め
+print('|%5s|' % 'ABC')  # => |  ABC| : 右寄せ
+print('|%-5s|' % 'ABC')  # => |ABC  | : 左寄せ
+print('|%5d|' % 123)  # => |  123| : 右寄せ
+print('|%-5d|' % 123)  # => |123  | : 左寄せ
+print('|%+5d|' % 123)  # => | +123| : ±符号付き
+print('|%5.2f|' % 1.23)  # => | 1.23| : 整数部の桁数.小数部の桁数
+print('|%05d|' % 123)  # => |00123| : 0埋め
 ```
 
 ### エスケープシーケンス
 
 | 項目 | 内容 |
 | --- | --- |
-| "\\" | \ |
-| "\'" | ' |
+| '\\' | \ |
+| '\'' | ' |
 | "\"" | " |
-| "\a" | ベル |
-| "\b" | バックスペース |
-| "\f" | フォームフィード |
-| "\n" | LF |
-| "\r" | CR |
-| "\t" | タブ |
-| "\v" | 垂直タブ |
-| "\nnn" | 8進表記文字(nは0～7) |
-| "\xnn" | 16進表記文字(nは0～f) |
-| "\uxxxx" | ユニコード文字xxxx (xxxxは10進数　例: u"\u3042"→'あ') |
-| "\Uxxxxxxxx" | ユニコード文字xxxxxxxx (xxxxxxxxは10進数　例: U"\U00003042"→'あ') |
-| "\N{name}" | Unicodeデータベース文字 (例: u"\N{HIRAGANA LETTER A}"→'あ') |
+| '\a' | ベル |
+| '\b' | バックスペース |
+| '\f' | フォームフィード |
+| '\n' | LF |
+| '\r' | CR |
+| '\t' | タブ |
+| '\v' | 垂直タブ |
+| '\nnn' | 8進表記文字(nは0～7) |
+| '\xnn' | 16進表記文字(nは0～f) |
+| '\uxxxx' | ユニコード文字xxxx (xxxxは10進数　例: u'\u3042'→'あ') |
+| '\Uxxxxxxxx' | ユニコード文字xxxxxxxx (xxxxxxxxは10進数　例: U'\U00003042'→'あ') |
+| '\N{name}' | Unicodeデータベース文字 (例: u'\N{HIRAGANA LETTER A}'→'あ') |
 
 ### バイト列(byte), Unicode
 
@@ -1045,8 +1209,8 @@ print('あいうえお')
 print(len('あいうえお'))        # uをつけなくてもUnicodeとして扱われる
 print(b'あいうえお')
 print(len(b'あいうえお'))       # バイト列として扱われる
-print(r"あいう\nえお")
-print(len(r"あいう\nえお"))
+print(r'あいう\nえお')
+print(len(r'あいう\nえお'))
 ```
 
 > あいうえお
@@ -2599,14 +2763,14 @@ else:
 ```py
 for i in range(3):
     j = i + 1
-    print(" " + str(i) + " ,")
+    print(' ' + str(i) + ' ,')
 
 for i in range(5, 8):
     j = i + 1
-    print(" " + str(i) + " ,")
+    print(' ' + str(i) + ' ,')
 
 # Pythonではループ変数やループ内で定義された変数を、ループの外でも参照できる
-print(", " + str(i) + " " + str(j))
+print(', ' + str(i) + ' ' + str(j))
 ```
 
 ### for(リストを与える場合)
@@ -2700,7 +2864,7 @@ for k in {'k1': 1, 'k2': 2, 'k3': 3}:
 > k3
 
 ```py
-for c in "012":
+for c in '012':
     print(c)
 ```
 
@@ -2711,7 +2875,7 @@ for c in "012":
 > 2
 
 ```py
-for line in open("grammer.py", encoding='utf8'):
+for line in open('grammer.py', encoding='utf8'):
     print(line)
     # 1行ずつ標準出力
 ```
@@ -2766,7 +2930,7 @@ for i in range(5):
 ```py
 import itertools
 for x, y,z in itertools.product(range(10), range(10), range(10)):
-  print("%d,%d,%d" % (x,y,z))
+  print('%d,%d,%d' % (x,y,z))
 ```
 
 ```
@@ -3815,12 +3979,12 @@ try:
     # 範囲外の文字が指定し、IndexError例外を発生させる
     c = str[5]
 except IOError as err:
-    print("I/O error: {0}".format(err))
+    print('I/O error: {0}'.format(err))
 except IndexError as err:
-    print("IndexError: {0}".format(err))
+    print('IndexError: {0}'.format(err))
 except (UnicodeEncodeError, UnicodeDecodeError, UnicodeTranslateError) as err:
     # 複数の例外をまとめて扱う
-    print("UnicodeError: {0}".format(err))
+    print('UnicodeError: {0}'.format(err))
 except:
     # その他の例外
     print(sys.exc_info())   # 現在処理中の例外(type, value, traceback)
@@ -3899,7 +4063,7 @@ print(a)
 
 ```py
 for i, s in enumerate(["'foo'","'bar'", "'hoge'"]):
-    exec(f"var{i+1} = {s}")
+    exec(f'var{i+1} = {s}')
 
 print(var1)
 print(var2)
@@ -4008,7 +4172,7 @@ with open(filepath, 'w') as f:
 ```py
 # 定義
 def func1():
-    print("hello")
+    print('hello')
 
 # 呼出
 func1()
@@ -4022,19 +4186,19 @@ def func2(arg):
     print(arg)
 
 # 呼出
-func2("hello")
+func2('hello')
 ```
 
 ## 既定値を持つ引数あり
 
 ```py
 # 定義
-def func3(arg="bye"):
+def func3(arg='bye'):
     print(arg)
 
 # 呼出
 func3()
-func3(arg="hi")
+func3(arg='hi')
 ```
 
 ## 戻り値あり
@@ -4045,7 +4209,7 @@ def func4(arg):
     return arg
 
 # 呼出
-print(func4("hello"))
+print(func4('hello'))
 ```
 
 ## docstringあり
@@ -4053,8 +4217,8 @@ print(func4("hello"))
 ```py
 # 定義
 def func5():
-    """helloと表示する関数"""
-    print("hello")
+    '''helloと表示する関数'''
+    print('hello')
 
 # 呼出
 func5()
@@ -4078,12 +4242,12 @@ def func_vl(arg, *t, **d):
         print(val)
 
 # 呼出
-func_vl("foobar",
-        "t1",
-        "t2",
-        dk1="dv1",
-        dk2="dv2",
-        dk3="dv3")
+func_vl('foobar',
+        't1',
+        't2',
+        dk1='dv1',
+        dk2='dv2',
+        dk3='dv3')
 ```
 
 ## 引数のアンパック
@@ -4171,7 +4335,7 @@ ccc
 ## 標準出力
 
 ```py
-print("Hello Python!")
+print('Hello Python!')
 ```
 
 ## ローカルファイル
@@ -5071,7 +5235,7 @@ os.makedirs(path, exist_ok=True)
 touch(fpath)
 
 # ファイルを検索して削除
-[os.remove(f) for f in glob("./test-remove/*.txt")]
+[os.remove(f) for f in glob('./test-remove/*.txt')]
 
 os.rmdir(path)
 ```
@@ -5580,8 +5744,8 @@ import json
 
 json_str = '''
 {
-    "key1":"val1",
-    "key2":"val2"
+    'key1':'val1',
+    'key2':'val2'
 }
 '''
 
@@ -5599,8 +5763,8 @@ import json
 
 json_str = '''
 {
-    "key1":"val1",
-    "key2":"val2"
+    'key1':'val1',
+    'key2':'val2'
 }
 '''
 
@@ -5617,10 +5781,10 @@ import json
 
 json_str = '''
 {
-    "key1":"val1",
-    "key2":{
-        "key2-1":"val2-1",
-        "key2-2":"val2-2"
+    'key1':'val1',
+    'key2':{
+        'key2-1':'val2-1',
+        vkey2-2':'val2-2'
     }
 }
 '''
@@ -5708,10 +5872,6 @@ url = 'http://python.org/'
 req = urllib.request.Request(url)
 with urllib.request.urlopen(req) as response:
     html = response.read()
-```
-
-```
-b'<!doctype html>\n<!--[if lt IE 7]>   <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->\n<!--[if IE 7]>      <html class="no-js ie7 lt-ie8 lt-ie9">          <![endif]-->\n<!--[if IE 8]>      <html class="no-js ie8 lt-ie9">                 <![endif]-->\n<!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->\n\n<head>\n    <meta charset="utf-8">\n    <meta http-equiv="X-UA-Compatible" content="IE=edge">\n\n    <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">\n\n    <meta name="application-name" content="Python.org">\n    <meta name="msapplication-tooltip" content="The official home of the Python Programming Language">\n    <meta name="apple-mobile-web-app-title" content="Python.org">\n    <meta name="apple-mobile-web-app-capable" content="yes">\n    <meta name="apple-mobile-web-app-status-bar-style" content="black">\n\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <meta name="HandheldFriendly" content="True">\n    <meta name="format-detection" content="telephone=no">\n    <meta http-equiv="cleartype" content="on">\n    <meta http-equiv="imagetoolbar" content="false">\n\n    <script src="/static/js/libs/modernizr.js"></script>\n\n    <link href="/static/stylesheets/style.67f4b30f7483.css" rel="stylesheet" type="text/css" title="default" />\n    <link href="/static/stylesheets/mq.3ae8e02ece5b.css" rel="stylesheet" type="text/css" media="not print, braille, embossed, speech, tty" />\n    \n\n    <!--[if (lte IE 8)&(!IEMobile)]>\n    <link href="/static/stylesheets/no-mq.fcf414dc68a3.css" rel="stylesheet" type="text/css" media="screen" />\n    \n    \n    <![endif]-->\n\n    \n    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">\n    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/apple-touch-icon-144x144-precomposed.png">\n    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/apple-touch-icon-114x114-precomposed.png">\n    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/apple-touch-icon-72x72-precomposed.png">\n    <link rel="apple-touch-icon-precomposed" href="/static/apple-touch-icon-precomposed.png">\n    <link rel="apple-touch-icon" href="/static/apple-touch-icon-precomposed.png">\n\n    \n    <meta name="msapplication-TileImage" content="/static/metro-icon-144x144-precomposed.png"><!-- white shape -->\n    <meta name="msapplication-TileColor" content="#3673a5"><!-- python blue -->\n    <meta name="msapplication-navbutton-color" content="#3673a5">\n\n    <title>Welcome to Python.org</title>\n\n    <meta name="description" content="The official home of the Python Programming Language">\n    <meta name="keywords" content="Python programming language object oriented web free open source software license documentation download community">\n\n    \n    <meta property="og:type" content="website">\n    <meta property="og:site_name" content="Python.org">\n    <meta property="og:title" content="Welcome to Python.org">\n    <meta property="og:description" content="The official home of the Python Programming Language">\n    \n    <meta property="og:image" content="https://www.python.org/static/opengraph-icon-200x200.png">\n    <meta property="og:image:secure_url" content="https://www.python.org/static/opengraph-icon-200x200.png">\n    \n    <meta property="og:url" content="https://www.python.org/">\n\n    <link rel="author" href="/static/humans.txt">\n\n    <link rel="alternate" type="application/rss+xml" title="Python Enhancement Proposals"\n          href="https://www.python.org/dev/peps/peps.rss/">\n    <link rel="alternate" type="application/rss+xml" title="Python Job Opportunities"\n          href="https://www.python.org/jobs/feed/rss/">\n    <link rel="alternate" type="application/rss+xml" title="Python Software Foundation News"\n          href="https://feeds.feedburner.com/PythonSoftwareFoundationNews">\n    <link rel="alternate" type="application/rss+xml" title="Python Insider"\n          href="https://feeds.feedburner.com/PythonInsider">\n\n    \n\n    \n    <script type="application/ld+json">\n     {\n       "@context": "https://schema.org",\n       "@type": "WebSite",\n       "url": "https://www.python.org/",\n       "potentialAction": {\n         "@type": "SearchAction",\n         "target": "https://www.python.org/search/?q={search_term_string}",\n         "query-input": "required name=search_term_string"\n       }\n     }\n    </script>\n\n    \n    <script type="text/javascript">\n    var _gaq = _gaq || [];\n    _gaq.push([\'_setAccount\', \'UA-39055973-1\']);\n    _gaq.push([\'_trackPageview\']);\n\n    (function() {\n        var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;\n        ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';\n        var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(ga, s);\n    })();\n    </script>\n    \n</head>\n\n<body class="python home" id="homepage">\n\n    <div id="touchnav-wrapper">\n\n        <div id="nojs" class="do-not-print">\n            <p><strong>Notice:</strong> While Javascript is not essential for this website, your interaction with the content will be limited. Please turn Javascript on for the full experience. </p>\n        </div>\n\n        <!--[if lte IE 8]>\n        <div id="oldie-warning" class="do-not-print">\n            <p>\n                <strong>Notice:</strong> Your browser is <em>ancient</em>. Please\n                <a href="http://browsehappy.com/">upgrade to a different browser</a> to experience a better web.\n            </p>\n        </div>\n        <![endif]-->\n\n        <!-- Sister Site Links -->\n        <div id="top" class="top-bar do-not-print">\n\n            <nav class="meta-navigation container" role="navigation">\n\n                \n                <div class="skip-link screen-reader-text">\n                    <a href="#content" title="Skip to content">Skip to content</a>\n                </div>\n\n                \n                <a id="close-python-network" class="jump-link" href="#python-network" aria-hidden="true">\n                    <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close\n                </a>\n\n                \n\n<ul class="menu" role="tree">\n    \n    <li class="python-meta current_item selectedcurrent_branch selected">\n        <a href="/" title="The Python Programming Language" class="current_item selectedcurrent_branch selected">Python</a>\n    </li>\n    \n    <li class="psf-meta ">\n        <a href="/psf-landing/" title="The Python Software Foundation" >PSF</a>\n    </li>\n    \n    <li class="docs-meta ">\n        <a href="https://docs.python.org" title="Python Documentation" >Docs</a>\n    </li>\n    \n    <li class="pypi-meta ">\n        <a href="https://pypi.python.org/" title="Python Package Index" >PyPI</a>\n    </li>\n    \n    <li class="jobs-meta ">\n        <a href="/jobs/" title="Python Job Board" >Jobs</a>\n    </li>\n    \n    <li class="shop-meta ">\n        <a href="/community/" title="Python Community" >Community</a>\n    </li>\n    \n</ul>\n\n\n                <a id="python-network" class="jump-link" href="#top" aria-hidden="true">\n                    <span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network\n                </a>\n\n            </nav>\n\n        </div>\n\n        <!-- Header elements -->\n        <header class="main-header" role="banner">\n            <div class="container">\n\n                <h1 class="site-headline">\n                    <a href="/"><img class="python-logo" src="/static/img/python-logo.png" alt="python&trade;"></a>\n                </h1>\n\n                <div class="options-bar-container do-not-print">\n                    <a href="/psf/donations/" class="donate-button">Donate</a>\n                    <div class="options-bar">\n                        \n                        <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="/search/" method="get">\n                            <fieldset title="Search Python.org">\n\n                                <span aria-hidden="true" class="icon-search"></span>\n\n                                <label class="screen-reader-text" for="id-search-field">Search This Site</label>\n                                <input id="id-search-field" name="q" type="search" role="textbox" class="search-field" placeholder="Search" value="" tabindex="1">\n\n                                <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">\n                                    GO\n                                </button>\n\n                                \n                                <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->\n\n                            </fieldset>\n                        </form><span class="breaker"></span><div class="adjust-font-size" aria-hidden="true">\n                            <ul class="navigation menu" aria-label="Adjust Text Size on Page">\n                                <li class="tier-1 last" aria-haspopup="true">\n                                    <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>\n                                    <ul class="subnav menu">\n                                        <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>\n                                        <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</a></li>\n                                        <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>\n                                    </ul>\n                                </li>\n                            </ul>\n                        </div><div class="winkwink-nudgenudge">\n                            <ul class="navigation menu" aria-label="Social Media Navigation">\n                                <li class="tier-1 last" aria-haspopup="true">\n                                    <a href="#" class="action-trigger">Socialize</a>\n                                    <ul class="subnav menu">\n                                        <li class="tier-2 element-1" role="treeitem"><a href="https://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>\n                                        <li class="tier-2 element-2" role="treeitem"><a href="https://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>\n                                        <li class="tier-2 element-3" role="treeitem"><a href="/community/irc/"><span aria-hidden="true" class="icon-freenode"></span>Chat on IRC</a></li>\n                                    </ul>\n                                </li>\n                            </ul>\n                        </div>\n                        <span data-html-include="/authenticated"></span>\n                    </div><!-- end options-bar -->\n                </div>\n\n                <nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">\n                    \n                        \n<ul class="navigation menu" role="menubar" aria-label="Main Navigation">\n  \n    \n    \n    <li id="about" class="tier-1 element-1  " aria-haspopup="true">\n        <a href="/about/" title="" class="">About</a>\n        \n            \n\n<ul class="subnav menu" role="menu" aria-hidden="true">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/about/apps/" title="">Applications</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/about/quotes/" title="">Quotes</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/about/gettingstarted/" title="">Getting Started</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/about/help/" title="">Help</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="http://brochure.getpython.info/" title="">Python Brochure</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    \n    \n    <li id="downloads" class="tier-1 element-2  " aria-haspopup="true">\n        <a href="/downloads/" title="" class="">Downloads</a>\n        \n            \n\n<ul class="subnav menu" role="menu" aria-hidden="true">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/downloads/" title="">All releases</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/downloads/source/" title="">Source code</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/downloads/windows/" title="">Windows</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/downloads/mac-osx/" title="">Mac OS X</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="/download/other/" title="">Other Platforms</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="https://docs.python.org/3/license.html" title="">License</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="/download/alternatives" title="">Alternative Implementations</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    \n    \n    <li id="documentation" class="tier-1 element-3  " aria-haspopup="true">\n        <a href="/doc/" title="" class="">Documentation</a>\n        \n            \n\n<ul class="subnav menu" role="menu" aria-hidden="true">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/doc/" title="">Docs</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/doc/av" title="">Audio/Visual Talks</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="https://wiki.python.org/moin/BeginnersGuide" title="">Beginner&#39;s Guide</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="https://devguide.python.org/" title="">Developer&#39;s Guide</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="https://docs.python.org/faq/" title="">FAQ</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="http://wiki.python.org/moin/Languages" title="">Non-English Docs</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="http://python.org/dev/peps/" title="">PEP Index</a></li>\n    \n        <li class="tier-2 element-8" role="treeitem"><a href="https://wiki.python.org/moin/PythonBooks" title="">Python Books</a></li>\n    \n        <li class="tier-2 element-9" role="treeitem"><a href="/doc/essays/" title="">Python Essays</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    \n    \n    <li id="community" class="tier-1 element-4  " aria-haspopup="true">\n        <a href="/community/" title="" class="">Community</a>\n        \n            \n\n<ul class="subnav menu" role="menu" aria-hidden="true">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/community/survey" title="">Community Survey</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/community/diversity/" title="">Diversity</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/community/lists/" title="">Mailing Lists</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/community/irc/" title="">IRC</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="/community/forums/" title="">Forums</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="/psf/annual-report/2019/" title="">PSF Annual Impact Report</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="/community/workshops/" title="">Python Conferences</a></li>\n    \n        <li class="tier-2 element-8" role="treeitem"><a href="/community/sigs/" title="">Special Interest Groups</a></li>\n    \n        <li class="tier-2 element-9" role="treeitem"><a href="/community/logos/" title="">Python Logo</a></li>\n    \n        <li class="tier-2 element-10" role="treeitem"><a href="https://wiki.python.org/moin/" title="">Python Wiki</a></li>\n    \n        <li class="tier-2 element-11" role="treeitem"><a href="/community/merchandise/" title="">Merchandise</a></li>\n    \n        <li class="tier-2 element-12" role="treeitem"><a href="/community/awards" title="">Community Awards</a></li>\n    \n        <li class="tier-2 element-13" role="treeitem"><a href="https://www.python.org/psf/codeofconduct/" title="">Code of Conduct</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    \n    \n    <li id="success-stories" class="tier-1 element-5  " aria-haspopup="true">\n        <a href="/success-stories/" title="success-stories" class="">Success Stories</a>\n        \n            \n\n<ul class="subnav menu" role="menu" aria-hidden="true">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/success-stories/category/arts/" title="">Arts</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/success-stories/category/business/" title="">Business</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/success-stories/category/education/" title="">Education</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/success-stories/category/engineering/" title="">Engineering</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="/success-stories/category/government/" title="">Government</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="/success-stories/category/scientific/" title="">Scientific</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="/success-stories/category/software-development/" title="">Software Development</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    \n    \n    <li id="news" class="tier-1 element-6  " aria-haspopup="true">\n        <a href="/blogs/" title="News from around the Python world" class="">News</a>\n        \n            \n\n<ul class="subnav menu" role="menu" aria-hidden="true">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/blogs/" title="Python Insider Blog Posts">Python News</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="http://planetpython.org/" title="Planet Python">Community News</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="http://pyfound.blogspot.com/" title="PSF Blog">PSF News</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="http://pycon.blogspot.com/" title="PyCon Blog">PyCon News</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    \n    \n    <li id="events" class="tier-1 element-7  " aria-haspopup="true">\n        <a href="/events/" title="" class="">Events</a>\n        \n            \n\n<ul class="subnav menu" role="menu" aria-hidden="true">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/events/python-events" title="">Python Events</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/events/python-user-group/" title="">User Group Events</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/events/python-events/past/" title="">Python Events Archive</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/events/python-user-group/past/" title="">User Group Events Archive</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="https://wiki.python.org/moin/PythonEventsCalendar#Submitting_an_Event" title="">Submit an Event</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    \n    \n    \n  \n</ul>\n\n                    \n                </nav>\n\n                <div class="header-banner "> <!-- for optional "do-not-print" class -->\n                    \n        <div id="dive-into-python" class="flex-slideshow slideshow">\n\n            <ul class="launch-shell menu" id="launch-shell">\n                <li>\n                    <a class="button prompt" id="start-shell" data-shell-container="#dive-into-python" href="/shell/">&gt;_\n                        <span class="message">Launch Interactive Shell</span>\n                    </a>\n                </li>\n            </ul>\n\n            <ul class="slides menu">\n                \n                <li>\n                    <div class="slide-code"><pre><code><span class="comment"># Python 3: Fibonacci series up to n</span>\r\n>>> def fib(n):\r\n>>>     a, b = 0, 1\r\n>>>     while a &lt; n:\r\n>>>         print(a, end=\' \')\r\n>>>         a, b = b, a+b\r\n>>>     print()\r\n>>> fib(1000)\r\n<span class="output">0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987</span></code></pre></div>\n                    <div class="slide-copy"><h1>Functions Defined</h1>\r\n<p>The core of extensible programming is defining functions. Python allows mandatory and optional arguments, keyword arguments, and even arbitrary argument lists. <a href="//docs.python.org/3/tutorial/controlflow.html#defining-functions">More about defining functions in Python&nbsp;3</a></p></div>\n                </li>\n                \n                <li>\n                    <div class="slide-code"><pre><code><span class="comment"># Python 3: List comprehensions</span>\r\n>>> fruits = [\'Banana\', \'Apple\', \'Lime\']\r\n>>> loud_fruits = [fruit.upper() for fruit in fruits]\r\n>>> print(loud_fruits)\r\n<span class="output">[\'BANANA\', \'APPLE\', \'LIME\']</span>\r\n\r\n<span class="comment"># List and the enumerate function</span>\r\n>>> list(enumerate(fruits))\r\n<span class="output">[(0, \'Banana\'), (1, \'Apple\'), (2, \'Lime\')]</span></code></pre></div>\n                    <div class="slide-copy"><h1>Compound Data Types</h1>\r\n<p>Lists (known as arrays in other languages) are one of the compound data types that Python understands. Lists can be indexed, sliced and manipulated with other built-in functions. <a href="//docs.python.org/3/tutorial/introduction.html#lists">More about lists in Python&nbsp;3</a></p></div>\n                </li>\n                \n                <li>\n                    <div class="slide-code"><pre><code><span class="comment"># Python 3: Simple arithmetic</span>\r\n>>> 1 / 2\r\n<span class="output">0.5</span>\r\n>>> 2 ** 3\r\n<span class="output">8</span>\r\n>>> 17 / 3  <span class="comment"># classic division returns a float</span>\r\n<span class="output">5.666666666666667</span>\r\n>>> 17 // 3  <span class="comment"># floor division</span>\r\n<span class="output">5</span></code></pre></div>\n                    <div class="slide-copy"><h1>Intuitive Interpretation</h1>\r\n<p>Calculations are simple with Python, and expression syntax is straightforward: the operators <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code> work as expected; parentheses <code>()</code> can be used for grouping. <a href="http://docs.python.org/3/tutorial/introduction.html#using-python-as-a-calculator">More about simple math functions in Python&nbsp;3</a>.</p></div>\n                </li>\n                \n                <li>\n                    <div class="slide-code"><pre><code><span class="comment"># Python 3: Simple output (with Unicode)</span>\r\n>>> print("Hello, I\'m Python!")\r\n<span class="output">Hello, I\'m Python!</span>\r\n\r\n<span class="comment"># Input, assignment</span>\r\n>>> name = input(\'What is your name?\\n\')\r\n>>> print(\'Hi, %s.\' % name)\r\n<span class="output">What is your name?\r\nPython\r\nHi, Python.</span></code></pre></div>\n                    <div class="slide-copy"><h1>Quick &amp; Easy to Learn</h1>\r\n<p>Experienced programmers in any other language can pick up Python very quickly, and beginners find the clean syntax and indentation structure easy to learn. <a href="//docs.python.org/3/tutorial/">Whet your appetite</a> with our Python&nbsp;3 overview.</p>\r\n                   </div>\n                </li>\n                \n                <li>\n                    <div class="slide-code"><pre><code><span class="comment"># For loop on a list</span>\r\n>>> numbers = [2, 4, 6, 8]\r\n>>> product = 1\r\n>>> for number in numbers:\r\n...    product = product * number\r\n... \r\n>>> print(\'The product is:\', product)\r\n<span class="output">The product is: 384</span></code></pre></div>\n                    <div class="slide-copy"><h1>All the Flow You&rsquo;d Expect</h1>\r\n<p>Python knows the usual control flow statements that other languages speak &mdash; <code>if</code>, <code>for</code>, <code>while</code> and <code>range</code> &mdash; with some of its own twists, of course. <a href="//docs.python.org/3/tutorial/controlflow.html">More control flow tools in Python&nbsp;3</a></p></div>\n                </li>\n                \n            </ul>\n        </div>\n\n\n                </div>\n\n                \n        <div class="introduction">\n            <p>Python is a programming language that lets you work quickly <span class="breaker"></span>and integrate systems more effectively. <a class="readmore" href="/doc/">Learn More</a></p>\n        </div>\n\n\n             </div><!-- end .container -->\n        </header>\n\n        <div id="content" class="content-wrapper">\n            <!-- Main Content Column -->\n            <div class="container">\n\n                <section class="main-content " role="main">\n\n                    \n                    \n\n                    \n\n                    \n\n                \n\n                <div class="row">\n\n                    <div class="small-widget get-started-widget">\n                        <h2 class="widget-title"><span aria-hidden="true" class="icon-get-started"></span>Get Started</h2>\r\n<p>Whether you\'re new to programming or an experienced developer, it\'s easy to learn and use Python.</p>\r\n<p><a href="/about/gettingstarted/">Start with our Beginner&rsquo;s Guide</a></p>\n                    </div>\n\n                    <div class="small-widget download-widget">\n                        <h2 class="widget-title"><span aria-hidden="true" class="icon-download"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions!</p>\n<p>Latest: <a href="/downloads/release/python-374/">Python 3.7.4</a></p>\n                    </div>\n\n                    <div class="small-widget documentation-widget">\n                        <h2 class="widget-title"><span aria-hidden="true" class="icon-documentation"></span>Docs</h2>\r\n<p>Documentation for Python\'s standard library, along with tutorials and guides, are available online.</p>\r\n<p><a href="https://docs.python.org">docs.python.org</a></p>\n                    </div>\n\n                    <div class="small-widget jobs-widget last">\n                        <h2 class="widget-title"><span aria-hidden="true" class="icon-jobs"></span>Jobs</h2>\r\n<p>Looking for work or have a Python related position that you\'re trying to hire for? Our <strong>relaunched community-run job board</strong> is the place to go.</p>\r\n<p><a href="//jobs.python.org">jobs.python.org</a></p>\n                    </div>\n\n                </div>\n\n                <div class="list-widgets row">\n\n                    <div class="medium-widget blog-widget">\n                        \n                        <div class="shrubbery">\n                        \n                            <h2 class="widget-title"><span aria-hidden="true" class="icon-news"></span>Latest News</h2>\n                            <p class="give-me-more"><a href="https://blog.python.org" title="More News">More</a></p>\n                            \n                            <ul class="menu">\n                                \n                                \n                                <li>\n<time datetime="2019-08-07T08:37:00.000002+00:00"><span class="say-no-more">2019-</span>08-07</time>\n <a href="http://feedproxy.google.com/~r/PythonInsider/~3/0XCbz6INDL8/python-380b3-is-now-available-for.html">Python 3.8.0b3 is now available for testing</a></li>\n                                \n                                <li>\n<time datetime="2019-07-31T16:06:00.000002+00:00"><span class="say-no-more">2019-</span>07-31</time>\n <a href="http://feedproxy.google.com/~r/PythonInsider/~3/MwuRB1u_KNQ/pypi-now-supports-uploading-via-api.html">PyPI now supports uploading via API token</a></li>\n                                \n                                <li>\n<time datetime="2019-07-31T16:02:00.000002+00:00"><span class="say-no-more">2019-</span>07-31</time>\n <a href="http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/PyfIYGrs4Vo/pypi-now-supports-uploading-via-api.html">PyPI now supports uploading via API token</a></li>\n                                \n                                <li>\n<time datetime="2019-07-18T15:15:21.000003+00:00"><span class="say-no-more">2019-</span>07-18</time>\n <a href="https://mailchi.mp/python/psf-2019-q2-newsletter">Python Software Foundation - Q2 Newsletter</a></li>\n                                \n                                <li>\n<time datetime="2019-07-11T15:04:00.000003+00:00"><span class="say-no-more">2019-</span>07-11</time>\n <a href="http://feedproxy.google.com/~r/PythonSoftwareFoundationNews/~3/9sGpXmeE1-c/2019-psf-fundraiser-thank-you-debrief.html">2019 PSF Fundraiser - Thank you &amp; debrief</a></li>\n                                \n                            </ul>\n                        </div><!-- end .shrubbery -->\n\n                    </div>\n\n                    <div class="medium-widget event-widget last">\n                        \n                        <div class="shrubbery">\n                        \n                            <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events</h2>\n                            <p class="give-me-more"><a href="/events/calendars/" title="More Events">More</a></p>\n                            \n                            <ul class="menu">\n                                \n                                \n                                \n                                <li>\n<time datetime="2019-08-15T00:00:00+00:00"><span class="say-no-more">2019-</span>08-15</time>\n <a href="/events/python-events/854/">PyBay</a></li>\n                                \n                                \n                                \n                                <li>\n<time datetime="2019-08-15T00:00:00+00:00"><span class="say-no-more">2019-</span>08-15</time>\n <a href="/events/python-events/847/">PyCon Korea 2019</a></li>\n                                \n                                \n                                \n                                <li>\n<time datetime="2019-08-23T00:00:00+00:00"><span class="say-no-more">2019-</span>08-23</time>\n <a href="/events/python-events/846/">IndyPy Web Conf 2019</a></li>\n                                \n                                \n                                \n                                <li>\n<time datetime="2019-08-23T00:00:00+00:00"><span class="say-no-more">2019-</span>08-23</time>\n <a href="/events/python-events/855/">Kiwi PyCon X</a></li>\n                                \n                                \n                                \n                                <li>\n<time datetime="2019-08-29T00:00:00+00:00"><span class="say-no-more">2019-</span>08-29</time>\n <a href="/events/python-user-group/835/">PyCon Latam 2019</a></li>\n                                \n                                \n                            </ul>\n                        </div>\n\n                    </div>\n\n                </div>\n\n                <div class="row">\n\n                    <div class="medium-widget success-stories-widget">\n                        \n\n\n\n                        <div class="shrubbery">\n                            \n\n                            <h2 class="widget-title"><span aria-hidden="true" class="icon-success-stories"></span>Success Stories</h2>\n                            <p class="give-me-more"><a href="/success-stories/" title="More Success Stories">More</a></p>\n\n                            \n                            <div class="success-story-item" id="success-story-836">\n\n                            <blockquote>\n                                <a href="/success-stories/python-seo-link-analyzer/">&quot;Python is all about automating repetitive tasks, leaving more time for your other SEO efforts.&quot;</a>\n                            </blockquote>\n\n                            <table cellpadding="0" cellspacing="0" border="0" width="100%" class="quote-from">\n                                <tbody>\n                                    <tr>\n                                        \n                                        <td><p><a href="/success-stories/python-seo-link-analyzer/">Using Python scripts to analyse SEO and broken links on your site</a> <em>by Marnix de Munck</em></p></td>\n                                    </tr>\n                                </tbody>\n                            </table>\n                            </div>\n                            \n\n                        </div><!-- end .shrubbery -->\n\n                    </div>\n\n                    <div class="medium-widget applications-widget last">\n                        <div class="shrubbery">\n                            <h2 class="widget-title"><span aria-hidden="true" class="icon-python"></span>Use Python for&hellip;</h2>\r\n<p class="give-me-more"><a href="/about/apps" title="More Applications">More</a></p>\r\n\r\n<ul class="menu">\r\n    <li><b>Web Development</b>:\r\n        <span class="tag-wrapper"><a class="tag" href="http://www.djangoproject.com/">Django</a>, <a class="tag" href="http://www.pylonsproject.org/">Pyramid</a>, <a class="tag" href="http://bottlepy.org">Bottle</a>, <a class="tag" href="http://tornadoweb.org">Tornado</a>, <a href="http://flask.pocoo.org/" class="tag">Flask</a>, <a class="tag" href="http://www.web2py.com/">web2py</a></span></li>\r\n    <li><b>GUI Development</b>:\r\n        <span class="tag-wrapper"><a class="tag" href="http://wiki.python.org/moin/TkInter">tkInter</a>, <a class="tag" href="https://wiki.gnome.org/Projects/PyGObject">PyGObject</a>, <a class="tag" href="http://www.riverbankcomputing.co.uk/software/pyqt/intro">PyQt</a>, <a class="tag" href="https://wiki.qt.io/PySide">PySide</a>, <a class="tag" href="https://kivy.org/">Kivy</a>, <a class="tag" href="http://www.wxpython.org/">wxPython</a></span></li>\r\n    <li><b>Scientific and Numeric</b>:\r\n        <span class="tag-wrapper">\r\n<a class="tag" href="http://www.scipy.org">SciPy</a>, <a class="tag" href="http://pandas.pydata.org/">Pandas</a>, <a href="http://ipython.org" class="tag">IPython</a></span></li>\r\n    <li><b>Software Development</b>:\r\n        <span class="tag-wrapper"><a class="tag" href="http://buildbot.net/">Buildbot</a>, <a class="tag" href="http://trac.edgewall.org/">Trac</a>, <a class="tag" href="http://roundup.sourceforge.net/">Roundup</a></span></li>\r\n    <li><b>System Administration</b>:\r\n        <span class="tag-wrapper"><a class="tag" href="http://www.ansible.com">Ansible</a>, <a class="tag" href="http://www.saltstack.com">Salt</a>, <a class="tag" href="https://www.openstack.org">OpenStack</a></span></li>\r\n</ul>\r\n\n                        </div><!-- end .shrubbery -->\n                    </div>\n\n                </div>\n\n                \n                <div class="pep-widget">\n\n                    <h2 class="widget-title">\n                        <span class="prompt">&gt;&gt;&gt;</span> <a href="/dev/peps/">Python Enhancement Proposals<span class="say-no-more"> (PEPs)</span></a>: The future of Python<span class="say-no-more"> is discussed here.</span>\n                        <a aria-hidden="true" class="rss-link" href="/dev/peps/peps.rss"><span class="icon-feed"></span> RSS</a>\n                    </h2>\n\n\n                    \n                    \n                </div>\n\n                                <div class="psf-widget">\n\n                    <div class="python-logo"></div>\n                    \n                    <h2 class="widget-title">\r\n    <span class="prompt">&gt;&gt;&gt;</span> <a href="/psf/">Python Software Foundation</a>\r\n</h2>\r\n<p>The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. <a class="readmore" href="/psf/">Learn more</a> </p>\r\n<p class="click-these">\r\n    <a class="button" href="/users/membership/">Become a Member</a>\r\n    <a class="button" href="/psf/donations/">Donate to the PSF</a>\r\n</p>\n                </div>\n\n\n\n\n                </section>\n\n                \n                \n\n                \n                \n\n\n            </div><!-- end .container -->\n        </div><!-- end #content .content-wrapper -->\n\n        <!-- Footer and social media list -->\n        <footer id="site-map" class="main-footer" role="contentinfo">\n            <div class="main-footer-links">\n                <div class="container">\n\n                    \n                    <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>\n\n                    \n\n<ul class="sitemap navigation menu do-not-print" role="tree" id="container">\n    \n    <li class="tier-1 element-1">\n        <a href="/about/" >About</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/about/apps/" title="">Applications</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/about/quotes/" title="">Quotes</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/about/gettingstarted/" title="">Getting Started</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/about/help/" title="">Help</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="http://brochure.getpython.info/" title="">Python Brochure</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    <li class="tier-1 element-2">\n        <a href="/downloads/" >Downloads</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/downloads/" title="">All releases</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/downloads/source/" title="">Source code</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/downloads/windows/" title="">Windows</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/downloads/mac-osx/" title="">Mac OS X</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="/download/other/" title="">Other Platforms</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="https://docs.python.org/3/license.html" title="">License</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="/download/alternatives" title="">Alternative Implementations</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    <li class="tier-1 element-3">\n        <a href="/doc/" >Documentation</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/doc/" title="">Docs</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/doc/av" title="">Audio/Visual Talks</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="https://wiki.python.org/moin/BeginnersGuide" title="">Beginner&#39;s Guide</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="https://devguide.python.org/" title="">Developer&#39;s Guide</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="https://docs.python.org/faq/" title="">FAQ</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="http://wiki.python.org/moin/Languages" title="">Non-English Docs</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="http://python.org/dev/peps/" title="">PEP Index</a></li>\n    \n        <li class="tier-2 element-8" role="treeitem"><a href="https://wiki.python.org/moin/PythonBooks" title="">Python Books</a></li>\n    \n        <li class="tier-2 element-9" role="treeitem"><a href="/doc/essays/" title="">Python Essays</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    <li class="tier-1 element-4">\n        <a href="/community/" >Community</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/community/survey" title="">Community Survey</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/community/diversity/" title="">Diversity</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/community/lists/" title="">Mailing Lists</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/community/irc/" title="">IRC</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="/community/forums/" title="">Forums</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="/psf/annual-report/2019/" title="">PSF Annual Impact Report</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="/community/workshops/" title="">Python Conferences</a></li>\n    \n        <li class="tier-2 element-8" role="treeitem"><a href="/community/sigs/" title="">Special Interest Groups</a></li>\n    \n        <li class="tier-2 element-9" role="treeitem"><a href="/community/logos/" title="">Python Logo</a></li>\n    \n        <li class="tier-2 element-10" role="treeitem"><a href="https://wiki.python.org/moin/" title="">Python Wiki</a></li>\n    \n        <li class="tier-2 element-11" role="treeitem"><a href="/community/merchandise/" title="">Merchandise</a></li>\n    \n        <li class="tier-2 element-12" role="treeitem"><a href="/community/awards" title="">Community Awards</a></li>\n    \n        <li class="tier-2 element-13" role="treeitem"><a href="https://www.python.org/psf/codeofconduct/" title="">Code of Conduct</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    <li class="tier-1 element-5">\n        <a href="/success-stories/" title="success-stories">Success Stories</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/success-stories/category/arts/" title="">Arts</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/success-stories/category/business/" title="">Business</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/success-stories/category/education/" title="">Education</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/success-stories/category/engineering/" title="">Engineering</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="/success-stories/category/government/" title="">Government</a></li>\n    \n        <li class="tier-2 element-6" role="treeitem"><a href="/success-stories/category/scientific/" title="">Scientific</a></li>\n    \n        <li class="tier-2 element-7" role="treeitem"><a href="/success-stories/category/software-development/" title="">Software Development</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    <li class="tier-1 element-6">\n        <a href="/blogs/" title="News from around the Python world">News</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/blogs/" title="Python Insider Blog Posts">Python News</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="http://planetpython.org/" title="Planet Python">Community News</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="http://pyfound.blogspot.com/" title="PSF Blog">PSF News</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="http://pycon.blogspot.com/" title="PyCon Blog">PyCon News</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    <li class="tier-1 element-7">\n        <a href="/events/" >Events</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="/events/python-events" title="">Python Events</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="/events/python-user-group/" title="">User Group Events</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="/events/python-events/past/" title="">Python Events Archive</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/events/python-user-group/past/" title="">User Group Events Archive</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="https://wiki.python.org/moin/PythonEventsCalendar#Submitting_an_Event" title="">Submit an Event</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n    <li class="tier-1 element-8">\n        <a href="/dev/" >Contributing</a>\n        \n            \n\n<ul class="subnav menu">\n    \n        <li class="tier-2 element-1" role="treeitem"><a href="https://devguide.python.org/" title="">Developer&#39;s Guide</a></li>\n    \n        <li class="tier-2 element-2" role="treeitem"><a href="https://bugs.python.org/" title="">Issue Tracker</a></li>\n    \n        <li class="tier-2 element-3" role="treeitem"><a href="https://mail.python.org/mailman/listinfo/python-dev" title="">python-dev list</a></li>\n    \n        <li class="tier-2 element-4" role="treeitem"><a href="/dev/core-mentorship/" title="">Core Mentorship</a></li>\n    \n        <li class="tier-2 element-5" role="treeitem"><a href="/news/security/" title="">Report a Security Issue</a></li>\n    \n</ul>\n\n        \n    </li>\n    \n</ul>\n\n\n                    <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>\n                    \n\n                </div><!-- end .container -->\n            </div> <!-- end .main-footer-links -->\n\n            <div class="site-base">\n                <div class="container">\n                    \n                    <ul class="footer-links navigation menu do-not-print" role="tree">\n                        <li class="tier-1 element-1"><a href="/about/help/">Help &amp; <span class="say-no-more">General</span> Contact</a></li>\n                        <li class="tier-1 element-2"><a href="/community/diversity/">Diversity <span class="say-no-more">Initiatives</span></a></li>\n                        <li class="tier-1 element-3"><a href="https://github.com/python/pythondotorg/issues">Submit Website Bug</a></li>\n                        <li class="tier-1 element-4">\n                            <a href="https://status.python.org/">Status <span class="python-status-indicator-default" id="python-status-indicator"></span></a>\n                        </li>\n                    </ul>\n\n                    <div class="copyright">\n                        <p><small>\n                            <span class="pre">Copyright &copy;2001-2019.</span>\n                            &nbsp;<span class="pre"><a href="/psf-landing/">Python Software Foundation</a></span>\n                            &nbsp;<span class="pre"><a href="/about/legal/">Legal Statements</a></span>\n                            &nbsp;<span class="pre"><a href="/privacy/">Privacy Policy</a></span>\n                            &nbsp;<span class="pre"><a href="/psf/sponsorship/sponsors/#heroku">Powered by Heroku</a></span>\n                        </small></p>\n                    </div>\n\n                </div><!-- end .container -->\n            </div><!-- end .site-base -->\n\n        </footer>\n\n    </div><!-- end #touchnav-wrapper -->\n\n    \n    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>\n    <script>window.jQuery || document.write(\'<script src="/static/js/libs/jquery-1.8.2.min.js"><\\/script>\')</script>\n\n    <script src="/static/js/libs/masonry.pkgd.min.js"></script>\n    <script src="/static/js/libs/html-includes.js"></script>\n\n    <script type="text/javascript" src="/static/js/main-min.fbfe252506ae.js" charset="utf-8"></script>\n    \n\n    <!--[if lte IE 7]>\n    <script type="text/javascript" src="/static/js/plugins/IE8-min.16868e6a5d2f.js" charset="utf-8"></script>\n    \n    \n    <![endif]-->\n\n    <!--[if lte IE 8]>\n    <script type="text/javascript" src="/static/js/plugins/getComputedStyle-min.c3860be1d290.js" charset="utf-8"></script>\n    \n    \n    <![endif]-->\n\n    \n\n    \n    \n\n</body>\n</html>\n'
 ```
 
 #### 文字コードを指定
@@ -6145,14 +6305,14 @@ url = 'http://python.org/'
 try:
     r = requests.get(url)
 except requests.exceptions.RequestException as e:
-    print("Error: {}".format(e))
+    print('Error: {}'.format(e))
 ```
 
 # クラス
 
 ```py
 class MyClass:
-    """docstring of MyClass"""
+    '''docstring of MyClass'''
 
     # クラス変数
     publicClassVariable = 10
@@ -6172,7 +6332,7 @@ class MyClass:
 
     # 文字列化
     def __str__(self):
-        return "MyClass: " + self.__privateInstanceVariable
+        return 'MyClass: ' + self.__privateInstanceVariable
 
     def getName(self):          # getter
         return self.__privateInstanceVariable
@@ -6183,19 +6343,19 @@ class MyClass:
     # 通常メソッド
     def Calc(self):
         self.publicInstanceVariable2 = 3
-        print("パブリックメソッド")
+        print('パブリックメソッド')
 
     def __MyCalc(self):
-        print("プライベートメソッド")
+        print('プライベートメソッド')
 
     @classmethod
     def SelfName(cls):
         publicClassVariable2 = 30
-        print("パブリックメソッド")
+        print('パブリックメソッド')
 
     @classmethod
     def __PrivateSelfName(cls):
-        print("プライベートクラスメソッド")
+        print('プライベートクラスメソッド')
 
 
 # インスタンス変数
@@ -6461,7 +6621,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 ## 恒久的にモジュール検索パスを追加
 
 ```sh
-export PYTHONPATH="/path/to/module:$PYTHONPATH"`
+export PYTHONPATH='/path/to/module:$PYTHONPATH'`
 ```
 
 site-packagesフォルダの中に、`*.pth`ファイル(ファイル名は任意)を作成し、各行にパスを追加
