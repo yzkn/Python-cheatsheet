@@ -618,6 +618,8 @@ print(datetime(2019, 8, 7, 6, 54, 32, 1000, tzinfo=timezone(timedelta(hours=9)))
 
 #### pytzを使用する場合
 
+##### 現在日時から生成
+
 ```py
 #  $ pip install pytz
 
@@ -642,14 +644,22 @@ print(type(timezone('Asia/Tokyo')))
 print(datetime.now(timezone('UTC')))
 # 2019-08-07 03:45:18.553981+00:00
 
+print(datetime.now(tz=timezone('Europe/London')))
+# 2019-08-07 04:45:18.553981+01:00
+
 print(datetime.now(tz=timezone('Asia/Tokyo')))
-# 2019-08-07 12:45:18.613778+09:00
+# 2019-08-07 12:45:18.553981+09:00
+
+print(datetime.now(timezone('UTC')).astimezone(timezone('Europe/London')))
+# 2019-08-07 04:45:18.634371+01:00
 
 print(datetime.now(timezone('UTC')).astimezone(timezone('Asia/Tokyo')))
 # 2019-08-07 12:45:18.754351+09:00
 
-print(datetime.now(timezone('UTC')).astimezone(timezone('Europe/London')))
-# 2019-08-07 04:45:18.634371+01:00
+#
+
+print(timezone('Europe/London').localize(datetime.now()))
+# 2019-08-07 12:45:20.011410+01:00
 
 print(timezone('Asia/Tokyo').localize(datetime.now()))
 # 2019-08-07 12:45:20.011410+09:00
@@ -659,9 +669,74 @@ print(timezone('Asia/Tokyo').localize(datetime.now()))
 print(timezone('UTC').localize(datetime.now()))
 # 2019-08-07 12:45:18.760637+00:00
 
+print(timezone('UTC').localize(datetime.now()).astimezone(timezone('Europe/London')))
+# 2019-08-07 13:45:18.760637+09:00
+
 print(timezone('UTC').localize(datetime.now()).astimezone(timezone('Asia/Tokyo')))
-# 2019-08-07 21:47:29.529403+09:00
+# 2019-08-07 21:45:18.760637+09:00
 ```
+
+##### 任意の日時を生成
+
+```py
+from datetime import datetime
+from pytz import timezone
+
+date = datetime(2019, 8, 9, 10)
+
+tz = timezone('Asia/Tokyo')
+print(tz.localize(date))
+
+tz = timezone('Europe/London')
+print(tz.localize(date))
+
+tz = timezone('UTC')
+print(tz.localize(date))
+```
+
+> 2019-08-09 10:11:12+09:00
+>
+> 2019-08-09 10:11:12+01:00
+>
+> 2019-08-10 02:00:00+00:00
+
+##### サマータイム終了時点を跨いだ日時の加算
+
+```py
+from datetime import datetime, timedelta
+from pytz import timezone
+
+tz = timezone('Europe/London')
+dt = datetime(year=2019, month=10, day=27, hour=0, minute=58)
+localized = tz.normalize(tz.normalize(tz.localize(dt)) + timedelta(minutes=1))
+print(localized)
+
+dt = datetime(year=2019, month=10, day=27, hour=0, minute=59)
+localized = tz.normalize(tz.normalize(tz.localize(dt)) + timedelta(minutes=1))
+print(localized)
+
+dt = datetime(year=2019, month=10, day=27, hour=0, minute=59, second=59)
+localized = tz.normalize(tz.normalize(tz.localize(dt)) + timedelta(seconds=1))
+print(localized)
+
+dt = datetime(year=2019, month=10, day=27, hour=1, minute=0, second=0)
+localized = tz.normalize(tz.normalize(tz.localize(dt)) + timedelta(seconds=1))
+print(localized)
+
+dt = datetime(year=2019, month=10, day=27, hour=1, minute=0)
+localized = tz.normalize(tz.normalize(tz.localize(dt)) + timedelta(minutes=1))
+print(localized)
+```
+
+> 2019-10-27 00:59:00+01:00
+>
+> 2019-10-27 01:00:00+01:00
+>
+> 2019-10-27 01:00:00+01:00
+>
+> 2019-10-27 01:00:01+00:00
+>
+> 2019-10-27 01:01:00+00:00
 
 ### datetimeからdate
 
@@ -1666,6 +1741,24 @@ if a == []:
 ### リストを生成
 
 ```py
+# 空のリスト
+lst = []
+print(lst)
+lst = [None] * 10
+print(lst)
+lst = [0] * 10
+print(lst)
+
+
+```
+
+> []
+>
+> [None, None, None, None, None, None, None, None, None, None]
+>
+> [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+```py
 # リストをコピー
 oldlist = ['foo', 'bar', 'hoge']
 newlist = list(oldlist)
@@ -1784,6 +1877,24 @@ print(lst)  # 存在しない値を指定するとエラーが発生
 > ValueError: list.remove(x): x not in list
 >
 > ['bar', 'hoge', 'bar', 'hoge', 'bar', 'hoge']
+
+### リストの要素を除去
+
+```py
+lst = ['foo', 'bar', 'hoge']
+
+lst.pop() # 末尾から除去
+
+lst.pop(0) # 先頭から除去
+```
+
+> 'hoge'
+>
+> ['foo', 'bar']
+>
+> 'foo'
+>
+> ['bar']
 
 ### リストの反復処理
 
@@ -2204,6 +2315,39 @@ print(dct2)
 >
 > {'1': 'f', '2': 's', '3': 't'}
 
+### 辞書の要素の存在チェック
+
+```py
+dct = { 1:'first', 2:'second', 3:'third', }
+print(1 in dct) # キー
+print(1 not in dct)
+
+print('first' in dct) # 値
+print('first' in dct.values())
+
+print((1, 'first') in dct.items()) # キーと値
+```
+
+> True
+>
+> False
+>
+> False
+>
+> True
+>
+> True
+
+### 指定した値を持つキーを取得する
+
+```py
+dct = { 1:'first', 2:'second', 3:'third', }
+keys = [k for k, v in dct.items() if v == 'first' or v == 'second']
+print(keys)
+```
+
+> [1, 2]
+
 ### 辞書のキーと値を交換
 
 ```py
@@ -2342,6 +2486,16 @@ print(res)
 ```py
 t = 'foo', 'bar', 123, 456
 x, y, z, w = t
+```
+
+```py
+def fibonacci(n):
+    x, y = 0, 1
+    for i in range(n):
+        print(x)
+        x, y = y, x+y # tmp変数が不要になる
+
+fibonacci(10)
 ```
 
 ## セット
@@ -6126,6 +6280,44 @@ m.method()
 
 ```
 
+## オブジェクトの属性の参照と存在チェック
+
+```py
+
+class MyClass:
+    publicClassVariable = 10
+    __privateClassVariable = 20
+
+    def __init__(self):
+        self.val1 = 10
+        self.val2 = 20
+
+myClass = MyClass()
+
+# 属性のリスト
+print(dir(myClass))
+
+# dict属性
+print(vars(myClass))
+
+# 属性値の参照
+print(myClass.publicClassVariable)
+
+# 属性の存在チェック
+hasattr(myClass, 'publicClassVariable')
+hasattr(myClass, '__privateClassVariable')
+```
+
+> ['_MyClass__privateClassVariable', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'publicClassVariable', 'val1', 'val2']
+>
+> {'val1': 10, 'val2': 20}
+>
+> 10
+>
+> True
+>
+> False
+
 # モジュール
 
 ## モジュールの読み込み
@@ -6154,6 +6346,12 @@ print(type(os.sep))
 ```py
 from glob import glob, iglob
 ```
+
+### 推奨される読み込み順序
+
+1. 標準ライブラリ
+2. サードパーティライブラリ
+3. ローカルライブラリ（自作のライブラリ）
 
 ## 外部スクリプトの読み込み
 
