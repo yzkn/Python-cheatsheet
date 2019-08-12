@@ -1138,22 +1138,289 @@ print(fuga)
 
 ```
 
-### format
+### 文字列のフォーマット
+
+#### ゼロ埋め
+
+```py
+print('12345'.zfill(8))
+print('1234567890'.zfill(8))
+print('+1234'.zfill(8))
+print('-1234'.zfill(8))
+print('-a1234'.zfill(8)) # -の後ろに0埋め
+print('xyz'.zfill(8))
+
+print(str(12345).zfill(8))
+```
+
+> 00012345
+>
+> 1234567890
+>
+> +0001234
+>
+> -0001234
+>
+> -00a1234
+>
+> 00000xyz
+
+> 00012345
+
+```py
+print('1234'.rjust(8, '0'))
+print('1234'.ljust(8, '0'))
+print('1234'.center(8, '0'))
+print('-1234'.rjust(8, '0'))
+print('-1234'.ljust(8, '0'))
+print('-1234'.center(8, '0'))
+```
+
+> 00001234
+>
+> 12340000
+>
+> 00123400
+>
+> 000-1234
+>
+> -1234000
+>
+> 0-123400
+
+#### format
+
+##### 整列
 
 ```py
 print('{}'.format(1))
+print('{} {} {}'.format(1, 2, 3)) # 複数の値を埋め込む
+print('{2} {0} {1}'.format(1, 2, 3)) # 埋め込み順序を指定する
+print('{one} {three} {two}'.format(one=1, two=2, three=3)) # 埋め込み順序を指定する
+print('{{}}'.format(1)) # {}自体を記述したい場合は2つ重ねる
+
+print('{:+}'.format(1)) # 正の数でも符号を表示
+
+print('{:0=10}'.format(100)) # ゼロ埋め
+print('{:010}'.format(100))
+print('{:0=10}'.format(-100))
+print('{:010}'.format(-100))
+
+print('{:<10}'.format(1)) # 左寄せ
+
+print('{:>10}'.format(1)) # 右寄せ
+print('{:0>10}'.format(1))
+
+print('{:^10}'.format(1)) # センタリング(中央寄せ)
+print('{:0^10}'.format(1))
+print('{:*^10}'.format(1))
 ```
 
 > 1
+>
+> 1 2 3
+>
+> 3 1 2
+>
+> 1 3 2
+>
+> {}
+>
+> +1
+
+> 0000000100
+>
+> 0000000100
+>
+> -000000100
+>
+> -000000100
+
+> 1
+>
+>          1
+>
+> 0000000001
+>
+>     1
+>
+> 0000100000
+>
+> ****1*****
+
+##### 小数点以下の桁数
 
 ```py
-print('%s' % 'ABC')  # 文字列： ABC
-print('%d' % 123)  # 整数　： 123
-print('%f' % 1.23)  # 実数　： 1.23
-print('%x' % 255)  # 16進数： ff
-print('%o' % 255)  # 8進数： 377
-print('%d%%' % 100)  # %自体： 100%
+print("{:.0f}".format(1.5))
+print("{:.0f}".format(2.5)) # 偶数への丸め(JIS Z 8401)なので、3ではなく2となる(round関数と同様)
+```
 
+> 2
+>
+> 2
+
+##### 桁区切り文字
+
+```py
+print('{:,}'.format(1234567))
+```
+
+> 1,234,567
+
+##### 指数表記
+
+```py
+print('{:.3e}'.format(1.234567))
+```
+
+> 1.235e+00
+
+##### 2進数、8進数、16進数
+
+```py
+
+print('{:d}'.format(255)) # 10進数
+print('{:b}'.format(255)) # 2進数
+print('{:o}'.format(255)) # 8進数
+print('{:x}'.format(255)) # 16進数
+print('{:#b}'.format(255)) # 接頭辞 + 2進数
+print('{:#o}'.format(255)) # 接頭辞 + 8進数
+print('{:#x}'.format(255)) # 接頭辞 + 16進数
+```
+
+> 255
+>
+> 11111111
+>
+> 377
+>
+> ff
+>
+> 0b11111111
+>
+> 0o377
+>
+> 0xff
+
+##### リストの値を代入
+
+```py
+lst = ['first', 'second', 'third']
+mes = '{}: {}{}'.format(*lst)
+print(mes)
+
+mes = '{0[0]}: {0[1]}{0[2]}'.format(lst)
+print(mes)
+```
+
+> first: secondthird
+>
+> first: secondthird
+
+```py
+# 複数のリストから値を埋め込む
+lst1 = ['first', 'second', 'third']
+lst2 = ['one', 'two', 'three']
+mes = '{0[0]}: {0[1]}{0[2]}\t{1[0]}: {1[1]}{1[2]}'.format(lst1, lst2)
+print(mes)
+```
+
+> first: secondthird      one: twothree
+
+##### タプルの値を代入
+
+```py
+tpl = ('first', 'second', 'third')
+mes = '{}: {}{}'.format(*tpl)
+print(mes)
+
+mes = '{0[0]}: {0[1]}{0[2]}'.format(tpl)
+print(mes)
+```
+
+> first: secondthird
+>
+> first: secondthird
+
+##### 辞書の値を代入
+
+```py
+dct = { 'aaa':'first', 'bbb':'second', 'ccc':'third'}
+mes = '{aaa}: {bbb}{ccc}'.format(**dct)
+print(mes)
+```
+
+> first: secondthird
+
+#### f文字列
+
+```py
+one = 'first'
+two = 2
+three = '3rd'
+mes = f'{one}: {two}{three}'
+print(mes)
+```
+
+> first: 23rd
+
+##### リストの値を代入
+
+```py
+lst = ['first', 'second', 'third']
+mes = f'{lst[0]}: {lst[1]}{lst[2]}'
+print(mes)
+```
+
+> first: secondthird
+
+##### タプルの値を代入
+
+```py
+tpl = ('first', 'second', 'third')
+mes = f'{tpl[0]}: {tpl[1]}{tpl[2]}'
+print(mes)
+```
+
+> first: secondthird
+
+##### 辞書の値を代入
+
+`f""` の中では `"` は使えず、 `f''`の中では `'` は使えない(バックスラッシュでエスケープできない)
+
+```py
+dct = { 'aaa':'first', 'bbb':'second', 'ccc':'third'}
+mes = f"{dct['aaa']}: {dct['bbb']}{dct['ccc']}"
+print(mes)
+```
+
+> first: secondthird
+
+#### フォーマット演算子
+
+```py
+print('%c' % 'A')  # 文字： A
+print('%s' % 'ABC')  # 文字列： ABC
+print('%r' % 'ABC')  # 文字列： ABC
+
+print('%d' % 123)  # 整数： 123
+print('%i' % 123)  # 整数： 123
+
+print('%e' % 1.23)  # 指数： 1.230000e+00
+print('%E' % 1.23)  # 指数： 1.230000E+00
+print('%f' % 1.23)  # 実数： 1.23
+print('%F' % 1.23)  # 実数： 1.23
+
+print('%o' % 255)  # 8進数： 377
+print('%b' % 255)  # 8進数： 377
+
+print('%x' % 255)  # 16進数： ff
+print('%X' % 255)  # 16進数： FF
+
+print('%d%%' % 100)  # %自体： 100%
+```
+
+```py
 print('|%5s|' % 'ABC')  # => |  ABC| : 右寄せ
 print('|%-5s|' % 'ABC')  # => |ABC  | : 左寄せ
 print('|%5d|' % 123)  # => |  123| : 右寄せ
@@ -1252,6 +1519,25 @@ for key, value in enumerate(parts):
 >
 > 8:yz
 
+#### splitの引数を指定しないと、空白文字(改行文字を含む)で分割される
+
+```py
+hoge = 'a bc\nde f\nghi\njkl\nmno\npqr\nstu\nvwx\ny z'
+parts = hoge.split('\n')
+print(parts)
+```
+
+> ['a bc', 'de f', 'ghi', 'jkl', 'mno', 'pqr', 'stu', 'vwx', 'y z']
+
+| 文字 |
+| --- |
+| スペース ` ` |
+| タブ `\t` |
+| 改行 `\n` |
+| 復帰 `\r` |
+| 改頁 `\f` |
+| 垂直タブ `\v` |
+
 ### 部分文字列
 
 ```py
@@ -1268,6 +1554,19 @@ print(hoge[0:7:2])  # acdf
 # -9  -8  -7  -6  -5  -4  -3  -2  -1  0 #
 #########################################
 ```
+
+#### 1文字ずつ処理する
+
+```py
+for c in 'abc':
+    print(c)
+```
+
+> a
+>
+> b
+>
+> c
 
 #### 部分文字列を全パターン取得する
 
@@ -1342,6 +1641,11 @@ i
 
 #### 単純な検索
 
+| メソッド | 特徴 |
+| --- | --- |
+| find | 文字列が見つからない場合に `-1` を返す |
+| index | 文字列が見つからない場合に `ValueError` を返す |
+
 ```py
 # -----:    0000000000111111111122222222223333333333444444444455
 # count:    0123456789012345678901234567890123456789012345678901
@@ -1391,7 +1695,6 @@ print(haystack.rindex(needle, 5,30))
 print(haystack.rfind(needle, 4,30))
 ```
 
-
 > 30
 >
 > 4
@@ -1404,7 +1707,29 @@ print(haystack.rfind(needle, 4,30))
 >
 > 4
 
+##### 前方一致
 
+```py
+haystack = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
+haystack.startswith('abc')
+haystack.startswith('xyz')
+```
+
+> True
+>
+> False
+
+##### 後方一致
+
+```py
+haystack = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
+haystack.endswith('abc')
+haystack.endswith('xyz')
+```
+
+> False
+>
+> True
 
 #### 正規表現による検索
 
@@ -1776,6 +2101,32 @@ replacement.join(haystack.splitlines())
 ```
 
 > 'haystackhaystackhaystack'
+
+##### 前後の空白文字を除去
+
+```py
+s = ' \txyz\t '
+print('^' + s.strip() + '$')
+print('^' + s.lstrip() + '$')
+print('^' + s.rstrip() + '$')
+```
+
+> ^xyz$
+>
+> ^xyz     $
+>
+> ^       xyz$
+
+##### 大文字化・小文字化
+
+```py
+print('abcde'.upper())
+print('ABCDE'.lower())
+```
+
+> ABCDE
+>
+> abcde
 
 #### 正規表現による置換
 
@@ -2324,6 +2675,10 @@ print(dupll2d)
 dct = { 1:'first', 2:'two', 2:'second', 3:'third'}
 # キーが同じ要素が追加されたら上書きされる(2:'two'ではなく2:'second'が残る)
 
+# デバッグ表示
+print(str(dct))
+print('%s' % dct)
+
 # 追加
 dct[4] = 'fourth'
 
@@ -2355,6 +2710,10 @@ dct.clear()
 dct = {}
 ```
 
+> {1: 'first', 2: 'second', 3: 'third'}
+>
+> {1: 'first', 2: 'second', 3: 'third'}
+>
 > first
 >
 > first
@@ -2597,12 +2956,21 @@ t = 'hoge',
 t = 'hoge'  # カンマをつけないとただの変数
 
 t = 'foo', 'bar', 123, 456
+
+# デバッグ表示
+print(str(t))
+print('%s' % (t,)) # print('%s' % t)とするとTypeError: not all arguments converted during string formatting
+
 t[2]
 
 # リストからタプルを生成
 print(tuple([1, 2, 3]))  # リストからタプル
 print(list((1, 2, 3))  # タプルからリスト
 ```
+
+> ('foo', 'bar', 123, 456)
+>
+> ('foo', 'bar', 123, 456)
 
 > 123
 
@@ -5856,6 +6224,86 @@ arff.dumps(data)
 ```
 
 ## ネットワーク
+
+### URL文字列の操作
+
+#### URLエンコーディング
+
+```py
+from urllib import parse
+
+# エンコード
+print(parse.quote('検索クエリ', encoding='utf-8'))
+
+# デコード
+print(parse.unquote('%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA', encoding='utf-8'))
+```
+
+> %E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA
+>
+> 検索クエリ
+
+##### 変換対象の文字の違いと利用する関数
+
+```py
+print(urllib.parse.quote('+ /'))
+print(urllib.parse.quote_plus('+ /'))
+print(urllib.parse.quote_plus('+ /', safe='+/'))
+```
+
+> %2B%20/
+>
+> %2B+%2F
+>
+> ++/
+
+```py
+print(urllib.parse.unquote('a+b'))
+print(urllib.parse.unquote_plus('a+b'))
+```
+
+> a+b
+>
+> a b
+
+#### URL文字列のパース
+
+```py
+from urllib import parse
+
+parts = parse.urlparse('https://example.net/user?id=12345&pw=678&q='+'%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA')
+print(parts)
+print(parts.path)
+print(parse.parse_qs(parts.query))
+
+```
+
+> ParseResult(scheme='https', netloc='example.net', path='/user', params='', query='id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA', fragment='')
+>
+> /user
+>
+> {'id': ['12345'], 'pw': ['678'], 'q': ['検索クエリ']}
+
+#### URL文字列の組み立て
+
+```py
+from urllib import parse
+
+new_query = parse.urlencode({'id': ['12345'], 'pw': ['678'], 'q': ['検索クエリ']}, True)
+print(new_query)
+
+
+parts = parse.urlparse('https://example.net/user?id=12345&pw=678&q='+'%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA')
+print(parts)
+new_url = parse.ParseResult(parts.scheme, parts.netloc, parts.path, parts.params, new_query, parts.fragment).geturl()
+print(new_url)
+```
+
+> id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA
+>
+> ParseResult(scheme='https', netloc='example.net', path='/user', params='', query='id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA', fragment='')
+>
+> https://example.net/user?id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA
 
 ### urllib
 
