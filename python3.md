@@ -12,37 +12,37 @@
 
 # 命名規則
 
-| 項目 | 文字種 | 区切り文字 |
-| --- | --- | --- |
-| パッケージ | 英数小文字 | - |
-| モジュール | 英数小文字 | アンダースコア |
-| クラス, 例外, 型変数 | 英数大小文字 | 大文字 |
-| メソッド, 関数,変数 | 英数小文字 | アンダースコア |
-| 定数 | 英数大文字 | アンダースコア |
+| 項目                 | 文字種       | 区切り文字     |
+| -------------------- | ------------ | -------------- |
+| パッケージ           | 英数小文字   | -              |
+| モジュール           | 英数小文字   | アンダースコア |
+| クラス, 例外, 型変数 | 英数大小文字 | 大文字         |
+| メソッド, 関数,変数  | 英数小文字   | アンダースコア |
+| 定数                 | 英数大文字   | アンダースコア |
 
 # 演算子
 
 ## [演算子の優先順位](https://docs.python.org/ja/3/reference/expressions.html#operator-precedence)
 
-|  演算子  |  意味  |
-| --- | --- |
-|  (1), [1], {1:1}, {1}  |  式結合/タプル、リスト、辞書、集合  |
-|  l[1], l[1,2], f(arg), c.attribute  | 添え字指定、スライス、関数呼び出し、属性参照  |
-|  await  |  Await式
-|  **  |  べき乗  |
-|  +x, -x, ~x  |  数、負数、ビット単位NOT  |
-|  *, /, //, %  |  乗算、除算、整除除算、剰余/文字列フォーマット  |
-|  +, -  |  加算、減算  |
-|  <<, >>  |  シフト演算  |
-|  &  |  ビット単位 AND  |
-|  ^  |  ビット単位 XOR  |
-|  |  |  ビット単位 OR  |
-|  in, not in, is, is not, <, <=, >, >=, !=, ==  |  比較  |
-|  not x  |  NOT  |
-|  and  |  AND  |
-|  or  |  OR  |
-|  if -- else  |  条件式(三項演算子)  |
-|  lambda  |  ラムダ式  |
+| 演算子                                       | 意味                                          |
+| -------------------------------------------- | --------------------------------------------- |
+| (1), [1], {1:1}, {1}                         | 式結合/タプル、リスト、辞書、集合             |
+| l[1], l[1,2], f(arg), c.attribute            | 添え字指定、スライス、関数呼び出し、属性参照  |
+| await                                        | Await 式                                      |
+| \*\*                                         | べき乗                                        |
+| +x, -x, ~x                                   | 数、負数、ビット単位 NOT                      |
+| \*, /, //, %                                 | 乗算、除算、整除除算、剰余/文字列フォーマット |
+| +, -                                         | 加算、減算                                    |
+| <<, >>                                       | シフト演算                                    |
+| &                                            | ビット単位 AND                                |
+| ^                                            | ビット単位 XOR                                |
+|                                              |                                               | ビット単位 OR |
+| in, not in, is, is not, <, <=, >, >=, !=, == | 比較                                          |
+| not x                                        | NOT                                           |
+| and                                          | AND                                           |
+| or                                           | OR                                            |
+| if -- else                                   | 条件式(三項演算子)                            |
+| lambda                                       | ラムダ式                                      |
 
 ```py
 # 三項演算子
@@ -88,7 +88,7 @@ print(x is z)
 >
 > False
 
-`is` での比較で、オブジェクトが同一でなくてもTrueが返る場合もある
+`is` での比較で、オブジェクトが同一でなくても True が返る場合もある
 
 ```py
 x = '1234567890'
@@ -242,7 +242,7 @@ type(0x11) # 16進数
 >
 > <class 'float'>
 >
-> \# 10進数以外
+> \# 10 進数以外
 >
 > <class 'int'>
 >
@@ -306,7 +306,7 @@ print(isinstance(100, (int, str)))
 >
 > True
 
-## type()とisinstance()の差異
+## type()と isinstance()の差異
 
 継承を考慮
 
@@ -329,9 +329,9 @@ print(isinstance(False, int))
 
 ## boolean
 
-|  True  |  False  |
-| ---- | ---- |
-|  bool(1)<br>bool(2)<br>bool(-3)<br>bool(.1)<br>bool(1j)<br>bool('a')<br>bool([0])<br>bool((0,))<br>bool({0})  |  bool(0)<br><br><br>bool(0.)<br>bool(0j)<br>bool('')<br>bool([])<br>bool(())<br>bool({})  |
+| True                                                                                                        | False                                                                                   |
+| ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| bool(1)<br>bool(2)<br>bool(-3)<br>bool(.1)<br>bool(1j)<br>bool('a')<br>bool([0])<br>bool((0,))<br>bool({0}) | bool(0)<br><br><br>bool(0.)<br>bool(0j)<br>bool('')<br>bool([])<br>bool(())<br>bool({}) |
 
 ```py
 True == 1  # True
@@ -392,17 +392,17 @@ if s.isnumeric():
 >
 > \# '一五一十'
 >
-> isNumeric \# 漢数字だけしか含まれていないためTrueが返る
+> isNumeric \# 漢数字だけしか含まれていないため True が返る
 >
 > ValueError: invalid literal for int() with base 10: '一五一十' \# キャストには失敗する
 
-* `isnumeric()` が `True` となる文字
+- `isnumeric()` が `True` となる文字
 
 ```
 零 一 二 三 四 五 六 七 八 九 十 百 千 万 億 兆
 ```
 
-#### 10進数以外のキャスト
+#### 10 進数以外のキャスト
 
 ```py
 print(int('0b11111111', 2)) # 2進数
@@ -427,7 +427,7 @@ print(int('0xffff', 0)) # 16進数
 >
 > 65535
 
-#### 1文字の漢数字のキャスト
+#### 1 文字の漢数字のキャスト
 
 ```py
 import unicodedata
@@ -437,7 +437,7 @@ print(unicodedata.numeric('五')) # 漢数字1文字ごとにキャスト
 
 > 5.0
 
-##### 2文字以上の漢数字のキャスト(漢数字をアラビア数字に変換してからint型にキャスト)
+##### 2 文字以上の漢数字のキャスト(漢数字をアラビア数字に変換してから int 型にキャスト)
 
 ```py
 import re
@@ -704,16 +704,16 @@ print(td)
 
 > 143 days, 15:00:00
 
-### タイムゾーンを考慮したdatetime
+### タイムゾーンを考慮した datetime
 
-#### datetimeパッケージのtimezoneモジュールを使用する場合
+#### datetime パッケージの timezone モジュールを使用する場合
 
-UTCからの時間差を指定して最低限の処理をすればよい場合
+UTC からの時間差を指定して最低限の処理をすればよい場合
 
-| 種類 | 内容 |
-| --- | --- |
-| aware | TimeZone情報を持つdatetimeオブジェクト(tzinfo属性) |
-| naive | TimeZone情報を持たないdatetimeオブジェクト |
+| 種類  | 内容                                                   |
+| ----- | ------------------------------------------------------ |
+| aware | TimeZone 情報を持つ datetime オブジェクト(tzinfo 属性) |
+| naive | TimeZone 情報を持たない datetime オブジェクト          |
 
 ```py
 from datetime import datetime, timedelta, timezone
@@ -774,7 +774,7 @@ print(datetime(2019, 8, 7, 6, 54, 32, 1000, tzinfo=timezone(timedelta(hours=9)))
 
 ```
 
-#### pytzを使用する場合
+#### pytz を使用する場合
 
 ##### 現在日時から生成
 
@@ -896,7 +896,7 @@ print(localized)
 >
 > 2019-10-27 01:01:00+00:00
 
-### datetimeからdate
+### datetime から date
 
 ```py
 from datetime import datetime
@@ -914,7 +914,7 @@ print(dt.date().weekday())
 >
 > 4
 
-### datetimeからstr
+### datetime から str
 
 ```py
 from datetime import datetime
@@ -928,7 +928,7 @@ print(datetime.now().isoformat()) # ISO形式
 >
 > 2019-07-30T12:16:58.427664
 
-### strからdatetime、date
+### str から datetime、date
 
 ```py
 from datetime import date
@@ -963,7 +963,7 @@ print(tdatetime)
 >
 > 2019-07-30 12:16:58.001000+09:00
 
-#### タイムゾーンを考慮したstrからdatetime
+#### タイムゾーンを考慮した str から datetime
 
 ```py
 from datetime import datetime
@@ -977,9 +977,9 @@ print(tdatetime.tzinfo)
 >
 > UTC+09:00
 
-##### タイムゾーンを考慮したISO形式のstrからdatetime
+##### タイムゾーンを考慮した ISO 形式の str から datetime
 
-dateutil.parserを利用する
+dateutil.parser を利用する
 
 ```sh
 $ pip install python-dateutil
@@ -1038,32 +1038,32 @@ print(parse('2019-08-07T03:04:05.432100JST').astimezone(JST))
 >
 > 2019-08-07 03:04:05.432100+09:00
 
-#### [日付時刻のformat文字列に埋め込むディレクティブ](https://docs.python.org/ja/3/library/time.html#time.strftime)
+#### [日付時刻の format 文字列に埋め込むディレクティブ](https://docs.python.org/ja/3/library/time.html#time.strftime)
 
-|  ディレクティブ  |  意味  |  注釈  |
-| ---- | ---- | ---- |
-|  %a  |  ロケールにおける省略形の曜日名。  |    |
-|  %A  |  ロケールにおける省略なしの曜日名。  |    |
-|  %b  |  ロケールにおける省略形の月名。  |    |
-|  %B  |  ロケールにおける省略なしの月名。  |    |
-|  %c  |  ロケールにおける適切な日付および時刻表現。  |    |
-|  %d  |  月の始めから何日目かを表す 10 進数 [01,31]。  |    |
-|  %H  |  (24 時間計での) 時を表す 10 進数 [00,23]。  |    |
-|  %I  |  (12 時間計での) 時を表す 10 進数 [01,12]。  |    |
-|  %j  |  年の初めから何日目かを表す 10 進数 [001,366]。  |    |
-|  %m  |  月を表す 10 進数 [01,12]。  |    |
-|  %M  |  分を表す 10 進数 [00,59]。  |    |
-|  %p  |  ロケールにおける AM または PM に対応する文字列。  |  (1)  |
-|  %S  |  秒を表す 10 進数 [00,61]。  |  (2)  |
-|  %U  |  年の初めから何週目か (日曜を週の始まりとします)を表す<br>10 進数 [00,53]。年が明けてから最初の日曜日までの全ての曜日は 0 週目に属すると見なされます。  |  (3)  |
-|  %w  |  曜日を表す 10 進数 [0(日曜日),6]。  |    |
-|  %W  |  年の初めから何週目か (日曜を週の始まりとします)を表す<br>10 進数 [00,53]。年が明けてから最初の月曜日までの全ての曜日は 0 週目に属すると見なされます。  |  (3)  |
-|  %x  |  ロケールにおける適切な日付の表現。  |    |
-|  %X  |  ロケールにおける適切な時刻の表現。  |    |
-|  %y  |  上 2 桁なしの西暦年を表す 10 進数 [00,99]。  |    |
-|  %Y  |  上 2 桁付きの西暦年を表す 10 進数。  |    |
-|  %Z  |  タイムゾーンの名前 (タイムゾーンがない場合には空文字列)。  |    |
-|  %%  |  文字 “%” 自体の表現。  |    |
+| ディレクティブ | 意味                                                                                                                                                  | 注釈 |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| %a             | ロケールにおける省略形の曜日名。                                                                                                                      |      |
+| %A             | ロケールにおける省略なしの曜日名。                                                                                                                    |      |
+| %b             | ロケールにおける省略形の月名。                                                                                                                        |      |
+| %B             | ロケールにおける省略なしの月名。                                                                                                                      |      |
+| %c             | ロケールにおける適切な日付および時刻表現。                                                                                                            |      |
+| %d             | 月の始めから何日目かを表す 10 進数 [01,31]。                                                                                                          |      |
+| %H             | (24 時間計での) 時を表す 10 進数 [00,23]。                                                                                                            |      |
+| %I             | (12 時間計での) 時を表す 10 進数 [01,12]。                                                                                                            |      |
+| %j             | 年の初めから何日目かを表す 10 進数 [001,366]。                                                                                                        |      |
+| %m             | 月を表す 10 進数 [01,12]。                                                                                                                            |      |
+| %M             | 分を表す 10 進数 [00,59]。                                                                                                                            |      |
+| %p             | ロケールにおける AM または PM に対応する文字列。                                                                                                      | (1)  |
+| %S             | 秒を表す 10 進数 [00,61]。                                                                                                                            | (2)  |
+| %U             | 年の初めから何週目か (日曜を週の始まりとします)を表す<br>10 進数 [00,53]。年が明けてから最初の日曜日までの全ての曜日は 0 週目に属すると見なされます。 | (3)  |
+| %w             | 曜日を表す 10 進数 [0(日曜日),6]。                                                                                                                    |      |
+| %W             | 年の初めから何週目か (日曜を週の始まりとします)を表す<br>10 進数 [00,53]。年が明けてから最初の月曜日までの全ての曜日は 0 週目に属すると見なされます。 | (3)  |
+| %x             | ロケールにおける適切な日付の表現。                                                                                                                    |      |
+| %X             | ロケールにおける適切な時刻の表現。                                                                                                                    |      |
+| %y             | 上 2 桁なしの西暦年を表す 10 進数 [00,99]。                                                                                                           |      |
+| %Y             | 上 2 桁付きの西暦年を表す 10 進数。                                                                                                                   |      |
+| %Z             | タイムゾーンの名前 (タイムゾーンがない場合には空文字列)。                                                                                             |      |
+| %%             | 文字 “%” 自体の表現。                                                                                                                                 |      |
 
 1. strptime() 関数で使う場合、%p ディレクティブが出力結果の時刻フィールドに影響を及ぼすのは、時刻を解釈するために %I を使ったときのみです。
 1. 値の幅は実際に 0 から 61 です; 60 は うるう秒\<leap seconds\> を表し、 61 は歴史的理由によりサポートされています。
@@ -1246,7 +1246,7 @@ print('{:*^10}'.format(1))
 >
 > 0000100000
 >
-> ****1*****
+> \***\*1\*\*\***
 
 ##### 小数点以下の桁数
 
@@ -1275,7 +1275,7 @@ print('{:.3e}'.format(1.234567))
 
 > 1.235e+00
 
-##### 2進数、8進数、16進数
+##### 2 進数、8 進数、16 進数
 
 ```py
 
@@ -1325,7 +1325,7 @@ mes = '{0[0]}: {0[1]}{0[2]}\t{1[0]}: {1[1]}{1[2]}'.format(lst1, lst2)
 print(mes)
 ```
 
-> first: secondthird      one: twothree
+> first: secondthird one: twothree
 
 ##### タプルの値を代入
 
@@ -1352,7 +1352,7 @@ print(mes)
 
 > first: secondthird
 
-#### f文字列
+#### f 文字列
 
 ```py
 one = 'first'
@@ -1432,23 +1432,23 @@ print('|%05d|' % 123)  # => |00123| : 0埋め
 
 ### エスケープシーケンス
 
-| 項目 | 内容 |
-| --- | --- |
-| '\\' | \ |
-| '\'' | ' |
-| "\"" | " |
-| '\a' | ベル |
-| '\b' | バックスペース |
-| '\f' | フォームフィード |
-| '\n' | LF |
-| '\r' | CR |
-| '\t' | タブ |
-| '\v' | 垂直タブ |
-| '\nnn' | 8進表記文字(nは0～7) |
-| '\xnn' | 16進表記文字(nは0～f) |
-| '\uxxxx' | ユニコード文字xxxx (xxxxは10進数　例: u'\u3042'→'あ') |
-| '\Uxxxxxxxx' | ユニコード文字xxxxxxxx (xxxxxxxxは10進数　例: U'\U00003042'→'あ') |
-| '\N{name}' | Unicodeデータベース文字 (例: u'\N{HIRAGANA LETTER A}'→'あ') |
+| 項目         | 内容                                                                  |
+| ------------ | --------------------------------------------------------------------- |
+| '\\'         | \                                                                     |
+| '\''         | '                                                                     |
+| "\""         | "                                                                     |
+| '\a'         | ベル                                                                  |
+| '\b'         | バックスペース                                                        |
+| '\f'         | フォームフィード                                                      |
+| '\n'         | LF                                                                    |
+| '\r'         | CR                                                                    |
+| '\t'         | タブ                                                                  |
+| '\v'         | 垂直タブ                                                              |
+| '\nnn'       | 8 進表記文字(n は 0 ～ 7)                                             |
+| '\xnn'       | 16 進表記文字(n は 0 ～ f)                                            |
+| '\uxxxx'     | ユニコード文字 xxxx (xxxx は 10 進数　例: u'\u3042'→'あ')             |
+| '\Uxxxxxxxx' | ユニコード文字 xxxxxxxx (xxxxxxxx は 10 進数　例: U'\U00003042'→'あ') |
+| '\N{name}'   | Unicode データベース文字 (例: u'\N{HIRAGANA LETTER A}'→'あ')          |
 
 ### バイト列(byte), Unicode
 
@@ -1488,7 +1488,7 @@ print(len(r'あいう\nえお'))
 >
 > SyntaxError: bytes can only contain ASCII literal characters.
 >
-> あいう\nえお
+> あいう\n えお
 >
 > 7
 
@@ -1519,7 +1519,7 @@ for key, value in enumerate(parts):
 >
 > 8:yz
 
-#### splitの引数を指定しないと、空白文字(改行文字を含む)で分割される
+#### split の引数を指定しないと、空白文字(改行文字を含む)で分割される
 
 ```py
 hoge = 'a bc\nde f\nghi\njkl\nmno\npqr\nstu\nvwx\ny z'
@@ -1529,13 +1529,13 @@ print(parts)
 
 > ['a bc', 'de f', 'ghi', 'jkl', 'mno', 'pqr', 'stu', 'vwx', 'y z']
 
-| 文字 |
-| --- |
-| スペース ` ` |
-| タブ `\t` |
-| 改行 `\n` |
-| 復帰 `\r` |
-| 改頁 `\f` |
+| 文字          |
+| ------------- |
+| スペース ``   |
+| タブ `\t`     |
+| 改行 `\n`     |
+| 復帰 `\r`     |
+| 改頁 `\f`     |
 | 垂直タブ `\v` |
 
 ### 部分文字列
@@ -1555,7 +1555,7 @@ print(hoge[0:7:2])  # acdf
 #########################################
 ```
 
-#### 1文字ずつ処理する
+#### 1 文字ずつ処理する
 
 ```py
 for c in 'abc':
@@ -1641,10 +1641,10 @@ i
 
 #### 単純な検索
 
-| メソッド | 特徴 |
-| --- | --- |
-| find | 文字列が見つからない場合に `-1` を返す |
-| index | 文字列が見つからない場合に `ValueError` を返す |
+| メソッド | 特徴                                           |
+| -------- | ---------------------------------------------- |
+| find     | 文字列が見つからない場合に `-1` を返す         |
+| index    | 文字列が見つからない場合に `ValueError` を返す |
 
 ```py
 # -----:    0000000000111111111122222222223333333333444444444455
@@ -1778,9 +1778,9 @@ if matched:
         print(matched.span(2))
 ```
 
-> <_sre.SRE_Match object; span=(0, 8), match='haystack'>
+> <\_sre.SRE_Match object; span=(0, 8), match='haystack'>
 >
-> <_sre.SRE_Match object; span=(0, 8), match='haystack'>
+> <\_sre.SRE_Match object; span=(0, 8), match='haystack'>
 >
 > haystack
 >
@@ -1897,9 +1897,9 @@ if searched:
     print(searched.span())
 ```
 
-> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+> <\_sre.SRE_Match object; span=(0, 3), match='hay'>
 >
-> <_sre.SRE_Match object; span=(0, 3), match='hay'>
+> <\_sre.SRE_Match object; span=(0, 3), match='hay'>
 >
 > hay
 >
@@ -1986,13 +1986,13 @@ for found in allfound:
 
 [モジュールコンテンツ](https://docs.python.org/ja/3/library/re.html#contents-of-module-re)
 
-|  フラグ  |  効果  |
-| --- | --- |
-|  re.ASCII<br>re.A  |  \w 、\W 、\b 、\B 、\d 、\D 、\s 、および \S に、完全な Unicode マッチングではなく ASCII 限定マッチングを行わせます  |
-|  re.DOTALL<br>re.S  | '.' 特殊文字を、改行を含むあらゆる文字にマッチさせます
-|  re.IGNORECASE<br>re.I  |  大文字・小文字を区別しないマッチングを行います
-|  re.MULTILINE<br>re.M  |  パターン文字 '^' は文字列の先頭で、および各行の先頭 (各改行の直後) で、マッチします。そしてパターン文字 '$' は文字列の末尾で、および各行の末尾 (各改行の直前) で、マッチします
-|  re.VERBOSE<br>re.X  | 正規表現を、パターンの論理的な節を視覚的に分割し、コメントを加えることで、見た目よく読みやすく書けるようにします
+| フラグ                | 効果                                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| re.ASCII<br>re.A      | \w 、\W 、\b 、\B 、\d 、\D 、\s 、および \S に、完全な Unicode マッチングではなく ASCII 限定マッチングを行わせます                                                             |
+| re.DOTALL<br>re.S     | '.' 特殊文字を、改行を含むあらゆる文字にマッチさせます                                                                                                                          |
+| re.IGNORECASE<br>re.I | 大文字・小文字を区別しないマッチングを行います                                                                                                                                  |
+| re.MULTILINE<br>re.M  | パターン文字 '^' は文字列の先頭で、および各行の先頭 (各改行の直後) で、マッチします。そしてパターン文字 '\$' は文字列の末尾で、および各行の末尾 (各改行の直前) で、マッチします |
+| re.VERBOSE<br>re.X    | 正規表現を、パターンの論理的な節を視覚的に分割し、コメントを加えることで、見た目よく読みやすく書けるようにします                                                                |
 
 ```py
 haystack = 'a12345.67890b'
@@ -2060,20 +2060,20 @@ validate('abcdefgｱｲｳ')
 
 ##### 文字種別のパターン
 
-|  文字種  |  パターン  |  例  |
-| --- | --- | --- |
-|  半角英字  |  `'[a-zA-Z]+'`  |    |
-|  半角数字  |  `'[0-9]+'`  |    |
-|  ASCII文字  |  `'[\u0000-\u007F]+'`  |  `ABCabc!"#$%&`  |
-|  半角記号  |  `'[\u0020-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E]+'`  |  `!"#$%&`  |
-|  全角英字  |  `'[ａ-ｚＡ-Ｚ]+'`  |    |
-|  全角数字  |  `'[０-９]+'`  |    |
-|  ローマ数字  |  `'[\u2160-\u217F]+'`  |  `ⅠⅡⅢ`  |
-|  漢数字  |  `'[〇一二三四五六七八九十百千万億兆]+'`  |    |
-|  ひらがな  |  `'[\u3041-\u309F]+'`  |    |
-|  全角カタカナ  |  `'[\u30A1-\u30FF]+'`  |    |
-|  半角カタカナ  |  `'[\uFF66-\uFF9F]+'`  |    |
-|  漢字 (CJK統合漢字)  |  `'[\u4E00-\u9FFF]+'`  |    |
+| 文字種              | パターン                                                    | 例             |
+| ------------------- | ----------------------------------------------------------- | -------------- |
+| 半角英字            | `'[a-zA-Z]+'`                                               |                |
+| 半角数字            | `'[0-9]+'`                                                  |                |
+| ASCII 文字          | `'[\u0000-\u007F]+'`                                        | `ABCabc!"#$%&` |
+| 半角記号            | `'[\u0020-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E]+'` | `!"#$%&`       |
+| 全角英字            | `'[ａ-ｚＡ-Ｚ]+'`                                           |                |
+| 全角数字            | `'[０-９]+'`                                                |                |
+| ローマ数字          | `'[\u2160-\u217F]+'`                                        | `ⅠⅡⅢ`          |
+| 漢数字              | `'[〇一二三四五六七八九十百千万億兆]+'`                     |                |
+| ひらがな            | `'[\u3041-\u309F]+'`                                        |                |
+| 全角カタカナ        | `'[\u30A1-\u30FF]+'`                                        |                |
+| 半角カタカナ        | `'[\uFF66-\uFF9F]+'`                                        |                |
+| 漢字 (CJK 統合漢字) | `'[\u4E00-\u9FFF]+'`                                        |                |
 
 ### 置換
 
@@ -2111,11 +2111,11 @@ print('^' + s.lstrip() + '$')
 print('^' + s.rstrip() + '$')
 ```
 
-> ^xyz$
+> ^xyz\$
 >
-> ^xyz     $
+> ^xyz \$
 >
-> ^       xyz$
+> ^ xyz\$
 
 ##### 大文字化・小文字化
 
@@ -2576,7 +2576,7 @@ print(ss)
 
 #### map
 
-第2引数の各要素に対して、第1引数のlambda式を適用した結果をイテレータとして返す
+第 2 引数の各要素に対して、第 1 引数の lambda 式を適用した結果をイテレータとして返す
 
 ```py
 # リストに対する演算(map)：map関数は、Python2ではリストを返すがPython3ではイテレータを返すため、list関数を挟む必要がある
@@ -2898,8 +2898,6 @@ print(dct2)
 ```
 
 >
->
->
 
 ### 辞書の内包表現
 
@@ -2989,7 +2987,7 @@ print(t)
 
 #### 多重タプルをフラット化
 
-##### 2重タプル
+##### 2 重タプル
 
 ```py
 t = ((3, 1, 4), (1, 5, 9), (2, 6, 5))
@@ -3179,7 +3177,6 @@ for v in d.values():
 
 ### for(試行回数を与える場合)
 
-
 ```py
 for i in range(4):
     print(i)    # 0 1 2 3
@@ -3187,7 +3184,7 @@ for i in range(5, 21, 5):
     print(i)    # 5 10 15 20
 ```
 
-### for文のelse節
+### for 文の else 節
 
 ```py
 for i in range(5):
@@ -4454,12 +4451,12 @@ exec('import os;os.system("echo foobar")', {'__builtins__':None}, {})
 
 > foobar
 >
-> ImportError: __import__ not found
+> ImportError: **import** not found
 
 ## assert(アサーション)
 
 `__debug__` が `True` の時のみ動作するので、テスト用に使用できる。
-コマンドラインオプションに-Oをつけると、 `__debug__` が `False` になるのでassertが動作しなくなる。
+コマンドラインオプションに-O をつけると、 `__debug__` が `False` になるので assert が動作しなくなる。
 
 ```py
 sum = 1 + 2
@@ -4470,7 +4467,7 @@ assert sum == 4, '期待される値と異なります'  # AssertionErrorが発�
 
 > \# assert sum == 3
 >
->  &nbsp;&nbsp;&nbsp;&nbsp;\# (何も出力されない)
+> &nbsp;&nbsp;&nbsp;&nbsp;\# (何も出力されない)
 
 > \# assert sum == 4
 >
@@ -4508,8 +4505,6 @@ raise exception # 例外を投げて終了
 ```
 
 >
->
->
 
 ## pass
 
@@ -4526,7 +4521,7 @@ class EmptyClass:
 
 ## with
 
-withブロックが終了するとオブジェクトの終了処理が自動的に呼ばれる
+with ブロックが終了するとオブジェクトの終了処理が自動的に呼ばれる
 
 ```py
 with open(filepath, 'w') as f:
@@ -4580,7 +4575,7 @@ def func4(arg):
 print(func4('hello'))
 ```
 
-## docstringあり
+## docstring あり
 
 ```py
 # 定義
@@ -4643,13 +4638,13 @@ for i, arg in enumerate(args):
 
 > ['python3md-arg.py', 'aaa', 'bbb', 'ccc']
 >
-> 第1引数: python3md-arg.py
+> 第 1 引数: python3md-arg.py
 >
-> 第2引数: aaa
+> 第 2 引数: aaa
 >
-> 第3引数: bbb
+> 第 3 引数: bbb
 >
-> 第4引数: ccc
+> 第 4 引数: ccc
 
 ## 標準入力
 
@@ -4769,7 +4764,7 @@ print(relpath)
 >
 > ABSPATH
 >
-> \# 2つのパス間の相対パスを取得する
+> \# 2 つのパス間の相対パスを取得する
 >
 > test-join/test.txt'
 
@@ -4803,7 +4798,7 @@ get_parent('__file__', 1)
 >
 > PosixPath('/mnt/c/Users/y/Documents/GitHub')
 
-#### Linux上でWindows形式のパスを操作
+#### Linux 上で Windows 形式のパスを操作
 
 ```py
 import ntpath
@@ -4903,11 +4898,11 @@ dirs = glob(os.path.join(DIRPATH, '*'), recursive=True)
 
 > [
 >
->   './test-glob/test-glob-1',
+> './test-glob/test-glob-1',
 >
->   './test-glob/test-glob-2',
+> './test-glob/test-glob-2',
 >
->   './test-glob/test-glob-3.dat'
+> './test-glob/test-glob-3.dat'
 >
 > ]
 
@@ -4917,11 +4912,11 @@ dirs = glob(os.path.join(DIRPATH, '**'), recursive=False)
 
 > [
 >
->   './test-glob/test-glob-1',
+> './test-glob/test-glob-1',
 >
->   './test-glob/test-glob-2',
+> './test-glob/test-glob-2',
 >
->   './test-glob/test-glob-3.dat'
+> './test-glob/test-glob-3.dat'
 >
 > ]
 
@@ -4939,7 +4934,7 @@ dirs = glob(os.path.join(DIRPATH, '*.*'), recursive=True)
 
 > [
 >
->   './test-glob/test-glob-3.dat'
+> './test-glob/test-glob-3.dat'
 >
 > ]
 
@@ -4951,13 +4946,13 @@ dirs = glob(os.path.join(DIRPATH, '*.*'), recursive=True)
 
 > [
 >
->   './test-glob/test-glob-1',
+> './test-glob/test-glob-1',
 >
->   './test-glob/test-glob-2'
+> './test-glob/test-glob-2'
 >
 > ]
 
-#### 再帰的にファイル・フォルダ一覧を取得 ⇒ _recursive_ が _True_ かつ、パスに _**_
+#### 再帰的にファイル・フォルダ一覧を取得 ⇒ _recursive_ が _True_ かつ、パスに _\*\*_
 
 ```py
 dirs = glob(os.path.join(DIRPATH, '**'), recursive=True)
@@ -4965,27 +4960,27 @@ dirs = glob(os.path.join(DIRPATH, '**'), recursive=True)
 
 > [
 >
->   './test-glob/',
+> './test-glob/',
 >
->   './test-glob/test-glob-1',
+> './test-glob/test-glob-1',
 >
->   './test-glob/test-glob-1/test-glob-1-1',
+> './test-glob/test-glob-1/test-glob-1-1',
 >
->   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
 >
->   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
 >
->   './test-glob/test-glob-1/test-glob-1-2.dat',
+> './test-glob/test-glob-1/test-glob-1-2.dat',
 >
->   './test-glob/test-glob-2',
+> './test-glob/test-glob-2',
 >
->   './test-glob/test-glob-2/test-glob-2-2.dat',
+> './test-glob/test-glob-2/test-glob-2-2.dat',
 >
->   './test-glob/test-glob-3.dat'
+> './test-glob/test-glob-3.dat'
 >
 > ]
 
-#### Python3.4以前で、再帰的にファイル・フォルダ一覧を取得
+#### Python3.4 以前で、再帰的にファイル・フォルダ一覧を取得
 
 ```py
 import os
@@ -5005,25 +5000,25 @@ print(files)
 
 > [
 >
->   './test-glob',
+> './test-glob',
 >
->   './test-glob/test-glob-3.dat',
+> './test-glob/test-glob-3.dat',
 >
->   './test-glob/test-glob-1',
+> './test-glob/test-glob-1',
 >
->   './test-glob/test-glob-1/test-glob-1-2.dat',
+> './test-glob/test-glob-1/test-glob-1-2.dat',
 >
->   './test-glob/test-glob-1/test-glob-1-1',
+> './test-glob/test-glob-1/test-glob-1-1',
 >
->   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
 >
->   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
 >
->   './test-glob/test-glob-2',
+> './test-glob/test-glob-2',
 >
->   './test-glob/test-glob-2/.test-glob-2-1.dat',
+> './test-glob/test-glob-2/.test-glob-2-1.dat',
 >
->   './test-glob/test-glob-2/test-glob-2-2.dat'
+> './test-glob/test-glob-2/test-glob-2-2.dat'
 >
 > ]
 
@@ -5035,13 +5030,13 @@ print(files)
 
 > [
 >
->   './test-glob/',
+> './test-glob/',
 >
->   './test-glob/test-glob-1',
+> './test-glob/test-glob-1',
 >
->   './test-glob/test-glob-1/test-glob-1-1',
+> './test-glob/test-glob-1/test-glob-1-1',
 >
->   './test-glob/test-glob-2'
+> './test-glob/test-glob-2'
 >
 > ]
 
@@ -5051,13 +5046,13 @@ dirs = glob(os.path.join(DIRPATH, '**' + os.path.sep), recursive=True)
 
 > [
 >
->   './test-glob/',
+> './test-glob/',
 >
->   './test-glob/test-glob-1/',
+> './test-glob/test-glob-1/',
 >
->   './test-glob/test-glob-1/test-glob-1-1/',
+> './test-glob/test-glob-1/test-glob-1-1/',
 >
->   './test-glob/test-glob-2/'
+> './test-glob/test-glob-2/'
 >
 > ]
 
@@ -5069,15 +5064,15 @@ dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True)
 
 > [
 >
->   './test-glob/test-glob-3.dat',
+> './test-glob/test-glob-3.dat',
 >
->   './test-glob/test-glob-1/test-glob-1-2.dat',
+> './test-glob/test-glob-1/test-glob-1-2.dat',
 >
->   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
 >
->   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
 >
->   './test-glob/test-glob-2/test-glob-2-2.dat'
+> './test-glob/test-glob-2/test-glob-2-2.dat'
 >
 > ]
 
@@ -5089,7 +5084,7 @@ dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*-[0-1].???')), recursive=
 
 > [
 >
->   './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'
 >
 > ]
 
@@ -5266,21 +5261,21 @@ result_path = shutil.copy2(srcpath, dst2) # 予めディレクトリを作成し
 print(result_path)
 ```
 
-> \# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+> \# ファイル → ファイル (同名のファイルが既に存在すれば上書き)
 >
 > ./test-copy2.txt
 
-> \# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+> \# ファイル → ファイル (同名のファイルが既に存在すれば上書き)
 >
 > ./test-copy2.txt
 >
->　./test-copy2
+> ./test-copy2
 
-> \# ファイル→フォルダ (同名のファイルが既に存在すればエラー)
+> \# ファイル → フォルダ (同名のファイルが既に存在すればエラー)
 >
 > ./test-copy2/test-copy1.txt
 
-> \# ファイル→ファイル (ファイル情報を保持)
+> \# ファイル → ファイル (ファイル情報を保持)
 >
 > ./test-copy2.txt
 >
@@ -5316,15 +5311,15 @@ glob('./test-dirtree/**', recursive=True)
 >
 > [
 >
->   './test-dirtree/',
+> './test-dirtree/',
 >
->   './test-dirtree/dir1',
+> './test-dirtree/dir1',
 >
->   './test-dirtree/dir1/file1.txt',
+> './test-dirtree/dir1/file1.txt',
 >
->   './test-dirtree/dir2',
+> './test-dirtree/dir2',
 >
->   './test-dirtree/dir2/file1.txt'
+> './test-dirtree/dir2/file1.txt'
 >
 > ]
 
@@ -5392,7 +5387,7 @@ glob('./test-rename/**', recursive=True)
 >
 > ['./test-rename/', './test-rename/file1.txt', './test-rename/file2.txt']
 >
-> ['./test-rename/', './test-rename/file2.txt'] \# dstpathのファイルが既に存在すると、上書きされる
+> ['./test-rename/', './test-rename/file2.txt'] \# dstpath のファイルが既に存在すると、上書きされる
 
 ### フォルダをリネーム
 
@@ -5645,11 +5640,11 @@ if not os.path.exists(path):
 
 ### タイプ別のファイル読み書き
 
-#### ZIPファイル
+#### ZIP ファイル
 
-##### ZIPファイル圧縮
+##### ZIP ファイル圧縮
 
-###### shutilを使ってフォルダごと圧縮
+###### shutil を使ってフォルダごと圧縮
 
 ```py
 from glob import glob
@@ -5690,13 +5685,13 @@ with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
 
 ```
 
-> \# base_dirを指定しない
+> \# base_dir を指定しない
 >
 > '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
 >
 > ['dir2/', 'file1.txt', 'dir2/file2.txt']
 
-> \# base_dirを指定する
+> \# base_dir を指定する
 >
 > '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
 >
@@ -5772,16 +5767,16 @@ with zipfile.ZipFile(archive_path) as zip_contents:
 > UserWarning: Duplicate name: 'test-archive/dir1/dir2/file2.txt'
 >
 > [
->   'test-archive/dir1/',
->   'test-archive/dir1/dir2/',
->   'test-archive/dir1/dir2/file2.txt',
->   'test-archive/dir1/',
->   'test-archive/dir1/dir2/',
->   'test-archive/dir1/file1.txt',
->   'test-archive/dir1/dir2/file2.txt'
-> ]
+> > 'test-archive/dir1/',
+> > 'test-archive/dir1/dir2/',
+> > 'test-archive/dir1/dir2/file2.txt',
+> > 'test-archive/dir1/',
+> > 'test-archive/dir1/dir2/',
+> > 'test-archive/dir1/file1.txt',
+> > 'test-archive/dir1/dir2/file2.txt'
+> > ]
 
-##### ZIPファイル解凍
+##### ZIP ファイル解凍
 
 ```py
 import zipfile
@@ -5841,7 +5836,7 @@ if __name__ == '__main__':
 
 #### 設定ファイル(configparser)
 
-* config.ini
+- config.ini
 
 ```ini
 [settings]
@@ -5917,7 +5912,7 @@ with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='shift_jis
     print(string)
 ```
 
-####### UTF-8 BOMなし
+####### UTF-8 BOM なし
 
 ```
 あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
@@ -5950,7 +5945,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') a
 かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
 ```
 
-####### UTF-8 BOMあり
+####### UTF-8 BOM あり
 
 ```py
 import os
@@ -5964,7 +5959,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8_sig
 かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
 ```
 
-###### 1行ずつ読込み
+###### 1 行ずつ読込み
 
 ```py
 import os
@@ -5993,7 +5988,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') a
 
 ##### 書込み
 
-###### 1行ずつ書込み(上書き)
+###### 1 行ずつ書込み(上書き)
 
 ```py
 import os
@@ -6013,7 +6008,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') 
     file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
-###### 1行ずつ書込み(追記)
+###### 1 行ずつ書込み(追記)
 
 ```py
 import os
@@ -6031,11 +6026,11 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') 
     file.writelines(lst)
 ```
 
-#### CSVファイル
+#### CSV ファイル
 
 ##### 読み込み
 
-Windows環境の場合は、明示的にUTF-8を指定しないとSJISとして読み書きされる
+Windows 環境の場合は、明示的に UTF-8 を指定しないと SJIS として読み書きされる
 
 ```py
 import csv
@@ -6080,8 +6075,13 @@ with open(os.path.join('test-fileio', 'outpututf8.csv'), 'a', encoding='utf_8', 
 >
 > 14
 
+#### JSON ファイル
 
-#### JSONファイル
+##### json.tool
+
+```sh
+$ python -m json.tool inpututf8.json
+```
 
 ##### ファイルから読み込み
 
@@ -6206,7 +6206,7 @@ with open(savepath, 'w', encoding='utf_8') as outfile:
     json.dump(jsondata, outfile)
 ```
 
-#### ARFFファイル
+#### ARFF ファイル
 
 ##### 読み込み
 
@@ -6225,9 +6225,9 @@ arff.dumps(data)
 
 ## ネットワーク
 
-### URL文字列の操作
+### URL 文字列の操作
 
-#### URLエンコーディング
+#### URL エンコーディング
 
 ```py
 from urllib import parse
@@ -6266,7 +6266,7 @@ print(urllib.parse.unquote_plus('a+b'))
 >
 > a b
 
-#### URL文字列のパース
+#### URL 文字列のパース
 
 ```py
 from urllib import parse
@@ -6284,7 +6284,7 @@ print(parse.parse_qs(parts.query))
 >
 > {'id': ['12345'], 'pw': ['678'], 'q': ['検索クエリ']}
 
-#### URL文字列の組み立て
+#### URL 文字列の組み立て
 
 ```py
 from urllib import parse
@@ -6312,23 +6312,40 @@ print(new_url)
 ```py
 import urllib.request
 url = 'http://python.org/'
-with urllib.request.urlopen(url) as response:
-    html = response.read()
 
+try:
+    with urllib.request.urlopen(url) as response:
+        html = response.read()
+except urllib.error.HTTPError as e:
+    print(e.code)
+    print(e.read())
+```
+
+```py
 import urllib.request
 url = 'http://python.org/'
 req = urllib.request.Request(url)
-with urllib.request.urlopen(req) as response:
-    html = response.read()
+
+try:
+    with urllib.request.urlopen(req) as response:
+        html = response.read()
+except urllib.error.HTTPError as e:
+    print(e.code)
+    print(e.read())
 ```
 
 #### 文字コードを指定
 
 ```py
 import urllib.request
-url = 'http://python.org/'
-with urllib.request.urlopen(url) as response:
-    html = response.read().decode('utf-8')
+url = 'http://www.soumu.go.jp/'
+
+try:
+    with urllib.request.urlopen(url) as response:
+        html = response.read().decode('shift_jis')
+except urllib.error.HTTPError as e:
+    print(e.code)
+    print(e.read())
 ```
 
 #### コンテンツをテンポラリファイルとして取得
@@ -6337,7 +6354,9 @@ with urllib.request.urlopen(url) as response:
 import urllib.request
 url = 'http://python.org/'
 local_filename, headers = urllib.request.urlretrieve(url)
-html = open(local_filename)
+with open(local_filename) as f:
+    string = f.read()
+    print(string)
 ```
 
 #### バイナリファイルを保存
@@ -6387,7 +6406,7 @@ with urllib.request.urlopen(req) as response:
     html = response.read()
 ```
 
-#### HTTPヘッダ(headers引数)
+#### HTTP ヘッダ(headers 引数)
 
 ```py
 import urllib.parse
@@ -6406,7 +6425,7 @@ with urllib.request.urlopen(req) as response:
     html = response.read()
 ```
 
-#### HTTPヘッダ(add_header)
+#### HTTP ヘッダ(add_header)
 
 ```py
 import urllib.parse
@@ -6424,7 +6443,23 @@ with urllib.request.urlopen(req) as response:
     html = response.read()
 ```
 
-#### BASIC認証
+#### User Agent
+
+```py
+import urllib.request
+url = 'http://httpbin.org/user-agent'
+headers = { "User-Agent" :  "Mozilla/1.0" }
+
+try:
+    req = urllib.request.Request(url, None, headers)
+    with urllib.request.urlopen(req) as response:
+        html = response.read()
+except urllib.error.HTTPError as e:
+    print(e.code)
+    print(e.read())
+```
+
+#### BASIC 認証
 
 ```py
 import urllib.request
@@ -6447,7 +6482,7 @@ with urllib.request.urlopen(url) as response:
     html = response.read()
 ```
 
-#### 応答ヘッダ・リダイレクト先URL
+#### 応答ヘッダ・リダイレクト先 URL
 
 ```py
 import urllib.parse
@@ -6541,6 +6576,57 @@ else:
 $ pip install requests
 ```
 
+#### コンテンツを文字列として取得
+
+```py
+import requests
+url = 'http://python.org/'
+response = requests.get(url)
+print(response.text)
+```
+
+#### 文字コードを指定
+
+##### 特定の文字コード(Shift-JIS)を指定
+
+```py
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = 'Shift_JIS'
+    print(response.text)
+```
+
+##### コンテンツの内容から文字コードを推定する
+
+###### chardetによる推定
+
+```py
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = response.apparent_encoding
+    print(response.text)
+```
+
+###### cChardetによる推定(chardetよりも高速)
+
+```sh
+$ pip install cchardet
+```
+
+```py
+import cchardet
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = cchardet.detect(response.content)["encoding"]
+    print(response.text)
+```
+
 #### GET
 
 ```py
@@ -6613,7 +6699,7 @@ headers = {'Referer', 'http://www.python.org/'}
 r = requests.post(url, data=json.dumps(payload), headers=headers)
 ```
 
-#### フォーム送信(Multipartエンコード)
+#### フォーム送信(Multipart エンコード)
 
 ```py
 import requests
@@ -6693,7 +6779,23 @@ url = 'http://python.org/'
 r = requests.get(url, timeout=1)
 ```
 
-#### 画像ファイルの保存
+#### バイナリファイルを保存
+
+```py
+import os
+import requests
+url = 'https://www.python.org/static/img/python-logo.png'
+
+def download_img(url, file_name):
+    r = requests.get(url, stream=True)
+    if r.status_code == 200:
+        with open(file_name, 'wb') as f:
+            f.write(r.content)
+
+download_img(url, os.path.basename(url))
+```
+
+##### 画像ファイルの保存
 
 ```sh
 $ pip install Image
@@ -6963,7 +7065,7 @@ from glob import glob, iglob
 
 ## 外部スクリプトの読み込み
 
-* test-import/main.py
+- test-import/main.py
 
 ```py
 # subfile.py
@@ -6986,7 +7088,7 @@ import subdir.subfile
 subdir.subfile.hello()
 ```
 
-* test-import/main2.py
+- test-import/main2.py
 
 ```py
 from subdir import *
@@ -6994,28 +7096,28 @@ main.hello()
 subfile.hello()
 ```
 
-* test-import/subfile.py
+- test-import/subfile.py
 
 ```py
 def hello():
     print('test-import/subdir.py hello()')
 ```
 
-* test-import/subdir/main.py
+- test-import/subdir/main.py
 
 ```py
 def hello():
     print('test-import/subdir/main.py hello()')
 ```
 
-* test-import/subdir/subfile.py
+- test-import/subdir/subfile.py
 
 ```py
 def hello():
     print('test-import/subdir/subfile.py hello()')
 ```
 
-* test-import/subdir/__init__.py
+- test-import/subdir/**init**.py
 
 ```py
 from glob import glob
@@ -7072,9 +7174,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 export PYTHONPATH='/path/to/module:$PYTHONPATH'`
 ```
 
-site-packagesフォルダの中に、`*.pth`ファイル(ファイル名は任意)を作成し、各行にパスを追加
+site-packages フォルダの中に、`*.pth`ファイル(ファイル名は任意)を作成し、各行にパスを追加
 
-* example.ptn
+- example.ptn
 
 ```py
 # foo package configuration
@@ -7084,7 +7186,7 @@ path/to/module
 
 # pydoc
 
-* python3md-pydoc.py
+- python3md-pydoc.py
 
 ```py
 #!/usr/bin/python
@@ -7139,7 +7241,7 @@ import colored_traceback.always
 
 > Traceback (most recent call last):
 >
->   File "<stdin>", line 1, in <module>
+> File "<stdin>", line 1, in <module>
 >
 > ZeroDivisionError: division by zero
 
