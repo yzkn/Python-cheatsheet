@@ -4699,6 +4699,14 @@ ccc
 
 ```py
 print('Hello Python!')
+
+# すぐにフラッシュする(Python3.3以降)
+print('Hello Python!', flush=True)
+
+# すぐにフラッシュする(Python3.2以前)
+import sys
+print('Hello Python!')
+sys.stdout.flush()
 ```
 
 ## ローカルファイル
@@ -4721,6 +4729,10 @@ print(basename)
 # ディレクトリ名を取得する
 dirname = os.path.dirname('./test-join/test.txt')
 print(dirname)
+
+# ファイル名とディレクトリ名のペアを取得する
+dirname, basename = os.path.split('./test-join/test.txt')
+print(dirname, basename)
 
 # 拡張子を取得する
 root, ext = os.path.splitext('./test-join/test.txt')
@@ -4753,6 +4765,10 @@ print(relpath)
 > \# ディレクトリ名を取得する
 >
 > ./test-join
+>
+> \# ファイル名とディレクトリ名のペアを取得する
+>
+> ./test-join test.txt
 >
 > \# 拡張子を取得する
 >
@@ -6205,6 +6221,93 @@ savepath = os.path.join('test-fileio', 'outpututf8.json')
 with open(savepath, 'w', encoding='utf_8') as outfile:
     json.dump(jsondata, outfile)
 ```
+
+#### XMLファイル
+
+##### ファイルから読み込み
+
+```py
+import os
+import xml.etree.ElementTree as ET
+
+filepath = os.path.join('test-fileio', 'inpututf8.xml')
+tree = ET.parse(filepath)
+
+# root要素を取得
+root = tree.getroot()
+print(root.tag)
+print(dir(root))
+
+# 子要素を取得
+for child in root:
+    print(child.tag, child.attrib)
+```
+
+> breakfast_menu
+>
+> ['__class__', '__copy__', '__deepcopy__', '__delattr__', '__delitem__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', 'append', 'attrib', 'clear', 'extend', 'find', 'findall', 'findtext', 'get', 'getchildren', 'getiterator', 'insert', 'items', 'iter', 'iterfind', 'itertext', 'keys', 'makeelement', 'remove', 'set', 'tag', 'tail', 'text']
+
+> food {'title': '001'}
+>
+> food {'title': '002'}
+>
+> food {'title': '003'}
+>
+> food {'title': '004'}
+>
+> food {'title': '005'}
+
+##### 文字列から読み込み
+
+```py
+import os
+import xml.etree.ElementTree as ET
+
+# <?xml version="1.0" encoding="UTF-8"?>
+xml_str = '''<?xml version="1.0" encoding="UTF-8"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>
+'''
+
+# root要素を取得
+root = ET.fromstring(xml_str)
+print(root.tag)
+print(root.text)
+
+# 子要素を取得
+for child in root:
+    print(child.tag, child.attrib)
+
+# 指定した名前の要素を取得
+for name in root.iter('from'):
+    print(name.text)
+
+# 指定したインデックスの要素を取得
+print(root[0].text)
+print(root[1].text)
+```
+
+> note
+
+> to {}
+>
+> from {}
+>
+> heading {}
+>
+> body {}
+
+> Jani
+
+> Tove
+>
+> Jani
+
+##### 書き込み
 
 #### ARFF ファイル
 
