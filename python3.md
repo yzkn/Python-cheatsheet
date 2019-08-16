@@ -5964,6 +5964,76 @@ print(config['settings']['pw'])
 
 #### テキストファイル
 
+##### 文字コードの推測
+
+ファイルの文字エンコーディングがOS標準のものと異なる場合はエラーとなるため、Webから入手したファイルなど文字コードが不明のファイルを読み込む際には、推測する必要がある
+
+```py
+import codecs
+import os
+
+def detect_encode(filepath):
+    cs = [
+        'utf-8',
+        'utf_8_sig',
+        'euc_jp',
+        'cp932',
+        #
+        'euc_jis_2004',
+        'euc_jisx0213',
+        'iso2022_jp_1',
+        'iso2022_jp_2',
+        'iso2022_jp_3',
+        'iso2022_jp_2004',
+        'iso2022_jp_ext',
+        'iso2022_jp',
+        'shift_jis_2004',
+        'shift_jis',
+        'shift_jisx0213',
+        'utf_7',
+        'utf_16_be',
+        'utf_16_le',
+        'utf_16',
+    ]
+
+    for c in cs:
+        try:
+            with codecs.open(filepath, 'r', c, errors='strict') as f:
+                print(f.read())
+                return c
+        except Exception as e:
+            continue
+    return None
+
+c = detect_encode(os.path.join('test-fileio', 'inputsjis.txt'))
+print(c)
+```
+
+> cp932
+
+###### エラーハンドラ
+
+| 値 | 意味 |
+| --- | --- |
+| 'strict' | UnicodeError (または、そのサブクラス) を送出します。これがデフォルトの動作です。 strict_errors() で実装されています。 |
+| 'ignore' | 不正な形式のデータを無視し、何も通知することなく処理を継続します。ignore_errors() で実装されています。 |
+
+####### ユニコード文字列をエンコードするコーデックでのみ有効な値:
+
+| 値 | 意味 |
+| --- | --- |
+| 'replace' | 適当な置換マーカーで置換します。Python では、組み込み codec のデコード時には公式の U+FFFD 代替文字が、エンコード時には '?' が使用されます。 replace_errors() で実装されています。 |
+| 'xmlcharrefreplace' | 適切な XML 文字参照で置換します (エンコードのみ)。 xmlcharrefreplace_errors() で実装されています。 |
+| 'backslashreplace' | バックスラッシュつきのエスケープシーケンスで置換します。 backslashreplace_errors() で実装されています。 |
+| 'namereplace' | \N{...} エスケープシーケンスで置換します (エンコードのみ)。 namereplace_errors() で実装されています。 |
+| 'surrogateescape' | デコード時には、バイト列を U+DC80 から U+DCFF の範囲の個々のサロゲートコードで置き換えます。データのエンコード時に 'surrogateescape' エラーハンドラが使用されると、このコードは同じバイト列に戻されます。 (詳しくは PEP 383 を参照。) |
+
+####### `utf-8, utf-16, utf-32, utf-16-be, utf-16-le, utf-32-be, utf-32-le` でのみ有効な値:
+
+| 値 | 意味 |
+| --- | --- |
+| 'surrogatepass' | サロゲートコードのエンコードとデコードを許可します。通常、これらの codecc は、サロゲートの存在をエラーとして扱います。 |
+
 ##### 読み込み
 
 ###### 単一の文字列として読込み
