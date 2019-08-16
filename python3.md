@@ -6038,6 +6038,16 @@ print(c)
 
 ###### 単一の文字列として読込み
 
+modeが `'r'` の場合、指定したパスにファイルが存在しない場合はエラーとなる
+
+```py
+import os
+with open('NOT.FOUND', 'r') as file:
+    file.read()
+```
+
+> FileNotFoundError
+
 ####### SHIFT-JIS
 
 ```py
@@ -6144,7 +6154,61 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') a
 
 ##### 書込み
 
-###### 1 行ずつ書込み(上書き)
+* modeが `'a'` の場合、指定したパスにファイルが存在する場合は追記、存在しない場合は新規作成、親フォルダが存在しない場合はエラーとなる
+
+```py
+import os
+with open('PATH/NOT/FOUND', 'a') as file:
+    file.write('')
+```
+
+> FileNotFoundError
+
+* modeが `'r+'` の場合、読み書きモードで開く(ファイルポインタが先頭)
+
+* modeが `'w'` の場合、指定したパスにファイルが存在する場合は上書き、存在しない場合は新規作成、親フォルダが存在しない場合はエラーとなる
+
+```py
+import os
+with open('PATH/NOT/FOUND', 'w') as file:
+    file.write('')
+```
+
+> FileNotFoundError
+
+* modeが `'ｘ'` の場合、指定したパスにファイルが既に存在する場合はエラーとなる
+
+```py
+import os
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x') as file:
+    file.write('')
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x') as file:
+    file.write('')
+```
+
+> FileExistsError
+
+###### 1 行ずつ書込み(x: 新規作成)
+
+```py
+import os
+string = 'foobar hoge'
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') as file:
+    file.write(string)
+```
+
+> 11
+
+###### リストを書込み(x: 新規作成)
+
+```py
+import os
+lst = ['foobar', 'hoge']
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') as file:
+    file.writelines(lst) # 要素間には空白文字等は挿入されない
+```
+
+###### 1 行ずつ書込み(w: 新規作成／上書き)
 
 ```py
 import os
@@ -6155,7 +6219,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') 
 
 > 11
 
-###### リストを書込み(上書き)
+###### リストを書込み(w: 新規作成／上書き)
 
 ```py
 import os
@@ -6164,7 +6228,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') 
     file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
-###### 1 行ずつ書込み(追記)
+###### 1 行ずつ書込み(a: 追記)
 
 ```py
 import os
@@ -6173,13 +6237,13 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') 
     file.write(string)
 ```
 
-###### リストを書き込み(追記)
+###### リストを書き込み(a: 追記)
 
 ```py
 import os
 lst = ['foobar', 'hoge']
 with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') as file:
-    file.writelines(lst)
+    file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
 #### CSV ファイル
