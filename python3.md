@@ -2231,6 +2231,31 @@ print(haystack.translate(str.maketrans({'h': 'H', 'a': 'oo', 's': '', 'k': None}
 
 > Hooytooc
 
+### ハッシュの取得
+
+```py
+import hashlib
+
+dat = 'foobar'
+
+print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
+
+print(hashlib.md5(dat.encode()).hexdigest()) # MD5
+print(hashlib.sha1(dat.encode()).hexdigest()) # SHA-1
+print(hashlib.sha256(dat.encode()).hexdigest()) # SHA256
+print(hashlib.sha512(dat.encode()).hexdigest()) # SHA512
+```
+
+> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
+>
+> 3858f62230ac3c915f300c664312c63f
+>
+> 8843d7f92416211de9ebb963ff4ce28125932878
+>
+> c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2
+>
+> 0a50261ebd1a390fed2bf326f2673c145582a6342d523204973d0219337f81616a8069b012587cf5635f6925f1b56c360230c19b273500ee013e030601bf2425
+
 ## リスト
 
 ```
@@ -4779,6 +4804,48 @@ print('Hello Python!')
 sys.stdout.flush()
 ```
 
+### 標準出力の内容をファイルに書き出す
+
+#### stdout
+
+```py
+import sys
+temp_sysout = sys.stdout
+f = open('./path/to/file.txt', 'w')
+sys.stdout = f
+
+print('to file')
+
+sys.stdout = temp_sysout
+f.close()
+
+print('to console')
+```
+
+* file.txt
+
+> to file
+
+* Console
+
+> to console
+
+#### print()
+
+```py
+with open('./path/to/file.txt', 'w') as f:
+    print('contents', file=f)
+```
+
+#### pprint()
+
+```py
+from pprint import pprint
+
+with open('./path/to/file.txt', 'w') as f:
+    pprint('contents', stream=f)
+```
+
 ## ローカルファイル
 
 ### パス文字列の操作
@@ -4793,33 +4860,56 @@ joined = os.path.join('.', 'test' + '-' + 'join', 'test.txt')
 print(joined)
 
 # ファイル名を取得する
-basename = os.path.basename('./test-join/test.txt')
-print(basename)
+bname = os.path.basename('./test-join/test.txt')
+print(bname)
 
 # ディレクトリ名を取得する
-dirname = os.path.dirname('./test-join/test.txt')
-print(dirname)
+dname = os.path.dirname('./test-join/test.txt')
+print(dname)
 
 # ファイル名とディレクトリ名のペアを取得する
-dirname, basename = os.path.split('./test-join/test.txt')
-print(dirname, basename)
+dname, bname = os.path.split('./test-join/test.txt')
+print(dname, bname)
 
 # 拡張子を取得する
 root, ext = os.path.splitext('./test-join/test.txt')
 print(root, ext)
-splitext = os.path.splitext('./test-join/test.txt')
-print(splitext[0], splitext[1])
+spltext = os.path.splitext('./test-join/test.txt')
+print(spltext[0], spltext[1])
 
 # 絶対パスを取得する
-abspath = os.path.abspath('./test-join/test.txt')
-print(abspath)
-if os.path.isabs(abspath): # パス文字列が絶対パスか検査する
+absp = os.path.abspath('./test-join/test.txt')
+print(absp)
+if os.path.isabs(absp): # パス文字列が絶対パスか検査する
     print('ABSPATH')
 
-# 2つのパス間の相対パスを取得する
-relpath = os.path.relpath(abspath, '.')
-print(relpath)
+# パス文字列がシンボリックリンクか検査する
+absp = os.path.abspath('./test-join/test.txt')
+os.path.islink(path)
 
+# パス文字列がマウントポイントか検査する
+absp = os.path.abspath('./test-join/test.txt')
+os.path.ismount(path)
+
+# 2つのパス間の相対パスを取得する
+relp = os.path.relpath(absp, '.')
+print(relp)
+
+# 共通パス(階層単位／文字単位)を取得する
+paths = [
+    os.path.abspath('./test-join/test1.txt'),
+    os.path.abspath('./test-join/test2.txt'),
+]
+cmnpath = os.path.commonpath(paths)
+print(cmnpath)
+cmnprefix = os.path.commonprefix(paths)
+print(cmnprefix)
+
+
+# ドライブレターを取得する
+drive, tail = os.path.splitdrive(absp)
+print(drive[0])
+print(os.path.samefile(os.path.join(drive, tail), absp))
 ```
 
 > \# パス文字列を組み立てる
@@ -4850,9 +4940,105 @@ print(relpath)
 >
 > ABSPATH
 >
-> \# 2 つのパス間の相対パスを取得する
+> \# パス文字列がシンボリックリンクか検査する
+>
+> False
+>
+> \# パス文字列がマウントポイントか検査する
+>
+> False
+>
+> \# 2つのパス間の相対パスを取得する
 >
 > test-join/test.txt'
+>
+> \# 共通パス(階層単位／文字単位)を取得する
+>
+> C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join
+>
+> C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join\test
+>
+> \# ドライブレターを取得する
+>
+> C
+>
+> True
+
+#### 複数のパスが同一のファイルを示しているか検査
+
+```py
+paths = [
+    os.path.abspath('./test-join/test1.txt'),
+    os.path.abspath('./test-join/test/../test1.txt'),
+]
+
+print(os.path.samefile(paths[0], paths[1])) # ファイルパスが同じファイルを参照しているか
+
+with open(paths[0], 'r') as f1, open(paths[1], 'r') as f2:
+    print(os.path.sameopenfile(f1.fileno(), f2.fileno())) # ファイル記述子が同じファイルを参照しているか
+
+stat1 = os.stat(paths[0])
+stat2 = os.stat(paths[1])
+print(os.path.samestat(stat1, stat2)) # os.fstat(), os.lstat()，os.stat() の返り値 (stat1, stat2) が同じファイルを参照しているか
+```
+
+> True
+>
+> True
+>
+> True
+
+#### パス文字列を正規化する(不要な区切り文字、 `..` の除去　／　Windows環境での大文字小文字の置換、スラッシュとバックスラッシュの置換)
+
+```py
+import os
+
+dirpath = 'path/to/to/to/../../folder/'
+
+# 不要な区切り文字、 `..` の除去
+nrmpath = os.path.normpath(dirpath)
+print(nrmpath)
+
+# Windows環境での大文字小文字の置換、スラッシュとバックスラッシュの置換
+nrmcase = os.path.normcase(path)
+print(nrmcase)
+```
+
+> path\to\folder
+>
+> c:\users\y\path\to\file.txt
+
+#### ホームディレクトリのパスを取得
+
+```py
+import os.path
+
+filepath = os.path.join('~', 'path', 'to', 'file.txt')
+path  = os.path.expanduser(filepath)
+print(path)
+```
+
+> C:\Users\y\path\to\file.txt
+
+#### 環境変数を取得
+
+```py
+import os.path
+
+# for Linux
+filepath = os.path.join('$HOME', 'path', 'to', 'file.txt')
+path  = os.path.expandvars(filepath)
+print(path)
+
+# for Windows
+filepath = os.path.join('%USERPROFILE%', 'path', 'to', 'file.txt')
+path  = os.path.expandvars(filepath)
+print(path)
+```
+
+> /home/y/path/to/file.txt
+
+> C:\Users\y\path\to\file.txt
 
 #### 親ディレクトリのパスを取得
 
@@ -4884,18 +5070,35 @@ get_parent('__file__', 1)
 >
 > PosixPath('/mnt/c/Users/y/Documents/GitHub')
 
+#### シンボリックリンクのパスを正規化
+
+```py
+import os
+
+os.path.realpath(__file__)
+```
+
 #### Linux 上で Windows 形式のパスを操作
 
 ```py
 import ntpath
 
+print(ntpath.sep)
+print(ntpath.sep is '\\')
+
 bname = ntpath.basename('\\path\\to\\file')
 print(bname)
 ```
 
+> \
+>
+> True
+
 > file
 
 ### カレントディレクトリ
+
+[python3md-cwd.py](python3md-cwd.py)
 
 ```py
 import os
@@ -4960,7 +5163,12 @@ print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
 
 ### ファイル・フォルダの一覧を取得
 
-[python3md-cwd.py](python3md-cwd.py)
+| 文字 | 内容 |
+| --- | --- |
+| * | 長さ0文字以上の任意の文字列 |
+| ? | 任意の一文字 |
+| [] | 括弧の中の文字 |
+| [*], [?], [[] | エスケープ |
 
 ```py
 from glob import glob
@@ -5173,6 +5381,14 @@ dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*-[0-1].???')), recursive=
 > './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'
 >
 > ]
+
+#### 正規表現を利用
+
+```py
+import re
+
+dirs = [p for p in glob.glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True) if re.search('test-glob(-1){3}.dat', p)]
+```
 
 ### ファイル情報を取得
 
@@ -5964,6 +6180,26 @@ print(config['settings']['pw'])
 
 #### テキストファイル
 
+##### モード
+
+| mode | 読み込み | 書き込み | ファイルポインタ | 既存ファイルが存在する | 既存ファイルが存在しない |
+| --- | --- | --- | --- | --- |
+|  r  | ○ | × | 先頭 | ○ | FileNotFoundError |
+|  x  |  |  | 先頭 | FileExistsError | 新規作成 |
+|  w  | × | ○ | 先頭 | ○ | 新規作成 |
+|  a  | × | ○ | 終端 | ○ | 新規作成 |
+|  r+ | ○ | ○ | 先頭 | ○ | FileNotFoundError |
+|  w+ | ○ | ○ | 先頭 | ○ | 新規作成 |
+|  a+ | ○ | ○ | 終端 | ○ | 新規作成 |
+
+
+r+	読み書き両用。
+ファイルがない場合はエラー。
+w+	読み書き両用。
+ファイルがある場合は「w」と同じ処理。
+a+	追記・読み書き両用。
+ファイルがない場合は新規作成。
+
 ##### 文字コードの推測
 
 ファイルの文字エンコーディングがOS標準のものと異なる場合はエラーとなるため、Webから入手したファイルなど文字コードが不明のファイルを読み込む際には、推測する必要がある
@@ -6034,9 +6270,25 @@ print(c)
 | --- | --- |
 | 'surrogatepass' | サロゲートコードのエンコードとデコードを許可します。通常、これらの codecc は、サロゲートの存在をエラーとして扱います。 |
 
+###### cChardetモジュールを使用
+
+chardetモジュールだと `windows-1252` と判定されがちなので [cChardet](https://github.com/PyYoshi/cChardet) モジュールを利用する
+
+```py
+import cchardet
+
+def detect_enc(filepath):
+    with open(filepath, mode="rb") as f:
+        return cchardet.detect(f.read())
+
+print(detect_enc('./test-fileio/inputsjis.txt'))
+```
+
+> {'encoding': 'SHIFT_JIS', 'confidence': 1.0}
+
 ##### 読み込み
 
-###### 単一の文字列として読込み
+###### 単一の文字列として読込み(r: 読み取り)
 
 modeが `'r'` の場合、指定したパスにファイルが存在しない場合はエラーとなる
 
@@ -6047,6 +6299,20 @@ with open('NOT.FOUND', 'r') as file:
 ```
 
 > FileNotFoundError
+
+```py
+import os
+
+filepath = './NOT.FOUND'
+if os.path.exists(os.path.dirname(os.path.abspath(filepath))):
+    if os.path.exists(os.path.abspath(filepath)):
+        with open(filepath, 'r') as file:
+            file.write('')
+    else:
+        print('File Not Found')
+else:
+    print('Directory Not Found')
+```
 
 ####### SHIFT-JIS
 
@@ -6125,7 +6391,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8_sig
 かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
 ```
 
-###### 1 行ずつ読込み
+###### 1 行ずつ読込み(r: 読み取り)
 
 ```py
 import os
@@ -6136,7 +6402,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') a
         string = file.readline()
 ```
 
-###### リストへ格納
+###### リストへ格納(r: 読み取り)
 
 ```py
 import os
@@ -6188,11 +6454,11 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x') as file:
 
 > FileExistsError
 
-###### 1 行ずつ書込み(x: 新規作成)
+###### 単一の文字列として書込み(x: 新規作成)
 
 ```py
 import os
-string = 'foobar hoge'
+string = 'foobar\nhoge\n'
 with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') as file:
     file.write(string)
 ```
@@ -6208,16 +6474,35 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') 
     file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
-###### 1 行ずつ書込み(w: 新規作成／上書き)
+###### 単一の文字列として書込み(w: 新規作成／上書き)
 
 ```py
 import os
-string = 'foobar hoge'
+string = 'foobar\nhoge\n'
 with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') as file:
     file.write(string)
 ```
 
 > 11
+
+###### 既存ファイルが存在するときに上書きするか確認する
+
+```py
+import os
+string = 'foobar\nhoge\n'
+
+if os.path.exists(os.path.join('test-fileio', 'outpututf8.txt')):
+    while True:
+        answer = input('Overwrite?: (y/n)').lower()
+        if answer == 'y':
+            with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w') as file:
+                file.write(string)
+            break
+        elif answer == 'n':
+            break
+else:
+    print('File Not Found')
+```
 
 ###### リストを書込み(w: 新規作成／上書き)
 
@@ -6228,11 +6513,11 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') 
     file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
-###### 1 行ずつ書込み(a: 追記)
+###### 単一の文字列として書込み(a: 追記)
 
 ```py
 import os
-string = 'foobar hoge'
+string = 'foobar\nhoge\n'
 with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') as file:
     file.write(string)
 ```
