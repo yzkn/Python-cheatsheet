@@ -4846,6 +4846,202 @@ with open('./path/to/file.txt', 'w') as f:
     pprint('contents', stream=f)
 ```
 
+## 環境変数
+
+### 環境変数の読み書き
+
+#### 環境変数の読み出し
+
+##### 一覧の取得
+
+```py
+import os
+print(os.environ)
+```
+
+> environ({
+>
+>     'ALLUSERSPROFILE': 'C:\\ProgramData',
+>
+>     'APPDATA': 'C:\\Users\\y\\AppData\\Roaming',
+>
+>     (中略)
+>
+>     'COLORTERM': 'truecolor'
+>
+> })
+
+※整形済
+
+```py
+import os
+for k in os.environ: # そのままforループで回す
+    print(k)
+
+for k in os.environ.keys(): # keys()メソッドをつけてforループで回す
+    print(k)
+```
+
+> ALLUSERSPROFILE
+>
+> APPDATA
+>
+> (中略)
+>
+> COLORTERM
+
+```py
+import os
+for v in os.environ.values():
+    print(v)
+
+for v in list(os.environ.values()): # list型で取得
+    print(v)
+```
+
+> C:\ProgramData
+>
+> C:\Users\y\AppData\Roaming
+>
+> (中略)
+>
+> truecolor
+
+```py
+import os
+for k, v in os.environ.items():
+    print(k, v)
+
+for k, v in list(os.environ.items()): # list型で取得
+    print(k, v)
+```
+
+> ALLUSERSPROFILE C:\ProgramData
+>
+> APPDATA C:\Users\y\AppData\Roaming
+>
+> (中略)
+>
+> COLORTERM truecolor
+
+##### 環境変数の存在チェック
+
+```py
+import os
+
+# キーの存在チェック
+print('ALLUSERSPROFILE' in os.environ)
+print('ALLUSERSPROFILE' not in os.environ.keys())
+
+# 値の存在チェック
+print('C:\\ProgramData' in os.environ.values())
+
+# キーと値を組み合わせてチェック
+print(('ALLUSERSPROFILE', 'C:\\ProgramData') in os.environ.items())
+```
+
+> True
+>
+> False
+
+> True
+
+> True
+
+##### キーを指定して値を取得
+
+```py
+import os
+
+print(os.environ['ALLUSERSPROFILE'])
+print(os.environ.get('ALLUSERSPROFILE'))
+print(os.getenv('ALLUSERSPROFILE'))
+
+print(os.environ['_ALLUSERSPROFILE']) # 指定されたキーが存在しない場合はエラー
+print(os.environ.get('_ALLUSERSPROFILE')) # 指定されたキーが存在しない場合はNone
+print(os.environ.get('_ALLUSERSPROFILE', 'NULL')) # 指定されたキーが存在しない場合は第2引数に指定された値
+print(os.getenv('_ALLUSERSPROFILE', 'NULL')) # 指定されたキーが存在しない場合は第2引数に指定された値
+```
+
+> C:\ProgramData
+>
+> C:\ProgramData
+>
+> C:\ProgramData
+
+> KeyError: '_ALLUSERSPROFILE'
+>
+> None
+>
+> NULL
+>
+> NULL
+
+#### 環境変数の書き込み
+
+以下の手順で環境変数を設定／上書きしても、システムの環境変数が変更されるわけではなく、実行中のスクリプトでのみ反映される
+
+```py
+import os
+
+os.environ['SAMPLE'] = 'foobar'
+print(os.environ['SAMPLE'])
+
+os.environ['SAMPLE'] = 'hogepiyo' # 上書きされる
+print(os.environ['SAMPLE'])
+
+os.environ['SAMPLE'] = 123 # 文字列以外を代入しようとするとTypeError
+print(os.environ['SAMPLE'])
+```
+
+> foobar
+>
+> hogepiyo
+>
+> TypeError: str expected, not int
+>
+> hogepiyo
+
+#### 環境変数の削除
+
+```py
+import os
+
+os.environ['SAMPLE'] = 'foobar'
+print(os.environ['SAMPLE'])
+
+print(os.environ.pop('SAMPLE'))
+print(os.environ['SAMPLE'])
+
+print(os.environ.pop('SAMPLE', None))
+```
+
+
+> foobar
+
+> foobar
+>
+> KeyError: 'SAMPLE'
+
+> None
+
+```py
+import os
+
+os.environ['SAMPLE'] = 'foobar'
+print(os.environ['SAMPLE'])
+
+del os.environ['SAMPLE']
+
+del os.environ['SAMPLE']
+```
+
+> foobar
+
+>
+
+> KeyError: 'SAMPLE'
+
 ## ローカルファイル
 
 ### パス文字列の操作
@@ -6288,7 +6484,7 @@ print(detect_enc('./test-fileio/inputsjis.txt'))
 
 ##### 読み込み
 
-###### 単一の文字列として読込み(r: 読み取り)
+###### 単一の文字列として読み込み(r: 読み取り)
 
 modeが `'r'` の場合、指定したパスにファイルが存在しない場合はエラーとなる
 
@@ -6391,7 +6587,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8_sig
 かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
 ```
 
-###### 1 行ずつ読込み(r: 読み取り)
+###### 1 行ずつ読み込み(r: 読み取り)
 
 ```py
 import os
@@ -6418,7 +6614,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') a
 ]
 ```
 
-##### 書込み
+##### 書き込み
 
 * modeが `'a'` の場合、指定したパスにファイルが存在する場合は追記、存在しない場合は新規作成、親フォルダが存在しない場合はエラーとなる
 
@@ -6454,7 +6650,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x') as file:
 
 > FileExistsError
 
-###### 単一の文字列として書込み(x: 新規作成)
+###### 単一の文字列として書き込み(x: 新規作成)
 
 ```py
 import os
@@ -6465,7 +6661,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') 
 
 > 11
 
-###### リストを書込み(x: 新規作成)
+###### リストを書き込み(x: 新規作成)
 
 ```py
 import os
@@ -6474,7 +6670,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') 
     file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
-###### 単一の文字列として書込み(w: 新規作成／上書き)
+###### 単一の文字列として書き込み(w: 新規作成／上書き)
 
 ```py
 import os
@@ -6504,7 +6700,7 @@ else:
     print('File Not Found')
 ```
 
-###### リストを書込み(w: 新規作成／上書き)
+###### リストを書き込み(w: 新規作成／上書き)
 
 ```py
 import os
@@ -6513,7 +6709,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') 
     file.writelines(lst) # 要素間には空白文字等は挿入されない
 ```
 
-###### 単一の文字列として書込み(a: 追記)
+###### 単一の文字列として書き込み(a: 追記)
 
 ```py
 import os
