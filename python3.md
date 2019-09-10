@@ -4804,6 +4804,14 @@ print('Hello Python!')
 sys.stdout.flush()
 ```
 
+### 末尾に改行文字をつけずに出力する
+
+```py
+print('Hello Python!', end='');print('Hello Python!', end='')
+```
+
+>Hello Python!Hello Python!
+
 ### 標準出力の内容をファイルに書き出す
 
 #### stdout
@@ -5041,6 +5049,42 @@ del os.environ['SAMPLE']
 >
 
 > KeyError: 'SAMPLE'
+
+### .envファイルに記述した設定値を環境変数に設定
+
+* 1. `python-dotenv` モジュールをインストールする
+
+```sh
+$ pip install python-dotenv
+```
+
+* 2. `.env` ファイルを作成
+
+```
+PASSWORD=my_password
+```
+
+* 3. `settings.py` を呼び出す
+
+* settings.py
+
+```py
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+
+load_dotenv(join(dirname(__file__), '.env'))
+PASSWORD = os.environ.get('PASSWORD')
+```
+
+* app.py
+
+```py
+import settings
+
+PASSWORD = settings.PASSWORD
+print(PASSWORD)
+```
 
 ## ローカルファイル
 
@@ -6135,6 +6179,33 @@ if not os.path.exists(path):
 ```
 
 > removed
+
+### ハッシュ値の取得
+
+
+### ハッシュの取得
+
+```py
+import hashlib
+
+with open(os.path.join('test-fileio', 'inputsjis.txt'),'rb') as f:
+    dat = f.read()
+    print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
+    print(hashlib.md5(dat).hexdigest()) # MD5
+    print(hashlib.sha1(dat).hexdigest()) # SHA-1
+    print(hashlib.sha256(dat).hexdigest()) # SHA256
+    print(hashlib.sha512(dat).hexdigest()) # SHA512
+```
+
+> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
+>
+> 8618e191816aeee9ad8e3444be9a26b5
+>
+> 7904da5abecff2cfa009df4262140d2f55e4d3da
+>
+> 9f4b600039cc7d66def7f25be7c6e1b998f3afc6c23eb52fb840b19480dd1ca2
+>
+> 3e5df2441e594ce512d81de7db1574e8c5f3187610ac0855d1d8f9111b983ced5af1277ee036c7e6817419553a3f7c910986fbd9d6d754b57cd82f2ee0d25fcc
 
 ### タイプ別のファイル読み書き
 
