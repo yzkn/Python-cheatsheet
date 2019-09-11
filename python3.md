@@ -2231,31 +2231,6 @@ print(haystack.translate(str.maketrans({'h': 'H', 'a': 'oo', 's': '', 'k': None}
 
 > Hooytooc
 
-### ハッシュの取得
-
-```py
-import hashlib
-
-dat = 'foobar'
-
-print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
-
-print(hashlib.md5(dat.encode()).hexdigest()) # MD5
-print(hashlib.sha1(dat.encode()).hexdigest()) # SHA-1
-print(hashlib.sha256(dat.encode()).hexdigest()) # SHA256
-print(hashlib.sha512(dat.encode()).hexdigest()) # SHA512
-```
-
-> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
->
-> 3858f62230ac3c915f300c664312c63f
->
-> 8843d7f92416211de9ebb963ff4ce28125932878
->
-> c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2
->
-> 0a50261ebd1a390fed2bf326f2673c145582a6342d523204973d0219337f81616a8069b012587cf5635f6925f1b56c360230c19b273500ee013e030601bf2425
-
 ## リスト
 
 ```
@@ -4553,6 +4528,19 @@ with open(filepath, 'w') as f:
     pass
 ```
 
+### 複数のwithをまとめる
+
+入力ファイルと出力ファイルを同時に開く場合など、複数のwithブロックによってネストが深くなってしまうのを防ぐために、「,」で区切って1つのwithブロックにまとめることができる
+
+```py
+with open(filepath1, 'r') as f1:
+    with open(filepath2, 'w') as f2:
+        pass
+
+with open(filepath1, 'r') as f1, with open(filepath2, 'w') as f2:
+    pass
+```
+
 # 関数
 
 ## 引数なし
@@ -5085,6 +5073,109 @@ import settings
 PASSWORD = settings.PASSWORD
 print(PASSWORD)
 ```
+
+## ハッシュ
+
+### 文字列からハッシュを取得
+
+```py
+import hashlib
+
+dat = 'foobar'
+
+print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
+
+print(hashlib.md5(dat.encode()).hexdigest()) # MD5
+print(hashlib.sha1(dat.encode()).hexdigest()) # SHA-1
+print(hashlib.sha256(dat.encode()).hexdigest()) # SHA256
+print(hashlib.sha512(dat.encode()).hexdigest()) # SHA512
+```
+
+> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
+>
+> 3858f62230ac3c915f300c664312c63f
+>
+> 8843d7f92416211de9ebb963ff4ce28125932878
+>
+> c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2
+>
+> 0a50261ebd1a390fed2bf326f2673c145582a6342d523204973d0219337f81616a8069b012587cf5635f6925f1b56c360230c19b273500ee013e030601bf2425
+
+#### 巨大なデータのハッシュを取得
+
+```py
+import hashlib
+
+dat = b'hoge'*0x100000
+
+# 比較用
+print(hashlib.md5(dat).hexdigest())
+
+h = hashlib.new('md5')
+
+# 処理単位
+chunk_size = h.block_size * 4096
+
+while dat:
+    chunk = dat[:chunk_size]
+    dat = dat[chunk_size:]
+    # ハッシュオブジェクトを更新
+    h.update(chunk)
+
+print(h.hexdigest())
+```
+
+> 58e20228105b868ae22ac4e3f5074631
+>
+> 58e20228105b868ae22ac4e3f5074631
+
+### ファイルのハッシュを取得
+
+```py
+import hashlib
+import os
+
+with open(os.path.join('test-fileio', 'inputsjis.txt'),'rb') as f:
+    dat = f.read()
+    print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
+    print(hashlib.md5(dat).hexdigest()) # MD5
+    print(hashlib.sha1(dat).hexdigest()) # SHA-1
+    print(hashlib.sha256(dat).hexdigest()) # SHA256
+    print(hashlib.sha512(dat).hexdigest()) # SHA512
+```
+
+> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
+>
+> 8618e191816aeee9ad8e3444be9a26b5
+>
+> 7904da5abecff2cfa009df4262140d2f55e4d3da
+>
+> 9f4b600039cc7d66def7f25be7c6e1b998f3afc6c23eb52fb840b19480dd1ca2
+>
+> 3e5df2441e594ce512d81de7db1574e8c5f3187610ac0855d1d8f9111b983ced5af1277ee036c7e6817419553a3f7c910986fbd9d6d754b57cd82f2ee0d25fcc
+
+#### 巨大なファイルのハッシュを取得
+
+```py
+import hashlib
+import os
+
+h = hashlib.new('md5')
+
+# 処理単位
+chunk_size = h.block_size * 4096
+
+with open(os.path.join('test-fileio', 'inputsjis.txt'),'rb') as f:
+    chunk = f.read(chunk_size)
+    while chunk:
+        # ハッシュオブジェクトを更新
+        h.update(chunk)
+        chunk = f.read(chunk_size)
+
+print(h.hexdigest())
+```
+
+> 8618e191816aeee9ad8e3444be9a26b5
 
 ## ローカルファイル
 
@@ -6180,33 +6271,6 @@ if not os.path.exists(path):
 
 > removed
 
-### ハッシュ値の取得
-
-
-### ハッシュの取得
-
-```py
-import hashlib
-
-with open(os.path.join('test-fileio', 'inputsjis.txt'),'rb') as f:
-    dat = f.read()
-    print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
-    print(hashlib.md5(dat).hexdigest()) # MD5
-    print(hashlib.sha1(dat).hexdigest()) # SHA-1
-    print(hashlib.sha256(dat).hexdigest()) # SHA256
-    print(hashlib.sha512(dat).hexdigest()) # SHA512
-```
-
-> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
->
-> 8618e191816aeee9ad8e3444be9a26b5
->
-> 7904da5abecff2cfa009df4262140d2f55e4d3da
->
-> 9f4b600039cc7d66def7f25be7c6e1b998f3afc6c23eb52fb840b19480dd1ca2
->
-> 3e5df2441e594ce512d81de7db1574e8c5f3187610ac0855d1d8f9111b983ced5af1277ee036c7e6817419553a3f7c910986fbd9d6d754b57cd82f2ee0d25fcc
-
 ### タイプ別のファイル読み書き
 
 #### ZIP ファイル
@@ -6977,6 +7041,51 @@ savepath = os.path.join('test-fileio', 'outpututf8.json')
 with open(savepath, 'w', encoding='utf_8') as outfile:
     json.dump(jsondata, outfile)
 ```
+
+#### iniファイル
+
+##### ファイルから読み込み
+
+* settings.ini
+
+```ini
+[DEFAULT]
+host = fuga
+
+[db]
+user = foobar
+password = hogepiyo
+```
+
+* app.py
+
+```py
+import configparser
+import os
+
+ini = configparser.ConfigParser()
+ini.read(os.path.join('test-fileio', 'settings.ini'), 'UTF-8')
+
+print(ini['db']['user'])
+print(ini['db']['password'])
+
+print(ini.get('db', 'user'))
+print(ini.get('db', 'password'))
+
+print(ini['db']['host'])
+```
+
+> ['test-fileio\\settings.ini'] # ini.read() の戻り値
+
+> foobar
+>
+> hogepiyo
+
+> foobar
+>
+> hogepiyo
+
+> fuga
 
 #### XMLファイル
 
