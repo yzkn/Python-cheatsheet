@@ -347,11 +347,20 @@ i = 0b11111111 # 2進数
 i = 0o777 # 8進数
 i = 0xffff # 16進数
 
-
 # long(Python3ではint型として扱う)
 # l = 1234567890123456789012345678901234567890123456789012345678901234567890L # Python 2
 l = 1234567890123456789012345678901234567890123456789012345678901234567890
 ```
+
+```py
+i = 1_000_000_000 # アンダースコアは無視され、int型として扱われる
+print(i)
+print('{:,}'.format(i)) # 3桁ごとにセミコロンを入れる
+```
+
+> 1000000000
+>
+> 1,000,000,000
 
 ### 文字列型からのキャスト
 
@@ -2520,6 +2529,31 @@ for (i1, i2) in zip(l1, l2):
 >
 > 2 7
 
+```py
+from itertools import zip_longest
+
+l1 = list(range(5))
+l2 = list(range(5,8))
+
+# 要素数の多いリストの要素数分だけ繰り返す
+for (i1, i2) in zip_longest(l1, l2):
+    print(i1, i2)
+
+# 要素数の多いリストの要素数分だけ繰り返す(不足している要素にNoneではなく指定した値を使用)
+for (i1, i2) in zip_longest(l1, l2, fillvalue=999):
+    print(i1, i2)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 999
+>
+> 4 999
+
 #### 多次元リスト
 
 ```py
@@ -2808,13 +2842,22 @@ lst = [[1, 'first'], [2, 'second'], [3, 'third']]
 dct = dict(lst)
 print(dct)
 
-# キーと値が別のリスト
+# キーと値が別のリスト(要素数の少ないリストの要素数分だけ繰り返す)
 keys = [1, 2, 3]
 values = ['first', 'second', 'third']
 dct = dict(zip(keys, values))
 print(dct)
+
+# キーと値が別のリスト(要素数の多いリストの要素数分だけ繰り返す)
+from itertools import zip_longest
+keys = [1, 2]
+values = ['first', 'second', 'third']
+dct = dict(zip_longest(keys, values, fillvalue=3))
+print(dct)
 ```
 
+> {1: 'first', 2: 'second', 3: 'third'}
+>
 > {1: 'first', 2: 'second', 3: 'third'}
 >
 > {1: 'first', 2: 'second', 3: 'third'}
@@ -3065,7 +3108,7 @@ print(res)
 
 ### シーケンス・アンパッキング
 
-タプルから複数の変数に一括代入する
+タプルから複数の変数に展開(一括代入)する
 
 ```py
 t = 'foo', 'bar', 123, 456
@@ -3081,6 +3124,47 @@ def fibonacci(n):
 
 fibonacci(10)
 ```
+
+代入元の要素数と代入先の変数の数が異なる場合
+
+```py
+x, y, z = 'foo', 'bar', 123, 456 # ValueError
+
+x, y, *z = 'foo', 'bar', 123, 456 # アスタリスクをつけるとリストに格納
+print(x, y, z)
+
+x, y, z, *w = 'foo', 'bar', 123, 456
+print(x, y, z, w)
+
+x, y, z, w, *v = 'foo', 'bar', 123, 456
+print(x, y, z, w, v)
+```
+
+> ValueError: too many values to unpack (expected 3)
+
+> 'foo', 'bar', [123, 456]
+
+> foo bar 123 [456]
+
+> foo bar 123 456 []
+
+入れ子のタプルを展開
+
+```py
+x, (y, z) = 'foo', (123, 456)
+print(x, y, z)
+```
+
+> foo 123 456
+
+不要な要素を展開しない
+
+```py
+x, y, *_ = 'foo', 'bar', 123, 456
+print(x, y)
+```
+
+> foo bar
 
 ## セット
 
