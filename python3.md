@@ -436,7 +436,9 @@ print(int('0xffff', 0)) # 16進数
 >
 > 65535
 
-#### 1 文字の漢数字のキャスト
+#### 漢数字のキャスト
+
+##### 1 文字の漢数字のキャスト
 
 ```py
 import unicodedata
@@ -492,6 +494,23 @@ int(transformNum('１億２３４万５千六百七十八'))
 ```
 
 > 102345678
+
+#### kanjizeパッケージを利用
+
+```sh
+$ pip install kanjize
+```
+
+```py
+from kanjize import int2kanji, kanji2int
+
+print(kanji2int('十二億三千四十五万六千七百八十九')) # 漢数字→int
+print(int2kanji(1230456789)) # int→漢数字
+```
+
+> 1230456789
+>
+> 十二億三千四十五万六千七百八十九
 
 ### 数値の切り上げ・切り捨て
 
