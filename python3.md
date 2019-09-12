@@ -1132,6 +1132,60 @@ print(fuga)
 >
 > abcdefghi
 
+### 文字種チェック
+
+#### 数値
+
+```py
+def is_int(intstr):
+    try:
+        int(intstr)
+        return True
+    except ValueError:
+        return False
+```
+
+```py
+def check_numstr(numstr):
+    print(
+        '{} {} {} {}'.format(
+            numstr,
+            numstr.isdigit(),
+            numstr.isdecimal(),
+            numstr.isnumeric()
+        )
+    )
+```
+
+| numstr | isdigit() | isdecimal() | isnumeric() |
+| --- | --- | --- | --- |
+| `1` | True | True | True |
+| `01` | True | True | True |
+| `１` | True | True | True |
+| `①` | True |  | True |
+| `一` |  |  | True |
+| ` 1` |  |  |  |
+| `0x11` |  |  |  |
+| `1.1` |  |  |  |
+
+```py
+import itertools
+
+print('| chr | isdigit | isdecimal | isnumeric')
+print('---------------------------------------')
+for number in range(0, 12000):
+    char = chr(number)
+    if (char.isdigit() or char.isdecimal() or char.isnumeric()):
+        print('| {0:>3} | {1:^7} | {2:^9} | {3:9} '.format(
+            char,
+            'True' if char.isdigit() else ' ',
+            'True' if char.isdecimal() else ' ',
+            'True' if char.isnumeric() else ' '
+        )
+    )
+
+```
+
 ### キャスト
 
 ```py
@@ -4800,6 +4854,55 @@ print('Hello Python!', end='');print('Hello Python!', end='')
 
 >Hello Python!Hello Python!
 
+### pprint()でデータ出力の整然化
+
+辞書・リストなどのオブジェクトを整形して出力する
+
+```py
+from pprint import pprint
+
+dctlst = [{ 1:'first', 2:'second', 3:'third'},{ 11:'first', 12:'second', 13:'third'},{ 21:'first', 22:'second', 23:'third'}]
+pprint(dctlst, stream=f)
+```
+
+> [{1: 'first', 2: 'second', 3: 'third'},
+>
+>  {11: 'first', 12: 'second', 13: 'third'},
+>
+>  {21: 'first', 22: 'second', 23: 'third'}]
+
+```py
+from pprint import pprint
+
+dctlst = [{ 1:'first', 2:'second', 3:'third'},{ 11:'first', 12:'second', 13:'third'},{ 21:'first', 22:'second', 23:'third'}]
+
+# 深さを指定
+pprint(dctlst, depth=1)
+
+# 横幅を指定
+pprint(dctlst, width=20)
+```
+
+> [{...}, {...}, {...}]
+
+> [{1: 'first',
+>
+>   2: 'second',
+>
+>   3: 'third'},
+>
+>  {11: 'first',
+>
+>   12: 'second',
+>
+>   13: 'third'},
+>
+>  {21: 'first',
+>
+>   22: 'second',
+>
+>   23: 'third'}]
+
 ### 標準出力の内容をファイルに書き出す
 
 #### stdout
@@ -4831,15 +4934,6 @@ print('to console')
 ```py
 with open('./path/to/file.txt', 'w') as f:
     print('contents', file=f)
-```
-
-#### pprint()
-
-```py
-from pprint import pprint
-
-with open('./path/to/file.txt', 'w') as f:
-    pprint('contents', stream=f)
 ```
 
 ## 環境変数
