@@ -7596,6 +7596,50 @@ with urllib.request.urlopen(url) as response:
 
 > 8090
 
+```py
+import os
+import requests
+url = 'https://www.python.org/static/img/python-logo.png'
+
+def download_img(url, file_name):
+    r = requests.get(url, stream=True)
+    if r.status_code == 200:
+        with open(file_name, 'wb') as f:
+            f.write(r.content)
+
+download_img(url, os.path.basename(url))
+```
+
+##### 画像ファイルの保存
+
+```sh
+$ pip install Image requests StringIO
+```
+
+```py
+import os
+import requests
+from PIL import Image
+from io import BytesIO
+url = 'https://www.python.org/static/img/python-logo.png'
+r = requests.get(url)
+i = Image.open(BytesIO(r.content))
+i.save(os.path.basename(url))
+```
+
+##### 大容量ファイルの保存
+
+```py
+import os
+import requests
+url = 'https://www.python.org/static/img/python-logo.png'
+r = requests.get(url, stream=True)
+if r.status_code == 200:
+    with open(os.path.basename(url), 'wb') as file:
+        for chunk in r.iter_content(chunk_size=1024):
+            file.write(chunk)
+```
+
 #### GET
 
 ```py
@@ -7604,6 +7648,11 @@ import urllib.request
 
 url = 'http://httpbin.org/get'
 
+with urllib.request.urlopen(url) as response:
+    html = response.read()
+    print(html)
+
+# クエリを送信
 params = {}
 params['name'] = 'Sato'
 params['location'] = 'Tokyo'
@@ -7613,6 +7662,20 @@ url = url + '?' + query
 
 with urllib.request.urlopen(url) as response:
     html = response.read()
+    print(html)
+```
+
+```py
+import requests
+
+url = 'http://httpbin.org/get'
+
+requests.get(url)
+
+# クエリを送信
+import requests
+r = requests.get('http://httpbin.org/get', params={'key':'value'})
+print(r.url) # http://httpbin.org/get?key=value
 ```
 
 #### POST
@@ -7630,43 +7693,83 @@ query = query.encode('ascii')
 req = urllib.request.Request(url, query)
 with urllib.request.urlopen(req) as response:
     html = response.read()
+    print(html)
 ```
 
-#### HTTP ヘッダ(headers 引数)
+```py
+import requests
+
+params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
+r = requests.post('http://httpbin.org/post', data=params)
+print(r.url)  # 生成されたURL(POSTなのでクエリ文字列がないことを確認)
+
+import json
+print(json.loads(res.content.decode())['form']) # {'age': '30', 'location': 'Tokyo', 'name': 'Sato'}
+```
+
+#### PUT
+
+```py
+import requests
+url = 'http://httpbin.org/put'
+requests.put(url)
+```
+
+#### DELETE
+
+```py
+import requests
+url = 'http://httpbin.org/delete'
+requests.delete(url)
+```
+
+#### HEAD
+
+```py
+import requests
+url = 'http://httpbin.org/get'
+requests.head(url)
+```
+
+#### HTTP ヘッダ
 
 ```py
 import urllib.parse
 import urllib.request
 
 url = 'http://httpbin.org/headers'
+
 user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xx Safari/xxx.xx'
 headers = {'User-Agent': user_agent}
 
 params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
 query = urllib.parse.urlencode(params)
-query = query.encode('ascii')
 
-req = urllib.request.Request(url, query, headers)
+# headers引数
+req = urllib.request.Request(url, data=query.encode('ascii'), method='GET', headers=headers)
 with urllib.request.urlopen(req) as response:
     html = response.read()
+    print(html)
+
+# add_header()
+req = urllib.request.Request(url, data=query.encode('ascii'), method='GET')
+req.add_header('Referer', 'http://httpbin.org/')
+with urllib.request.urlopen(req) as response:
+    html = response.read()
+    print(html)
 ```
 
-#### HTTP ヘッダ(add_header)
-
 ```py
-import urllib.parse
-import urllib.request
-
+import requests
 url = 'http://httpbin.org/headers'
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xx Safari/xxx.xx'
+headers = {'User-Agent': user_agent, 'Referer': 'http://httpbin.org/'}
 
-params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
-query = urllib.parse.urlencode(params)
-query = query.encode('ascii')
+payload = {'key1': 'val1', 'key2': 'val2'}
 
-req = urllib.request.Request(url, query)
-req.add_header('Referer', 'http://www.python.org/')
-with urllib.request.urlopen(req) as response:
-    html = response.read()
+r = requests.get(url, data=json.dumps(payload), headers=headers)
+print(r.status_code)
+print(r.content)
 ```
 
 #### User Agent
@@ -7797,92 +7900,6 @@ else:
 
 ### Requests(削除予定)
 
-#### GET
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-requests.get(url)
-```
-
-##### クエリを送信
-
-```py
-import requests
-res = requests.get('http://httpbin.org/get', params={'key':'value'})
-print(res.url)
-```
-
-> http://httpbin.org/get?key=value
-
-#### POST
-
-##### フォームデータを送信
-
-```py
-import requests
-res = requests.post('http://httpbin.org/post', data = {'key':'value'})
-
-import json
-print(json.loads(res.content.decode())['form'])
-```
-
-#### PUT
-
-```py
-import requests
-url = 'http://httpbin.org/put'
-requests.put(url)
-```
-
-#### DELETE
-
-```py
-import requests
-url = 'http://httpbin.org/delete'
-requests.delete(url)
-```
-
-#### header の取得
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-requests.head(url)
-```
-
-#### クエリ
-
-##### GET
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-payload = {'key1': 'val1', 'key2': 'val2'}
-r = requests.get(url, params=payload)
-print(r.url)  # 生成されたURL
-```
-
-##### POST
-
-```py
-import requests
-url = 'http://httpbin.org/post'
-payload = {'key1': 'val1', 'key2': 'val2'}
-r = requests.post(url, data=payload)
-print(r.url)  # 生成されたURL(POSTなのでクエリ文字列がないことを確認)
-```
-
-#### ヘッダの追加
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-payload = {'key1': 'val1', 'key2': 'val2'}
-headers = {'Referer', 'http://www.python.org/'}
-r = requests.post(url, data=json.dumps(payload), headers=headers)
-```
-
 #### フォーム送信(Multipart エンコード)
 
 ```py
@@ -7965,54 +7982,6 @@ url = 'http://httpbin.org/get'
 r = requests.get(url, timeout=1)
 ```
 
-#### バイナリファイルを保存
-
-```py
-import os
-import requests
-url = 'https://www.python.org/static/img/python-logo.png'
-
-def download_img(url, file_name):
-    r = requests.get(url, stream=True)
-    if r.status_code == 200:
-        with open(file_name, 'wb') as f:
-            f.write(r.content)
-
-download_img(url, os.path.basename(url))
-```
-
-##### 画像ファイルの保存
-
-```sh
-$ pip install Image
-$ pip install requests
-$ pip install StringIO
-```
-
-```py
-import os
-import requests
-from PIL import Image
-from io import BytesIO
-url = 'https://www.python.org/static/img/python-logo.png'
-r = requests.get(url)
-i = Image.open(BytesIO(r.content))
-i.save(os.path.basename(url))
-```
-
-#### 大容量ファイルの保存
-
-```py
-import os
-import requests
-url = 'https://www.python.org/static/img/python-logo.png'
-res = requests.get(url, stream=True)
-if res.status_code == 200:
-    with open(os.path.basename(url), 'wb') as file:
-        for chunk in res.iter_content(chunk_size=1024):
-            file.write(chunk)
-```
-
 #### JSON
 
 ```py
@@ -8029,8 +7998,8 @@ import requests
 url = 'http://httpbin.org/post'
 session = requests.session()
 auth_data = {'username': 'foo', 'password': 'bar'}
-res = session.post(url, data=auth_data)
-res = session.post(url, data={'key1': 'val1'})
+r = session.post(url, data=auth_data)
+r = session.post(url, data={'key1': 'val1'})
 ```
 
 #### 例外処理とレスポンスコード
