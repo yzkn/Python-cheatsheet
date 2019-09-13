@@ -7470,17 +7470,24 @@ print(new_url)
 >
 > https://example.net/user?id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA
 
-### urllib
+### リクエストを送信
+
+`urllib` モジュールではなく `Requests` モジュールを利用する場合、以下のコマンドでインストールする
+
+```sh
+$ pip install requests
+```
 
 #### コンテンツを文字列として取得
 
 ```py
 import urllib.request
-url = 'http://httpbin.org/get'
+url = 'http://httpbin.org'
 
 try:
     with urllib.request.urlopen(url) as response:
         html = response.read()
+        print(html)
 except urllib.error.HTTPError as e:
     print(e.code)
     print(e.read())
@@ -7488,18 +7495,28 @@ except urllib.error.HTTPError as e:
 
 ```py
 import urllib.request
-url = 'http://httpbin.org/get'
+url = 'http://httpbin.org'
 req = urllib.request.Request(url)
 
 try:
     with urllib.request.urlopen(req) as response:
         html = response.read()
+        print(html)
 except urllib.error.HTTPError as e:
     print(e.code)
     print(e.read())
 ```
 
+```py
+import requests
+url = 'http://httpbin.org'
+response = requests.get(url)
+print(response.text)
+```
+
 #### 文字コードを指定
+
+##### 特定の文字コード(Shift-JIS)を指定
 
 ```py
 import urllib.request
@@ -7508,9 +7525,48 @@ url = 'http://www.soumu.go.jp/'
 try:
     with urllib.request.urlopen(url) as response:
         html = response.read().decode('shift_jis')
+        print(html)
 except urllib.error.HTTPError as e:
     print(e.code)
     print(e.read())
+```
+
+```py
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = 'Shift_JIS'
+    print(response.text)
+```
+
+##### コンテンツの内容から文字コードを推定する
+
+###### chardetによる推定
+
+```py
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = response.apparent_encoding
+    print(response.text)
+```
+
+###### cChardetによる推定(chardetよりも高速)
+
+```sh
+$ pip install cchardet
+```
+
+```py
+import cchardet
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = cchardet.detect(response.content)["encoding"]
+    print(response.text)
 ```
 
 #### コンテンツをテンポラリファイルとして取得
@@ -7521,8 +7577,11 @@ url = 'http://httpbin.org/get'
 local_filename, headers = urllib.request.urlretrieve(url)
 with open(local_filename) as f:
     string = f.read()
-    print(string)
+
+print(local_filename)
 ```
+
+> C:\\Users\\y\\AppData\\Local\\Temp\\tmptkscpwv4
 
 #### バイナリファイルを保存
 
@@ -7534,6 +7593,8 @@ with urllib.request.urlopen(url) as response:
     with open(os.path.basename(url), 'wb') as localfile:
         localfile.write(response.read())
 ```
+
+> 8090
 
 #### GET
 
@@ -7734,62 +7795,7 @@ else:
     pass  # リクエストに成功
 ```
 
-### Requests
-
-```sh
-$ pip install requests
-```
-
-#### コンテンツを文字列として取得
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-response = requests.get(url)
-print(response.text)
-```
-
-#### 文字コードを指定
-
-##### 特定の文字コード(Shift-JIS)を指定
-
-```py
-import requests
-url = 'http://www.soumu.go.jp/'
-response = requests.get(url)
-if response.status_code == 200:
-    response.encoding = 'Shift_JIS'
-    print(response.text)
-```
-
-##### コンテンツの内容から文字コードを推定する
-
-###### chardetによる推定
-
-```py
-import requests
-url = 'http://www.soumu.go.jp/'
-response = requests.get(url)
-if response.status_code == 200:
-    response.encoding = response.apparent_encoding
-    print(response.text)
-```
-
-###### cChardetによる推定(chardetよりも高速)
-
-```sh
-$ pip install cchardet
-```
-
-```py
-import cchardet
-import requests
-url = 'http://www.soumu.go.jp/'
-response = requests.get(url)
-if response.status_code == 200:
-    response.encoding = cchardet.detect(response.content)["encoding"]
-    print(response.text)
-```
+### Requests(削除予定)
 
 #### GET
 
