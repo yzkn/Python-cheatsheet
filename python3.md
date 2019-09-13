@@ -1214,12 +1214,6 @@ for number in range(0, 12000):
 
 ```
 
-### キャスト
-
-```py
-
-```
-
 ### 文字列のフォーマット
 
 #### ゼロ埋め
@@ -1573,6 +1567,29 @@ print(len(r'あいう\nえお'))
 > あいう\n えお
 >
 > 7
+
+#### 文字列とバイト列の変換
+
+```py
+'foobar'.encode() # b'foobar'
+b'foobar'.decode() # 'foobar'
+
+# 文字コードを明示
+'foobar'.encode(encoding='utf-8') # b'foobar'
+b'foobar'.decode(encoding='utf-8') # 'foobar'
+bytes('abcd', encoding='utf-8')
+str(b'abcd', encoding='utf-8')
+
+# UnicodeDecodeErrorを無視する
+b'\xff'.decode() # UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+
+b'\xff'.decode('utf-8', 'replace') # '�'
+b'\xff'.decode(encoding='utf-8', errors='replace') # '�'
+
+bytes('abcd', encoding='utf-8', errors='replace') # b'abcd'
+str(b'abcd', encoding='utf-8', errors='replace') # 'abcd'
+
+```
 
 ### 区切り文字による分割
 
@@ -7431,6 +7448,23 @@ print(urllib.parse.unquote_plus('a+b'))
 >
 > a b
 
+##### URLの一部の要素に日本語が含まれている場合
+
+```py
+from urllib.parse import urlparse
+import urllib.request
+
+url = 'https://httpbin.org/get/?q=日本語'
+p = urlparse(url)
+url = '{}://{}{}{}{}{}{}{}{}'.format(
+    p.scheme, p.netloc, p.path,
+    ';' if p.params else '', p.params,
+    '?' if p.query else '', urllib.parse.quote_plus(p.query, safe='=&'),
+    '#' if p.fragment else '', p.fragment)
+print(url)
+response = urllib.request.urlopen(url)
+```
+
 #### URL 文字列のパース
 
 ```py
@@ -7496,7 +7530,7 @@ except urllib.error.HTTPError as e:
 ```py
 import urllib.request
 url = 'http://httpbin.org'
-req = urllib.request.Request(url)
+req = urllib.request.Request(url) # , method='GET')
 
 try:
     with urllib.request.urlopen(req) as response:
@@ -7667,15 +7701,51 @@ with urllib.request.urlopen(url) as response:
 
 ```py
 import requests
-
 url = 'http://httpbin.org/get'
-
-requests.get(url)
+r = requests.get(url)
+print(r.text)
 
 # クエリを送信
 import requests
 r = requests.get('http://httpbin.org/get', params={'key':'value'})
 print(r.url) # http://httpbin.org/get?key=value
+print(r.text)
+
+# 応答
+import requests
+url = 'http://httpbin.org/get'
+r = requests.get(url)
+
+print(r.headers)
+
+print(r.text)
+
+print(r.status_code)  # レスポンスコード
+print(r.status_code == requests.codes.ok)  # 200か判定
+
+print(r.encoding)  # 文字エンコードの確認
+r.encoding = 'Shift-JIS'  # 文字コードの設定(変更)
+print(r.text)  # 変更後のエンコーディングが使用される
+
+# リダイレクト禁止
+import requests
+url = 'http://httpbin.org/get'
+r = requests.get(url, allow_redirects=True)
+print(r.text)
+
+# タイムアウト
+import requests
+url = 'https://httpbin.org/deley/5'
+r = requests.get(url, timeout=1)
+print(r.text)
+
+# JSON
+import json
+import requests
+url = 'http://httpbin.org/json'
+r = requests.get(url)
+data = r.json()
+print(json.dumps(data, indent=4))
 ```
 
 #### POST
@@ -7687,10 +7757,8 @@ import urllib.request
 url = 'http://httpbin.org/post'
 
 params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
-query = urllib.parse.urlencode(params)
-query = query.encode('ascii')
 
-req = urllib.request.Request(url, query)
+req = urllib.request.Request(url, urllib.parse.urlencode(params).encode('ascii')) # , method='POST')
 with urllib.request.urlopen(req) as response:
     html = response.read()
     print(html)
@@ -7707,12 +7775,31 @@ import json
 print(json.loads(res.content.decode())['form']) # {'age': '30', 'location': 'Tokyo', 'name': 'Sato'}
 ```
 
+##### フォーム送信(Multipart エンコード)
+
+```py
+import requests
+url = 'http://httpbin.org/post'
+files = {'file': open('test.png', 'rb')}
+r = requests.post(url, files=files)
+
+import requests
+url = 'http://httpbin.org/post'
+files = {'file': ('test.png', open('test.png', 'rb'))}
+r = requests.post(url, files=files)
+
+import requests
+url = 'http://httpbin.org/post'
+files = {'file': ('test.txt', 'foobar')}
+r = requests.post(url, files=files)
+```
+
 #### PUT
 
 ```py
 import requests
 url = 'http://httpbin.org/put'
-requests.put(url)
+r = requests.put(url)
 ```
 
 #### DELETE
@@ -7720,7 +7807,7 @@ requests.put(url)
 ```py
 import requests
 url = 'http://httpbin.org/delete'
-requests.delete(url)
+r = requests.delete(url)
 ```
 
 #### HEAD
@@ -7728,7 +7815,7 @@ requests.delete(url)
 ```py
 import requests
 url = 'http://httpbin.org/get'
-requests.head(url)
+r = requests.head(url)
 ```
 
 #### HTTP ヘッダ
@@ -7740,13 +7827,12 @@ import urllib.request
 url = 'http://httpbin.org/headers'
 
 user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xx Safari/xxx.xx'
-headers = {'User-Agent': user_agent}
+headers = {'User-Agent': user_agent} # ユーザーエージェント
 
 params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
-query = urllib.parse.urlencode(params)
 
 # headers引数
-req = urllib.request.Request(url, data=query.encode('ascii'), method='GET', headers=headers)
+req = urllib.request.Request(url, data=urllib.parse.urlencode(params).encode('ascii'), method='GET', headers=headers)
 with urllib.request.urlopen(req) as response:
     html = response.read()
     print(html)
@@ -7770,22 +7856,6 @@ payload = {'key1': 'val1', 'key2': 'val2'}
 r = requests.get(url, data=json.dumps(payload), headers=headers)
 print(r.status_code)
 print(r.content)
-```
-
-#### User Agent
-
-```py
-import urllib.request
-url = 'http://httpbin.org/user-agent'
-headers = { "User-Agent" :  "Mozilla/1.0" }
-
-try:
-    req = urllib.request.Request(url, None, headers)
-    with urllib.request.urlopen(req) as response:
-        html = response.read()
-except urllib.error.HTTPError as e:
-    print(e.code)
-    print(e.read())
 ```
 
 #### BASIC 認証
@@ -7821,10 +7891,8 @@ user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTM
 headers = {'User-Agent': user_agent}
 
 params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
-query = urllib.parse.urlencode(params)
-query = query.encode('ascii')
 
-req = urllib.request.Request(url, query, headers)
+req = urllib.request.Request(url, urllib.parse.urlencode(params).encode('ascii'), headers) # , method='POST')
 with urllib.request.urlopen(req) as response:
     url = response.geturl()
     headers = response.info()
@@ -7833,59 +7901,95 @@ with urllib.request.urlopen(req) as response:
     # content=req.read().decode(charset)
 ```
 
+#### セッション
+
+```py
+import requests
+
+session = requests.Session()
+r1 = session.get('http://httpbin.org/cookies/set/key1/value1')
+r2 = session.get('http://httpbin.org/cookies')
+print(r2.text)
+```
+
+> {
+>
+>   "cookies": {
+>
+>     "key1": "value1"
+>
+>   }
+>
+> }
+
+```py
+import requests
+
+session = requests.Session()
+
+# 共通する項目を設定
+session.auth = ('Username', 'Password')
+session.headers.update({'x-key0': 'value0'})
+
+r = session.get('http://httpbin.org/headers', headers={'x-key1': 'value1'})
+print(r.text)
+
+# 個別項目を設定
+r = session.get('http://httpbin.org/headers', headers={'x-key2': 'value2'})
+print(r.text)
+```
+
+```json
+{
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate",
+    "Host": "httpbin.org",
+    "User-Agent": "python-requests/2.22.0",
+    "X-Key0": "value0",
+    "X-Key1": "value1"
+  }
+}
+
+{
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate",
+    "Host": "httpbin.org",
+    "User-Agent": "python-requests/2.22.0",
+    "X-Key0": "value0",
+    "X-Key2": "value2"
+  }
+}
+```
+
 #### Cookie
 
 ```py
-import urllib
-import urllib.request  # opener
-import urllib.parse  # urlencode
-import http
-import http.cookiejar
+import requests
 
-opener = urllib.request.build_opener(
-    urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+# 設定
+url = 'http://httpbin.org/get'
+cookies = dict(key1='val1')
+r = requests.get(url, cookies=cookies)
 
-u, p = 'id', 'pw'
-
-url1 = 'http://python.org/?login'
-url2 = 'http://python.org/?user=%s' % u
-
-post = {
-    'name': u,
-    'password': p
-}
-data = urllib.parse.urlencode(post).encode('utf-8')
-
-conn = opener.open(url1, data)
-ofs = open('out1.html', 'w', encoding='utf-8')
-ofs.write(conn.read().decode('utf-8'))
-ofs.close()
-
-conn = opener.open(url2)
-ofs = open('out2.html', 'w', encoding='euc-jp')
-ofs.write(conn.read().decode('euc-jp'))
-ofs.close()
+# 取得
+url = 'http://httpbin.org/cookies/set/key1/value1'
+r = requests.get(url)
+r.cookies['key1']  # Cookieが存在する場合は非None
 ```
 
 #### 例外処理とレスポンスコード
 
 ```py
-import urllib.parse
 import urllib.request
-from urllib.error import URLError
-
-url = 'http://httpbin.org/'
-user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xx Safari/xxx.xx'
-headers = {'User-Agent': user_agent}
-
-params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
-query = urllib.parse.urlencode(params)
-query = query.encode('ascii')
-
-req = urllib.request.Request(url, query, headers)
+url = 'http://httpbin.org'
+req = urllib.request.Request(url)
 try:
-    with urllib.request.urlopen(req) as response:
-        html = response.read()
+    with urllib.request.urlopen(req) as res:
+        body = res.read()
+except urllib.error.HTTPError as e:
+    print(e.code)
 except URLError as e:  # URLErrorはHTTPErrorも拾う
     print(e.code)
     print(e.read())
@@ -7897,112 +8001,6 @@ except URLError as e:  # URLErrorはHTTPErrorも拾う
 else:
     pass  # リクエストに成功
 ```
-
-### Requests(削除予定)
-
-#### フォーム送信(Multipart エンコード)
-
-```py
-import requests
-url = 'http://httpbin.org/post'
-files = {'file': open('test.png', 'rb')}
-r = requests.post(url, files=files)
-
-import requests
-url = 'http://httpbin.org/post'
-files = {'file': ('test.png', open('test.png', 'rb'))}
-r = requests.post(url, files=files)
-
-import requests
-url = 'http://httpbin.org/post'
-files = {'file': ('test.txt', 'foobar')}
-r = requests.post(url, files=files)
-```
-
-#### 応答
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-r = requests.get(url)
-r.headers
-# r.headers['status']
-# r.headers.get('status')
-r.text
-
-import requests
-url = 'http://httpbin.org/get'
-r = requests.get(url)
-r.status_code  # レスポンスコード
-r.status_code == requests.codes.ok  # 200か判定
-
-import requests
-url = 'http://httpbin.org/get'
-r = requests.get(url)
-r.encoding  # 文字エンコードの確認
-r.encoding = 'Shift-JIS'  # 文字コードの設定(変更)
-r.text  # 変更後のエンコーディングが使用される
-```
-
-#### Cookie
-
-##### 設定
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-cookies = dict(key1='val1')
-r = requests.get(url, cookies=cookies)
-```
-
-##### 取得
-
-```py
-import requests
-url = 'http://httpbin.org/cookies/set/key1/value1'
-r = requests.get(url)
-url = 'http://httpbin.org/cookies'
-r = requests.get(url)
-r.cookies['key1']  # Cookieが存在する場合は非None
-```
-
-#### リダイレクト禁止
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-r = requests.get(url, allow_redirects=True)
-```
-
-#### タイムアウト
-
-```py
-import requests
-url = 'http://httpbin.org/get'
-r = requests.get(url, timeout=1)
-```
-
-#### JSON
-
-```py
-import requests
-url = 'http://httpbin.org/json'
-r = requests.get()
-r.json()
-```
-
-#### セッション
-
-```py
-import requests
-url = 'http://httpbin.org/post'
-session = requests.session()
-auth_data = {'username': 'foo', 'password': 'bar'}
-r = session.post(url, data=auth_data)
-r = session.post(url, data={'key1': 'val1'})
-```
-
-#### 例外処理とレスポンスコード
 
 ```py
 import requests
