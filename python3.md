@@ -1327,8 +1327,8 @@ print('{:*^10}'.format(1))
 ##### 小数点以下の桁数
 
 ```py
-print("{:.0f}".format(1.5))
-print("{:.0f}".format(2.5)) # 偶数への丸め(JIS Z 8401)なので、3ではなく2となる(round関数と同様)
+print('{:.0f}'.format(1.5))
+print('{:.0f}'.format(2.5)) # 偶数への丸め(JIS Z 8401)なので、3ではなく2となる(round関数と同様)
 ```
 
 > 2
@@ -6823,7 +6823,7 @@ chardetモジュールだと `windows-1252` と判定されがちなので [cCha
 import cchardet
 
 def detect_enc(filepath):
-    with open(filepath, mode="rb") as f:
+    with open(filepath, mode='rb') as f:
         return cchardet.detect(f.read())
 
 print(detect_enc('./test-fileio/inputsjis.txt'))
@@ -7137,6 +7137,7 @@ $ python -m json.tool inpututf8.json
 
 ```py
 import json
+import os
 
 with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
     string = file.read()
@@ -7154,6 +7155,12 @@ with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') 
 > }
 >
 > json_dict:\<class 'dict'\>
+
+###### スクリプトを書かず、json.toolで解析する
+
+```sh
+$ python -m json.tool ./test-fileio/inpututf8.json
+```
 
 ##### 文字列から読み込み
 
@@ -7229,6 +7236,36 @@ for x in json_dict:
 > val1
 >
 > {'key2-1': 'val2-1', 'key2-2': 'val2-2'}
+
+###### 要素の検索
+
+```py
+import json
+import os
+
+def search(arg, cond):
+    res =[]
+    if cond(arg):
+        res.append(arg)
+    if isinstance(arg, list):
+        for item in arg:
+            res += search(item, cond)
+    elif isinstance(arg, dict):
+        for value in arg.values():
+            res += search(value, cond)
+    return res
+
+def is_valid_value(arg):
+    if isinstance(arg, str):
+        return 'val3-' in arg
+    if isinstance(arg, dict):
+        return arg.keys() == {'key5-1', 'key5-2'}
+
+with open(os.path.join('test-fileio', 'inpututf8nest.json'), encoding='utf-8') as f:
+    json_str = json.load(f)
+    result = search(json_str, is_valid_value)
+    print(result)
+```
 
 ##### 書き込み
 
@@ -7599,7 +7636,7 @@ import requests
 url = 'http://www.soumu.go.jp/'
 response = requests.get(url)
 if response.status_code == 200:
-    response.encoding = cchardet.detect(response.content)["encoding"]
+    response.encoding = cchardet.detect(response.content)['encoding']
     print(response.text)
 ```
 
