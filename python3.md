@@ -1618,7 +1618,7 @@ for key, value in enumerate(parts):
 >
 > 8:yz
 
-#### split の引数を指定しないと、空白文字(改行文字を含む)で分割される
+#### split の引数を指定しないと、空白文字(タブ文字、改行文字を含む)で分割される
 
 ```py
 hoge = 'a bc\nde f\nghi\njkl\nmno\npqr\nstu\nvwx\ny z'
@@ -1636,6 +1636,16 @@ print(parts)
 | 復帰 `\r`     |
 | 改頁 `\f`     |
 | 垂直タブ `\v` |
+
+#### split で分割した後、各要素の先頭・末尾の空白文字を除去する
+
+```py
+hoge = 'abc, def,\tghi'
+parts = [x.strip() for x in hoge.split(',')]
+print(parts)
+```
+
+> ['abc', 'def', 'ghi']
 
 ### 部分文字列
 
@@ -2216,6 +2226,19 @@ print('^' + s.rstrip() + '$')
 >
 > ^ xyz\$
 
+```py
+s = '### \txyz\t ###'
+print('^' + s.strip('#') + '$') # 引数に指定された文字を先頭・末尾から除去する(空白文字は除去しない)
+print('^' + s.lstrip('#') + '$')
+print('^' + s.rstrip('#') + '$')
+```
+
+> ^       xyz      $
+>
+> ^       xyz      ###$
+>
+> ^###    xyz      $
+
 ##### 大文字化・小文字化
 
 ```py
@@ -2422,7 +2445,7 @@ print(lst)
 lst.append(['fu', 'ga']) # appendの引数にリストを指定すると、リスト自体が新たな要素になる
 print(lst)
 
-# スライス
+# スライスを使用して、別のリスト(別のイテラブルオブジェクト)の要素を指定位置に追加(連結)する
 lst = ['foo', 'bar', 'hoge']
 print(lst[0:len(lst)-1])
 print(lst[0:len(lst)])
@@ -2430,15 +2453,24 @@ print(lst[0:len(lst)])
 lst[len(lst):len(lst)] = ['fu', 'ga']
 print(lst)
 
-# 別のリスト(別のイテラブルオブジェクト)の要素を追加(連結)する
+# 別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結)する
 lst1 = ['foo', 'bar', 'hoge']
 lst2 = ['fu', 'ga']
 lst1.extend(lst2)
 print(lst1)
 
+lst1.extend('piyo') # 文字列を追加する場合、1文字ずつが要素となる
+print(lst1)
+
+lst1.extend(['piyo']) # 文字列を1要素として追加する場合
+print(lst1)
+
 lst1 = ['foo', 'bar', 'hoge']
 lst2 = ['fu', 'ga']
 lst1 = lst1 + lst2
+print(lst1)
+
+lst1 = lst1 + ['piyo'] # 文字列を1要素として追加する場合
 print(lst1)
 
 # リストの要素を繰り返す
@@ -2476,7 +2508,13 @@ print(lst)  # 存在しない値を指定するとエラーが発生
 >
 > ['foo', 'bar', 'hoge', 'fu', 'ga']
 >
+> ['foo', 'bar', 'hoge', 'fu', 'ga', 'p', 'i', 'y', 'o']
+>
+> ['foo', 'bar', 'hoge', 'fu', 'ga', 'p', 'i', 'y', 'o', 'piyo']
+>
 > ['foo', 'bar', 'hoge', 'fu', 'ga']
+>
+> ['foo', 'bar', 'hoge', 'fu', 'ga', 'piyo']
 >
 > \# リストの要素を繰り返す
 >
@@ -2500,6 +2538,12 @@ lst = ['foo', 'bar', 'hoge']
 lst.pop() # 末尾から除去
 
 lst.pop(0) # 先頭から除去
+
+lst.remove('bar') # 指定された値を持つ要素のうち、最初のものを除去
+
+# 初期化(すべての要素を削除)
+lst.clear()
+
 ```
 
 > 'hoge'
@@ -2509,6 +2553,10 @@ lst.pop(0) # 先頭から除去
 > 'foo'
 >
 > ['bar']
+>
+> []
+>
+> []
 
 ### リストの反復処理
 
@@ -2829,7 +2877,7 @@ del dct[1]
 
 print(dct)
 
-# 初期化
+# 初期化(すべての要素を削除)
 dct.clear()
 dct = {}
 ```
