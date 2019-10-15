@@ -7406,6 +7406,37 @@ with open(os.path.join('test-fileio', 'inpututf8.csv'), encoding='utf_8', newlin
         print(', '.join(row))
 ```
 
+###### メモリ上のCSV文字列の読み込み
+
+```py
+import csv
+from io import StringIO
+
+csv_str = """
+1-1,1-2,1-3
+2-1,2-2,"2-3-1
+2-3-2"
+"""
+
+# sio = StringIO(csv_str.strip())
+
+# try:
+#     # 区切り文字を判別
+#     dialect = csv.Sniffer().sniff(sio.readline())
+# except:
+#     dialect = csv.excel
+
+# sio.seek(0)
+
+for row in csv.reader(StringIO(csv_str.strip())):
+    print(row)
+
+```
+
+> ['1-1', '1-2', '1-3']
+>
+> ['2-1', '2-2', '2-3-1\n2-3-2']
+
 ##### 書き込み
 
 ###### 上書き
@@ -7648,6 +7679,28 @@ print(ini['db']['host'])
 > hogepiyo
 
 > fuga
+#### TSV ファイル
+
+###### メモリ上のTSV文字列の読み込み
+
+```py
+import csv
+from io import StringIO
+
+csv_str = """
+1-1\t1-2\t1-3
+2-1\t2-2\t"2-3-1
+2-3-2"
+"""
+
+for row in csv.reader(StringIO(csv_str.strip()), csv.excel_tab):
+    print(row)
+
+```
+
+> ['1-1', '1-2', '1-3']
+>
+> ['2-1', '2-2', '2-3-1\n2-3-2']
 
 #### XMLファイル
 
