@@ -705,6 +705,10 @@ print(dt.microsecond)
 >
 > 354115
 
+### 祝日判定
+
+[emasaka/jpholidayp](https://github.com/emasaka/jpholidayp)
+
 ### 日付の生成
 
 ```py
@@ -2736,6 +2740,40 @@ print(lst)
 > ['bar', 'bar', 'foo', 'foo', 'hoge', 'hoge', 'piyo', 'piyo']
 
 > ['bar', 'bar', 'foo', 'foo', 'hoge', 'hoge', 'piyo', 'piyo']
+
+#### ソート条件を変える
+
+ラムダ式を指定すると、要素ごとに関数を実行した結果を基にソートされる
+
+* 文字数でソート
+
+```py
+print(len)
+
+lst = ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
+sortedlist = sorted(lst, key=len)
+print(lst)
+print(sortedlist)
+```
+
+> \<built-in function len\>
+>
+> ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
+>
+> ['foo', 'bar', 'foo', 'bar', 'piyo', 'hoge', 'piyo', 'hoge']
+
+* 末尾の文字のアルファベット順でソート
+
+```py
+lst = ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
+sortedlist = sorted(lst, key=lambda x: x[-1:])
+print(lst)
+print(sortedlist)
+```
+
+> ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
+>
+> ['hoge', 'hoge', 'foo', 'piyo', 'foo', 'piyo', 'bar', 'bar']
 
 ### リストの重複する要素を除去
 
@@ -4918,6 +4956,48 @@ list(range(*args))
 
 list(range(1, 5))   # と同じ
 ```
+
+## 関数オブジェクト
+
+### 関数を変数に代入
+
+* def
+  * 中身は複数の文。単独の文になる
+* lambda
+  * 中身は単一の式。式になる
+
+```py
+print(print)
+
+def print2(x):
+    print(x)
+
+print(print2)
+
+print3 = print2
+print(print3)
+
+print3('foobar')
+```
+
+> \<built-in function print\>
+>
+> \<function print2 at 0x00000206FF1A4558\>
+>
+> \<function print2 at 0x00000206FF1A4558\>
+>
+> foobar
+
+```py
+print4 = lambda x: print(x)
+print(print4)
+
+print4('foobar')
+```
+
+> \<function <lambda> at 0x00000206FF1A40D8\>
+>
+> foobar
 
 # I/O
 
@@ -8165,6 +8245,8 @@ class MyClass:
     '''docstring of MyClass'''
 
     # クラス変数
+    id = 1
+    name = 'n1'
     publicClassVariable = 10
 
     # プライベートクラス変数
@@ -8180,9 +8262,16 @@ class MyClass:
         del(self.publicInstanceVariable)
         del(self.__privateInstanceVariable)
 
-    # 文字列化
+    # 正式な文字列表現(__str__が定義されていないときに呼び出される)
+    def __repr__(self):
+        return '{}[ID:{}]'.format(self.name, self.id)
+
+    # 非公式な文字列表現(print、format、strなどの組み込み関数でオブジェクトを指定したときに呼び出される)
     def __str__(self):
         return 'MyClass: ' + self.__privateInstanceVariable
+
+    def __unicode__(self):
+        return '__unicode__'
 
     def getName(self):          # getter
         return self.__privateInstanceVariable
@@ -8216,37 +8305,107 @@ myClass1.publicInstanceVariable3 = 4
 
 # プライベートインスタンス変数にアクセス
 # インスタンス._クラス名__変数名
-print myClass1._MyClass__publicInstanceVariable
+print(myClass1._MyClass__publicInstanceVariable)
 
 # パプリッククラス変数へアクセス
 # インスタンス名でもクラス名でも可
 # 　インスタンス変数が存在しない場合は「インスタンス.変数名」はクラス変数を参照するが、
 # 　値を代入するとインスタンス変数が追加されるため、それ以降はインスタンス変数が参照される)
-print Widget.classVal
-print w.classVal
+print(Widget.classVal)
+print(w.classVal)
 
 # クラス変数の追加
 MyClass.publicClassVariable3 = 40
 
 # プライベートクラス変数にアクセス
 # インスタンス._クラス名__変数名
-print myClass1._MyClass__privateInstanceVariable
+print(myClass1._MyClass__privateInstanceVariable)
 
 
 myClass1 = MyClass(1, 2)    # インスタンス化
 myClass1.getName()          # メソッド実行
 mg = myClass1.getName       # 別名
 mg()                        # メソッド実行
+```
+
+## オブジェクトの文字列表現
+
+```py
+class MyClass:
+
+    id = 1
+    name = 'n1'
+
+    # 正式な文字列表現(__str__が定義されていないときに呼び出される)
+    def __repr__(self):
+        return 'repr: {}[ID:{}]'.format(self.name, self.id)
+
+    # 非公式な文字列表現(print、format、strなどの組み込み関数でオブジェクトを指定したときに呼び出される)
+    def __str__(self):
+        return 'str: {}[ID:{}]'.format(self.name, self.id)
+
+    def __unicode__(self):
+        return 'unicode: {}[ID:{}]'.format(self.name, self.id)
 
 
-# クラスの継承
+myClass1 = MyClass()
+print("myClass1: " + myClass1)
+print("myClass1: " + str(myClass1))
+```
+
+> TypeError: can only concatenate str (not "MyClass") to str
+>
+> myClass1: str: n1[ID:1]
+
+## オブジェクトの属性の参照と存在チェック
+
+```py
+
+class MyClass:
+    publicClassVariable = 10
+    __privateClassVariable = 20
+
+    def __init__(self):
+        self.val1 = 10
+        self.val2 = 20
+
+myClass = MyClass()
+
+# 属性のリスト
+print(dir(myClass))
+
+# dict属性
+print(vars(myClass))
+
+# 属性値の参照
+print(myClass.publicClassVariable)
+
+# 属性の存在チェック
+hasattr(myClass, 'publicClassVariable')
+hasattr(myClass, '__privateClassVariable')
+```
+
+> ['_MyClass__privateClassVariable', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'publicClassVariable', 'val1', 'val2']
+>
+> {'val1': 10, 'val2': 20}
+>
+> 10
+>
+> True
+>
+> False
+
+## クラスの継承
+
+```py
 class MySubClass(MyClass):
     def Calc(self):  # オーバーロード
         print('sub  a')
+```
 
-# 多重継承
+### 多重継承
 
-
+```py
 class A(object):
     def __init__(self):
         print 'Initialize A.'
@@ -8287,46 +8446,7 @@ class Main(A, B, C):
 
 m = Main()
 m.method()
-
 ```
-
-## オブジェクトの属性の参照と存在チェック
-
-```py
-
-class MyClass:
-    publicClassVariable = 10
-    __privateClassVariable = 20
-
-    def __init__(self):
-        self.val1 = 10
-        self.val2 = 20
-
-myClass = MyClass()
-
-# 属性のリスト
-print(dir(myClass))
-
-# dict属性
-print(vars(myClass))
-
-# 属性値の参照
-print(myClass.publicClassVariable)
-
-# 属性の存在チェック
-hasattr(myClass, 'publicClassVariable')
-hasattr(myClass, '__privateClassVariable')
-```
-
-> ['_MyClass__privateClassVariable', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'publicClassVariable', 'val1', 'val2']
->
-> {'val1': 10, 'val2': 20}
->
-> 10
->
-> True
->
-> False
 
 # モジュール
 
