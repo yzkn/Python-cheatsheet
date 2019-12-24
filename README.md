@@ -1244,7 +1244,7 @@ print(parse('2019-08-07T03:04:05.432100JST').astimezone(JST))
 1. 値の幅は実際に 0 から 61 です; 60 は うるう秒\<leap seconds\> を表し、 61 は歴史的理由によりサポートされています。
 1. strptime() 関数で使う場合、%U および %W を計算に使うのは曜日と年を指定したときだけです。
 
-## str
+## str(文字列)
 
 ```py
 print('str\nstr')
@@ -1836,6 +1836,19 @@ for c in 'abc':
 > b
 >
 > c
+
+##### インデックスを取得
+
+```py
+for i, c in enumerate('abc'):
+    print("{0}: {1}".format(i, c))
+```
+
+> 0: a
+>
+> 1: b
+>
+> 2: c
 
 #### 部分文字列を全パターン取得する
 
@@ -3280,6 +3293,65 @@ print(dct2)
 >
 > {'1': 'f', '2': 's', '3': 't'}
 
+### 辞書の反復処理
+
+#### インデックスとキー
+
+```py
+dct = { 'key1':'val1', 'key2':'val2', 'key3':'val3'}
+for index, key in enumerate(dct):
+    print(f'{index}: {key}')
+```
+
+> 0: key1
+>
+> 1: key2
+>
+> 2: key3
+
+#### インデックスと値
+
+```py
+dct = { 'key1':'val1', 'key2':'val2', 'key3':'val3'}
+for index, value in enumerate(dct.values()):
+    print(f'{index}: {value}')
+```
+
+> 0: val1
+>
+> 1: val2
+>
+> 2: val3
+
+#### インデックスと要素
+
+```py
+dct = { 'key1':'val1', 'key2':'val2', 'key3':'val3'}
+for index, item in enumerate(dct.items()):
+    print(f'{index}: {item}')
+```
+
+> 0: ('key1', 'val1')
+>
+> 1: ('key2', 'val2')
+>
+> 2: ('key3', 'val3')
+
+#### 複数の辞書を同時に繰り返す
+
+```py
+dct1 = { 'key1-1':'val1-1', 'key1-2':'val1-2', 'key1-3':'val1-3'}
+dct2 = { 'key2-1':'val2-1', 'key2-2':'val2-2', 'key2-3':'val2-3'}
+for index, item in enumerate(zip(dct1, dct1.values(), dct1.items(), dct2, dct2.values(), dct2.items())):
+    print(f'{index}: {item}')
+```
+
+> 0: ('key1-1', 'val1-1', ('key1-1', 'val1-1'), 'key2-1', 'val2-1', ('key2-1', 'val2-1'))
+>
+> 1: ('key1-2', 'val1-2', ('key1-2', 'val1-2'), 'key2-2', 'val2-2', ('key2-2', 'val2-2'))
+>
+> 2: ('key1-3', 'val1-3', ('key1-3', 'val1-3'), 'key2-3', 'val2-3', ('key2-3', 'val2-3'))
+
 ### 辞書の要素の存在チェック
 
 ```py
@@ -3453,6 +3525,26 @@ print(list((1, 2, 3))  # タプルからリスト
 >
 > [1, 2, 3]
 
+### タプルの反復処理
+
+#### インデックスを取得
+
+```py
+t = tuple(range(5, 10))
+for (index, item) in enumerate(t):
+    print(index, item)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 8
+>
+> 4 9
+
 ### タプルの入れ子
 
 ```py
@@ -3483,7 +3575,7 @@ print(res)
 ##### 多重タプル
 
 ```py
-
+#TODO
 ```
 
 ### シーケンス・アンパッキング
