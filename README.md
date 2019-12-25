@@ -1919,6 +1919,48 @@ hi
 i
 ```
 
+### エンコード・デコード
+
+#### Base64
+
+```py
+import base64
+
+filepath = '/path/to/file'
+filecontents = open(filepath, 'rb').read()
+
+# エンコード
+encoded = base64.b64encode( filecontents )
+print(encoded)
+
+# デコード
+decoded = base64.b64decode( encoded )
+if filecontents == decoded:
+    print('success')
+else:
+    print('failure')
+```
+
+#### URL safe な Base64
+
+```py
+import base64
+
+filepath = '/path/to/file'
+filecontents = open(filepath, 'rb').read()
+
+# エンコード
+encoded = base64.urlsafe_b64encode( filecontents )
+print(encoded)
+
+# デコード
+decoded = base64.urlsafe_b64decode( encoded )
+if filecontents == decoded:
+    print('success')
+else:
+    print('failure')
+```
+
 ### 検索
 
 #### 単純な検索
