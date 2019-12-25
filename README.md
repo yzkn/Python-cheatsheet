@@ -2015,6 +2015,13 @@ haystack.endswith('xyz')
 
 #### 正規表現による検索
 
+##### パターンのコンパイル
+
+```py
+import re
+r = re.compile('(\w)')
+```
+
 ##### 文字列の先頭でマッチ
 
 ```py
@@ -2502,6 +2509,18 @@ print(content)
 > fooba#oge
 >
 > piyo
+
+##### 数字のみ抽出
+
+```py
+# 正規表現操作のライブラリ
+import re
+content =  '123１２３一二三'
+numstr = re.sub('\\D', '', content)
+print(numstr)
+```
+
+> 123 １２３
 
 ##### ファイル名に使用できない文字を除去
 
@@ -3043,7 +3062,7 @@ print(strlist)
 fivelist = [i for i in l if i % 5 == 0 and i <= 50]
 print(fivelist)
 
-fivelist = [i  if i % 5 == 0 and i <= 50 else -1 for i in l]
+fivelist = [i  if i % 5 == 0 and i <= 50 else -1 for i in l] # elseがある場合は三項演算子なので順序が変わる
 print(fivelist)
 
 # 多次元リスト
@@ -3181,6 +3200,19 @@ dct = {}
 > [(1, 'first'), (2, 'secondsecond'), (3, 'third'), (4, 'fourth')]
 
 > {2: 'secondsecond', 3: 'third', 4: 'fourth'}
+
+### 辞書の要素を参照
+
+```py
+dct = { 'key1':'first', 'key2':'second', 'key3':'third'}
+
+dct['key1']
+dct.key1 # 辞書には使用できない(オブジェクトの属性を参照する際に使用)
+```
+
+> 'first'
+>
+> AttributeError: 'dict' object has no attribute 'key1'
 
 ### 辞書を生成(リスト・タプルから変換／初期化)
 
@@ -3554,7 +3586,7 @@ print(t)
 
 > (('foo', 'bar', 123, 456), ('piyo', 789))
 
-#### 多重タプルをフラット化
+#### 多重タプルをフラット化(flatten)
 
 ##### 2 重タプル
 
