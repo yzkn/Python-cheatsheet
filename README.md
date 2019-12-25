@@ -362,6 +362,7 @@
   - [一時的にモジュール検索パスを追加](#一時的にモジュール検索パスを追加)
   - [恒久的にモジュール検索パスを追加](#恒久的にモジュール検索パスを追加)
 - [pydoc](#pydoc)
+- [ロギング](#ロギング)
 - [エラーメッセージ](#エラーメッセージ)
   - [シンタックスハイライト](#シンタックスハイライト)
 
@@ -10165,6 +10166,24 @@ $ pydoc python3md-pydoc
 
 # HTMLファイルを生成
 $ pydoc python3md-pydoc
+```
+
+<a id="markdown-ロギング" name="ロギング"></a>
+
+# ロギング
+
+logging ライブラリを利用する
+
+```py
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s")
+
+logger.debug("message")
+logger.info("message")
+logger.warning("message")
+logger.error("message")
+logger.critical("message")
 ```
 
 <a id="markdown-エラーメッセージ" name="エラーメッセージ"></a>
