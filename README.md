@@ -301,8 +301,8 @@
           - [辞書に格納(csv.DictReader)](#辞書に格納csvdictreader)
           - [メモリ上の CSV 文字列の読み込み](#メモリ上の-csv-文字列の読み込み)
         - [書き込み](#書き込み-1)
-          - [上書き](#上書き)
-          - [追記](#追記)
+          - [上書き(mode:w)](#上書きmodew)
+          - [追記(mode:a)](#追記modea)
       - [JSON ファイル](#json-ファイル)
         - [json.tool](#jsontool)
         - [ファイルから読み込み](#ファイルから読み込み)
@@ -8714,25 +8714,88 @@ for row in csv.reader(StringIO(csv_str.strip())):
 
 ##### 書き込み
 
-<a id="markdown-上書き" name="上書き"></a>
+<a id="markdown-上書きmodew" name="上書きmodew"></a>
 
-###### 上書き
+###### 上書き(mode:w)
 
 ```py
 import csv
+
+# リストを1行ずつ書き込み
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    # delimiter='\t'とすればタブ区切り(tsv)
+    # quoting=csv.QUOTE_ALLとすれば区切り文字などを含まない要素もquotecharで囲まれ、
+    # quoting=csv.QUOTE_NONNUMERICとすれば数値以外が囲まれる
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+
+# 2次元配列を一括書き込み
 with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
     spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     spamwriter.writerow(['foo', 'bar', 'hoge'])
-    spamwriter.writerow(['foo', 'bar', 'hoge'])
+    spamwriter.writerows([['foo', 'bar'],['hoge', 'piyo']]) # 2次元配列
+
+# 辞書の値を書き込み
+dct1 = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4, 'h5': 5}
+
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.DictWriter(csvfile, ['h1', 'h2', 'h3', 'h4', 'unknownkey', 'h5']) # ['h1', 'h2', 'h3', 'h5']のように、不足している場合はwriterowでValueError
+    spamwriter.writeheader()
+    spamwriter.writerow(dct1)
+
+# 辞書の値を書き込み(fieldnamesに指定した以外のキーを無視)
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.DictWriter(csvfile, ['h1', 'h2', 'h3', 'h5'], extrasaction='ignore')
+    spamwriter.writeheader()
+    spamwriter.writerow(dct1)
+
+# 辞書の配列を書き込み
+dct1 = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4, 'h5': 5}
+dct2 = {'h1': 11, 'h2': 12, 'h3': 13, 'h5': 15}
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.DictWriter(csvfile, dct1.keys())
+    spamwriter.writeheader()
+    spamwriter.writerows([dct1,dct2])
 ```
 
+> \# 1 行ずつ書き込み
+>
 > 14
 >
 > 14
 
-<a id="markdown-追記" name="追記"></a>
+> \# 2 次元配列を一括書き込み
+>
+> foo,bar,hoge
+>
+> foo,bar
+>
+> hoge,piyo
 
-###### 追記
+> \# 辞書の値を書き込み
+>
+> h1,h2,h3,h4,unknownkey,h5
+>
+> 1,2,3,4,,5
+
+> \# 辞書の値を書き込み(fieldnames に指定した以外のキーを無視)
+>
+> h1,h2,h3,h5
+>
+> 1,2,3,5
+
+> \# 辞書の配列を書き込み
+>
+> h1,h2,h3,h4,h5
+>
+> 1,2,3,4,5
+>
+> 11,12,13,,15
+
+<a id="markdown-追記modea" name="追記modea"></a>
+
+###### 追記(mode:a)
 
 ```py
 import csv
