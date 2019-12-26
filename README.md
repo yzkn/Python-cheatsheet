@@ -363,6 +363,7 @@
   - [恒久的にモジュール検索パスを追加](#恒久的にモジュール検索パスを追加)
 - [pydoc](#pydoc)
 - [ロギング](#ロギング)
+  - [ファイル出力](#ファイル出力)
 - [エラーメッセージ](#エラーメッセージ)
   - [シンタックスハイライト](#シンタックスハイライト)
 
@@ -7510,7 +7511,7 @@ if os.path.exists(DIRPATH):
         )
     print(RESULT_DIRPATH)
 
-# os.makedirs(DIRPATH), exist_ok=True
+# os.makedirs(DIRPATH, exist_ok=True)
 os.makedirs(DIRPATH)
 ```
 
@@ -10176,14 +10177,31 @@ logging ライブラリを利用する
 
 ```py
 import logging
-logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s")
+logger = logging.getLogger(__name__)
 
 logger.debug("message")
 logger.info("message")
 logger.warning("message")
 logger.error("message")
 logger.critical("message")
+```
+
+<a id="markdown-ファイル出力" name="ファイル出力"></a>
+
+## ファイル出力
+
+```py
+import logging
+import os
+
+LOG_DIR = 'logfile'
+os.makedirs(LOG_DIR, exist_ok=True)
+
+logging.basicConfig(filename=os.path.join(LOG_DIR, 'logger.log'), level=logging.INFO, format="%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s")
+logger = logging.getLogger(__name__)
+
+logger.info("message")
 ```
 
 <a id="markdown-エラーメッセージ" name="エラーメッセージ"></a>
