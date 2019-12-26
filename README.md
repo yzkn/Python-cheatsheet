@@ -297,6 +297,8 @@
           - [リストを書き込み(a: 追記)](#リストを書き込みa-追記)
       - [CSV ファイル](#csv-ファイル)
         - [読み込み](#読み込み-1)
+          - [リストに格納(csv.reader)](#リストに格納csvreader)
+          - [辞書に格納(csv.DictReader)](#辞書に格納csvdictreader)
           - [メモリ上の CSV 文字列の読み込み](#メモリ上の-csv-文字列の読み込み)
         - [書き込み](#書き込み-1)
           - [上書き](#上書き)
@@ -8611,6 +8613,10 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') 
 
 Windows 環境の場合は、明示的に UTF-8 を指定しないと SJIS として読み書きされる
 
+<a id="markdown-リストに格納csvreader" name="リストに格納csvreader"></a>
+
+###### リストに格納(csv.reader)
+
 ```py
 import csv
 import os
@@ -8623,6 +8629,53 @@ with open(os.path.join('test-fileio', 'inpututf8.csv'), encoding='utf_8', newlin
     for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
         print(', '.join(row))
 ```
+
+> 1, 2, 3
+> 4, 5, 6
+> 7, 8, 9
+
+<a id="markdown-辞書に格納csvdictreader" name="辞書に格納csvdictreader"></a>
+
+###### 辞書に格納(csv.DictReader)
+
+```py
+import csv
+import os
+
+with open(os.path.join('test-fileio', 'inputsjis.csv'), encoding='shift_jis', newline='') as csvfile:
+    f = csv.DictReader(csvfile, delimiter=',', quotechar='"')
+    l = [row for row in f]
+    print(l)
+
+# 1行目がヘッダでない場合は、fieldnamesにヘッダ項目を指定する
+with open(os.path.join('test-fileio', 'inputsjis.csv'), encoding='shift_jis', newline='') as csvfile:
+    f = csv.DictReader(csvfile, fieldnames=['h1', 'h2', 'h3'])
+    for row in f:
+        print(row)
+
+# 1列目がデータではない場合(IDなど)
+fieldnames = ['h1', 'h2', 'h3']
+with open(os.path.join('test-fileio', 'inpututf8.csv'), encoding='utf_8', newline='') as csvfile:
+    f = csv.DictReader(csvfile, fieldnames=fieldnames)
+    l = [row for row in f]
+
+print([m.pop(fieldnames[0]) for m in l])
+print(l)
+```
+
+> [{'1': '4', '2': '5', '3': '6'}, {'1': '7', '2': '8', '3': '9'}]
+
+> \# 1 行目がヘッダでない場合は、fieldnames にヘッダ項目を指定する
+>
+> {'h1': '1', 'h2': '2', 'h3': '3'}
+>
+> {'h1': '4', 'h2': '5', 'h3': '6'}
+>
+> {'h1': '7', 'h2': '8', 'h3': '9'}
+
+> \# 1 列目がデータではない場合(ID など)
+>
+> [{'h2': '2', 'h3': '3'}, {'h2': '5', 'h3': '6'}, {'h2': '8', 'h3': '9'}]
 
 <a id="markdown-メモリ上の-csv-文字列の読み込み" name="メモリ上の-csv-文字列の読み込み"></a>
 
@@ -10192,14 +10245,14 @@ logging ライブラリを利用する
 
 ```py
 import logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s")
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s')
 logger = logging.getLogger(__name__)
 
-logger.debug("message")
-logger.info("message")
-logger.warning("message")
-logger.error("message")
-logger.critical("message")
+logger.debug('message')
+logger.info('message')
+logger.warning('message')
+logger.error('message')
+logger.critical('message')
 ```
 
 <a id="markdown-ファイル出力" name="ファイル出力"></a>
@@ -10213,10 +10266,10 @@ import os
 LOG_DIR = 'logfile'
 os.makedirs(LOG_DIR, exist_ok=True)
 
-logging.basicConfig(filename=os.path.join(LOG_DIR, 'logger.log'), level=logging.INFO, format="%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s")
+logging.basicConfig(filename=os.path.join(LOG_DIR, 'logger.log'), level=logging.INFO, format='%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s')
 logger = logging.getLogger(__name__)
 
-logger.info("message")
+logger.info('message')
 ```
 
 <a id="markdown-エラーメッセージ" name="エラーメッセージ"></a>
