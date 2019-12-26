@@ -314,7 +314,8 @@
         - [ファイルから読み込み](#ファイルから読み込み-1)
       - [TSV ファイル](#tsv-ファイル) - [メモリ上の TSV 文字列の読み込み](#メモリ上の-tsv-文字列の読み込み)
       - [XML ファイル](#xml-ファイル)
-        - [ファイルから読み込み](#ファイルから読み込み-2)
+        - [ファイルから一括読み込み](#ファイルから一括読み込み)
+        - [ファイルから逐次的に読み込み](#ファイルから逐次的に読み込み)
         - [文字列から読み込み](#文字列から読み込み-1)
         - [書き込み](#書き込み-3)
       - [ARFF ファイル](#arff-ファイル)
@@ -8958,9 +8959,9 @@ for row in csv.reader(StringIO(csv_str.strip()), csv.excel_tab):
 
 #### XML ファイル
 
-<a id="markdown-ファイルから読み込み-2" name="ファイルから読み込み-2"></a>
+<a id="markdown-ファイルから一括読み込み" name="ファイルから一括読み込み"></a>
 
-##### ファイルから読み込み
+##### ファイルから一括読み込み
 
 ```py
 import os
@@ -8992,6 +8993,20 @@ for child in root:
 > food {'title': '004'}
 >
 > food {'title': '005'}
+
+<a id="markdown-ファイルから逐次的に読み込み" name="ファイルから逐次的に読み込み"></a>
+
+##### ファイルから逐次的に読み込み
+
+```py
+import os
+import xml.etree.ElementTree as ET
+
+filepath = os.path.join('test-fileio', 'inpututf8.xml')
+for event, elem in ET.iterparse(filepath):
+    print(event, elem.tag)
+    elem.clear()
+```
 
 <a id="markdown-文字列から読み込み-1" name="文字列から読み込み-1"></a>
 
