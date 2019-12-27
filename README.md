@@ -5,6 +5,7 @@
 - [おまじない](#おまじない)
   - [shebang](#shebang)
 - [命名規則](#命名規則)
+- [予約語](#予約語)
 - [演算子](#演算子)
   - [演算子の優先順位](#演算子の優先順位)
   - [比較](#比較)
@@ -399,6 +400,34 @@
 | クラス, 例外, 型変数 | 英数大小文字 | 大文字         |
 | メソッド, 関数,変数  | 英数小文字   | アンダースコア |
 | 定数                 | 英数大文字   | アンダースコア |
+
+<a id="markdown-予約語" name="予約語"></a>
+
+# 予約語
+
+キーワードの一覧を確認する
+
+```py
+import keyword
+
+print(len(keyword.kwlist))
+print(keyword.kwlist)
+```
+
+> 35
+>
+> ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']
+
+ある文字列がキーワードか判定する
+
+```py
+import keyword
+
+target = keyword.kwlist[0]
+print(keyword.iskeyword(target))
+```
+
+> True
 
 <a id="markdown-演算子" name="演算子"></a>
 
