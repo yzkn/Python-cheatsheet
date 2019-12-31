@@ -2281,7 +2281,7 @@ print('あいうえお')
 print(len('あいうえお'))        # uをつけなくてもUnicodeとして扱われる
 print(b'あいうえお')
 print(len(b'あいうえお'))       # バイト列として扱われる
-print(r'あいう\nえお')
+print(r'あいう\nえお')          # Raw文字列
 print(len(r'あいう\nえお'))
 ```
 
@@ -2672,13 +2672,29 @@ r = re.compile(r'(\w)')
 ###### パターンを文字列変数からコンパイル
 
 ```py
-pattern_str = '([a-z]+)\s'
-print(r”%s” % pattern_str)
-pattern = re.compile(r”%s” % pattern_str)
-pattern.match('abc de')
+s = r'C:\Users\y\Documents'     # Raw文字列
+print(s)                        # C:\Users\y\Documents
+
+s = 'C:\\Users\\y\\Documents'
+print(s)                        # C:\Users\y\Documents
+
+p = 'y\\'
+print(re.search(repr(p)[1:-1], s)) # <re.Match object; span=(9, 11), match='y\\'>
 ```
 
-> \<re.Match object; span=(0, 4), match='abc '>
+* raw文字列でも、引用符をバックスラッシュでエスケープできるが、バックスラッシュ自体も文字列に残る
+* * raw文字列の末尾に奇数個連続したバックスラッシュは置けない
+* * `r"\""` はOK、 `r"\"` はNG
+
+```py
+print(re.search('y', s))        # <re.Match object; span=(9, 10), match='y'>
+print(re.search(r'y\', s))      # SyntaxError: EOL while scanning string literal
+print(re.search('y\', s))       # SyntaxError: EOL while scanning string literal
+print(re.search(r'y\\', s))     # <re.Match object; span=(9, 11), match='y\\'>
+print(re.search('y\\', s))      # re.error: bad escape (end of pattern) at position 1
+print(re.search(r'y\\\', s))    # SyntaxError: EOL while scanning string literal
+print(re.search('y\\\', s))     # SyntaxError: EOL while scanning string literal
+```
 
 
 <a id="markdown-文字列の先頭でマッチ" name="文字列の先頭でマッチ"></a>
