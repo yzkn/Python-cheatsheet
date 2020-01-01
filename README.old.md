@@ -1,24 +1,3 @@
-# 変数
-
-```py
-name = 3
-
-# 異なる方の値を代入
-name = 'Suzuki'
-
-# 変数の削除
-del name
-
-print(name)
-```
-
-```py
-# 多重代入
-x = y = z = 0
-```
-
-> NameError: name 'name' is not defined
-
 # データ型
 
 ```py
@@ -131,26 +110,7 @@ print(isinstance(100, (int, str)))
 >
 > True
 
-## type()と isinstance()の差異
-
-継承を考慮
-
-```py
-print(type(False) is bool)
-print(type(False) is int)
-
-# boolはintのサブクラス ⇒ isinstanceは継承元の型にもTrueを返す
-print(isinstance(False, bool))
-print(isinstance(False, int))
-```
-
-> True
->
-> False
->
-> True
->
-> True
+---
 
 ## boolean
 
