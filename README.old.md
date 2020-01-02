@@ -1,117 +1,3 @@
-# データ型
-
-```py
-type(True)
-```
-
-> <class 'bool'>
-
-```py
-# 1
-type(1)
-type(int('1'))
-type(float('1'))
-
-# 1.23
-type(1.23)
-type(int('1.23'))
-type(float('1.23'))
-
-# 1 + 1.23
-type(1 + 1.23)
-
-# 10進数以外
-type(0b11) # 2進数
-type(0o11) # 8進数
-type(0x11) # 16進数
-```
-
-> \# 1
->
-> <class 'int'>
->
-> <class 'int'>
->
-> <class 'float'>
->
-> \# 1.23
->
-> <class 'float'>
->
-> ValueError: invalid literal for int() with base 10: '1.23'
->
-> <class 'float'>
->
-> \# 1 + 1.23
->
-> <class 'float'>
->
-> \# 10 進数以外
->
-> <class 'int'>
->
-> <class 'int'>
->
-> <class 'int'>
-
-```py
-type('str')
-```
-
-> <class 'str'>
-
-```py
-type({0:0, 1:1, 2:2})
-type([0, 1, 2])
-type({0, 1, 2})
-type((0, 1, 2))
-```
-
-> <class 'dict'>
->
-> <class 'list'>
->
-> <class 'set'>
->
-> <class 'tuple'>
-
-## 型の判定
-
-## isinstance()
-
-```py
-type('str') is str
-type(1) is not str
-
-def is_valid_type(v):
-    return type(v) in (int, str)
-
-print(is_valid_type(1))
-print(is_valid_type('1'))
-```
-
-> True
->
-> True
->
-> True
->
-> True
-
-```py
-print(isinstance(1, str))
-print(isinstance('1', str))
-print(isinstance(100, (int, str)))
-```
-
-> False
->
-> True
->
-> True
-
----
-
 ## boolean
 
 | True                                                                                                        | False                                                                                   |
@@ -197,6 +83,11 @@ if s.isnumeric():
     i = int(s)  # 文字列型からのキャスト
     print('{}'.format(i))
 
+s = '1.23' # 小数点を含む数はエラーとなる
+if s.isnumeric(): False
+    pass
+i = int(s)  # 文字列型からのキャスト
+
 s = '１２３' # 全角数字文字列からint型へのキャスト(－や．は全角だとエラーとなる)
 if s.isnumeric():
     i = int(s)  # 文字列型からのキャスト
@@ -217,6 +108,10 @@ if s.isnumeric():
 > \# '1'
 >
 > 1
+>
+> \# 1.23
+>
+> ValueError: invalid literal for int() with base 10: '1.23'
 >
 > \# '１２３'
 >
@@ -9069,6 +8964,4 @@ import colored_traceback.always
 >
 > ZeroDivisionError: division by zero
 
----
-
-Copyright (c) 2019 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
+---Copyright (c) 2019 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
