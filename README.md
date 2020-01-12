@@ -3147,6 +3147,20 @@ print(emoji.emojize('Python is :thumbs_up:'))
 
 > Python is 👍
 
+### ランダムな文字列の生成
+
+```py
+import random
+
+str_length = 10
+universe = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+generated = "".join([random.choice(universe) for x in range(str_length)])
+print(generated)
+```
+
+> XGIuCq68EQ
+
 ## リスト
 
 ```
@@ -3458,6 +3472,56 @@ for (a, b, c) in zip(*l):
 > 2 5 8
 >
 > 3 6 9
+
+##### に平坦化(flatten)
+
+##### 2 次元リストを 1 次元リストに平坦化(flatten)
+
+```py
+l = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+
+# 内包表記
+result = [item for m in l for item in m]
+
+# itertools
+from itertools import chain
+result = list(chain.from_iterable(l))
+```
+
+> [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+##### 多次元リストを 1 次元リストに平坦化(flatten)
+
+```py
+import collections.abc
+
+l = [
+    [1, [2, 3]],
+    [4, 5, [6]],
+    [[7, 8], 9]
+]
+
+def flatten(l):
+    i = 0
+    while i < len(l):
+        while isinstance(l[i], collections.Iterable):
+            if not l[i]:
+                l.pop(i)
+                i -= 1
+                break
+            else:
+                l[i:i + 1] = l[i]
+        i += 1
+    return l
+
+result = flatten(l)
+```
+
+> [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 #### リストの要素を連結した文字列を取得
 
