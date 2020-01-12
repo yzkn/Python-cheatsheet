@@ -1,98 +1,6 @@
-## 辞書
-
-### 追加・置換・削除
-
-```py
-dct = { 1:'first', 2:'two', 2:'second', 3:'third'}
-# キーが同じ要素が追加されたら上書きされる(2:'two'ではなく2:'second'が残る)
-
-# デバッグ表示
-print(str(dct))
-print('%s' % dct)
-
-# 追加
-dct[4] = 'fourth'
-
-# 置換
-dct[2] = 'secondsecond'
-
-# 検索
-if 1 in dct:
-    print(dct[1])
-    print(dct.get(1))
-
-print(dct.get(999)) # 指定したキーが存在しなければNoneを返す
-print(dct.get(999, 'not found')) # 指定したキーが存在しなければ引数2を返す
-
-dct.keys()
-list(dct.keys())
-dct.values()
-list(dct.values())
-dct.items()
-list(dct.items())
-
-# 要素を削除
-del dct[1]
-
-print(dct)
-
-# 初期化(すべての要素を削除)
-dct.clear()
-dct = {}
-```
-
-> {1: 'first', 2: 'second', 3: 'third'}
->
-> {1: 'first', 2: 'second', 3: 'third'}
->
-> first
->
-> first
-
-> None
->
-> not found
-
-> dict_keys([1, 2, 3, 4])
->
-> [1, 2, 3, 4]
->
-> dict_values(['first', 'secondsecond', 'third', 'fourth'])
->
-> ['first', 'secondsecond', 'third', 'fourth']
->
-> ict_items([(1, 'first'), (2, 'secondsecond'), (3, 'third'), (4, 'fourth')])
->
-> [(1, 'first'), (2, 'secondsecond'), (3, 'third'), (4, 'fourth')]
-
-> {2: 'secondsecond', 3: 'third', 4: 'fourth'}
-
-### 辞書の要素を参照
-
-```py
-dct = { 'key1':'first', 'key2':'second', 'key3':'third'}
-
-dct['key1']
-dct.key1 # 辞書には使用できない(オブジェクトの属性を参照する際に使用)
-```
-
-> 'first'
->
-> AttributeError: 'dict' object has no attribute 'key1'
-
 ### 辞書を生成(リスト・タプルから変換／初期化)
 
 ```py
-dct = {}
-dct = { 1:'first', 2:'second', 3:'third', }
-print(dct)
-
-
-# 辞書をコピー
-olddict = { 1:'first', 2:'second', 3:'third'}
-newdict = dict(olddict)
-print(newdict)
-
 # リストから生成
 lst = [[1, 'first'], [2, 'second'], [3, 'third']]
 dct = dict(lst)
@@ -112,10 +20,6 @@ dct = dict(zip_longest(keys, values, fillvalue=3))
 print(dct)
 ```
 
-> {1: 'first', 2: 'second', 3: 'third'}
->
-> {1: 'first', 2: 'second', 3: 'third'}
->
 > {1: 'first', 2: 'second', 3: 'third'}
 >
 > {1: 'first', 2: 'second', 3: 'third'}
