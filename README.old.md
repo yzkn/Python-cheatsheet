@@ -1,75 +1,3 @@
-### 辞書を生成(リスト・タプルから変換／初期化)
-
-```py
-# リストから生成
-lst = [[1, 'first'], [2, 'second'], [3, 'third']]
-dct = dict(lst)
-print(dct)
-
-# キーと値が別のリスト(要素数の少ないリストの要素数分だけ繰り返す)
-keys = [1, 2, 3]
-values = ['first', 'second', 'third']
-dct = dict(zip(keys, values))
-print(dct)
-
-# キーと値が別のリスト(要素数の多いリストの要素数分だけ繰り返す)
-from itertools import zip_longest
-keys = [1, 2]
-values = ['first', 'second', 'third']
-dct = dict(zip_longest(keys, values, fillvalue=3))
-print(dct)
-```
-
-> {1: 'first', 2: 'second', 3: 'third'}
->
-> {1: 'first', 2: 'second', 3: 'third'}
->
-> {1: 'first', 2: 'second', 3: 'third'}
-
-```py
-lst = [(1, 'first'), (2, 'second'), (3, 'third')]
-dct = dict(lst)
-
-tpl = ([1, 'first'], [2, 'second'], [3, 'third'])
-dct = dict(tpl)
-
-lst = ['1f', '2s', '3t']
-dct = dict(lst)
-
-tpl = ('1f', '2s', '3t')
-dct = dict(tpl)
-```
-
-### 辞書を結合
-
-```py
-dct1 = dict(('1f', '2s', '3t'))
-dct2 = dict(('4f', '5f', '6s'))
-dct3 = dict(('4x', '8e', '9n'))
-
-dct1.update(dct2)
-
-print(dct1)
-print(dct2)
-
-dct1.update(dct3)
-
-print(dct1)
-print(dct3)
-
-print({**dct2, **dct3})
-```
-
-> {'1': 'f', '2': 's', '3': 't', '4': 'f', '5': 'f', '6': 's'}
->
-> {'4': 'f', '5': 'f', '6': 's'}
-
-> {'1': 'f', '2': 's', '3': 't', '4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'}
->
-> {'4': 'x', '8': 'e', '9': 'n'}
->
-> {'4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'}
-
 ### 辞書のコピー
 
 ```py
@@ -4212,7 +4140,7 @@ with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') a
 ```
 
 ```
-﻿あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+?あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
 かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
 ```
 
