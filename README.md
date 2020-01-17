@@ -3164,7 +3164,7 @@ print(generated)
 ## リスト
 
 ```
-[ ]:リスト, ( ):タプル, { }:セット(Set／集合)／辞書
+[ ]:リスト, ( ):タプル, { }:セット／辞書
 リストは変更可能
 タプルは変更不可
 ```
@@ -3925,6 +3925,29 @@ print(dct2)
 
 #### リスト・タプルから生成
 
+##### リストから生成
+
+```py
+l = list(range(100))
+lst = [str(i) for i in l] # リスト
+dct = {li: str(li) for li in l} # 辞書
+print(dct)
+```
+
+> {0: '0', 1: '1', 2: '2', ＜中略＞ 99: '99'}
+
+###### 連番とリストの要素から生成
+
+```py
+values = ['first', 'second', 'third']
+['{0}: {1}'.format(i + 100, values[i]) for i in range(len(values))]
+['{0}: {1}'.format(i + 100, v) for i, v in enumerate(values)]
+```
+
+> ['100: first', '101: second', '102: third']
+>
+> ['100: first', '101: second', '102: third']
+
 ##### リストのリストから生成
 
 ```py
@@ -4178,3 +4201,9 @@ print(dct2)
 > {'3': 'c', '1': 'b', '4': 'a'}
 
 ### 辞書の内包表記
+
+```
+形式: {キー: 値 for 変数 in イテラブルオブジェクト}
+```
+
+`キー:`を忘れるとセット(Set／集合)になる
