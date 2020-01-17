@@ -1,34 +1,7 @@
-### 辞書のキーと値を交換
-
-```py
-dct1 = dict(('1f', '2s', '3t'))
-dct2 = {v: k for k, v in dct1.items()}
-print(dct2)
-```
-
-> {'f': '1', 's': '2', 't': '3'}
-
-### 辞書の値でソート
-
-```py
-dct1 = dict(('1f', '4s', '3t'))
-dct2 = sorted(dct1.items(), key=lambda x: x[1], reverse=True)
-print(dct2)
-```
-
-> [('3', 't'), ('4', 's'), ('1', 'f')]
-
-### 辞書の重複する要素を除去 #TODO
-
-```py
-
-```
-
->
 
 ### 辞書の内包表記
 
-波括弧`{}`を使うと集合となる
+:なしに波括弧`{}`を使うと集合となる
 
 ```py
 l = list(range(100))
