@@ -1,14 +1,3 @@
-
-### 指定した値を持つキーを取得する
-
-```py
-dct = { 1:'first', 2:'second', 3:'third', }
-keys = [k for k, v in dct.items() if v == 'first' or v == 'second']
-print(keys)
-```
-
-> [1, 2]
-
 ### 辞書のキーと値を交換
 
 ```py
