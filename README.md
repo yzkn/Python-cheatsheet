@@ -3370,6 +3370,15 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+####リストの要素の存在チェック
+
+```py
+lst = ['foo', 'bar', 'hoge']
+print('bar' in lst)
+```
+
+> True
+
 ### リストの要素を除去
 
 ```py
@@ -3889,6 +3898,31 @@ print(newdict)
 
 > {1: 'first', 2: 'second', 3: 'third'}
 
+##### 辞書を代入した場合
+
+```py
+dct1 = dict(('1f', '2s', '3t'))
+
+dct2 = dct1
+dct1['1'] = 'z'
+print(dct1)
+print(dct2)
+
+dct1 = dict(('1f', '2s', '3t'))
+dct2 = dct1.copy()
+dct1['1'] = 'z'
+print(dct1)
+print(dct2)
+```
+
+> {'1': 'z', '2': 's', '3': 't'}
+>
+> {'1': 'z', '2': 's', '3': 't'}
+
+> {'1': 'z', '2': 's', '3': 't'}
+>
+> {'1': 'f', '2': 's', '3': 't'}
+
 #### リスト・タプルから生成
 
 ##### リストのリストから生成
@@ -4026,23 +4060,40 @@ dct.key1 # 辞書には使用できない(オブジェクトの属性を参照�
 >
 > AttributeError: 'dict' object has no attribute 'key1'
 
-```py
-# 検索
-if 1 in dct:
-    print(dct[1])
-    print(dct.get(1))
+#### 存在しないキーを指定した場合
 
-print(dct.get(999)) # 指定したキーが存在しなければNoneを返す
-print(dct.get(999, 'not found')) # 指定したキーが存在しなければ引数2を返す
+```py
+dct = { 'key1':'first', 'key2':'second', 'key3':'third'}
 ```
 
-> first
->
-> first
+| 関数                             | 値                   | 備考                                      |
+| -------------------------------- | -------------------- | ----------------------------------------- |
+| `dct['key999']`                  | `KeyError: 'key999'` | エラーが発生する                          |
+| `dct.get('key999')`              | `None`               | 指定したキーが存在しなければ None を返す  |
+| `dct.get('key999', 'not found')` | `not found`          | 指定したキーが存在しなければ引数 2 を返す |
 
-> None
->
-> not found
+#### 辞書の要素の存在チェック
+
+```py
+dct = { 1:'first', 2:'second', 3:'third', }
+```
+
+| 項目     | 関数                          | 値      |
+| -------- | ----------------------------- | ------- |
+| キー     | `1 in dct`                    | `True`  |
+|          | `1 not in dct`                | `False` |
+| 値       | `'first' in dct.values()`     | `True`  |
+| キーと値 | `(1, 'first') in dct.items()` | `True`  |
+
+#### 指定した値を持つキーを取得する
+
+```py
+targets = ['first', 'third']
+keys = [k for k, v in dct.items() if v in targets]
+print(keys)
+```
+
+> [1, 3]
 
 ### 辞書の要素を除去
 
@@ -4057,29 +4108,73 @@ print(dct)
 
 > {'key2': 'second', 'key3': 'third'}
 
-### 辞書の反復処理
+### 辞書の反復処理(キー・値・インデックスを取得)
 
 ```py
 dct = { 1:'first', 2:'second', 3:'third'}
-
-dct.keys()
-list(dct.keys())
-
-dct.values()
-list(dct.values())
-
-dct.items()
-list(dct.items())
 ```
 
-> dict_keys([1, 2, 3])
->
-> [1, 2, 3]
+| 項目               | 関数                                                                                                    | 値                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| キー               | `dct.keys()`                                                                                            | `dict_keys([1, 2, 3])`                                           |
+|                    | `list(dct.keys())`                                                                                      | `[1, 2, 3]`                                                      |
+| 値                 | `dct.values()`                                                                                          | `dict_values(['first', 'second', 'third'])`                      |
+|                    | `list(dct.values())`                                                                                    | `['first', 'second', 'third']`                                   |
+| キーと値のタプル   | `dct.items()`                                                                                           | `dict_items([(1, 'first'), (2, 'second'), (3, 'third')])`        |
+|                    | `list(dct.items())`                                                                                     | `[(1, 'first'), (2, 'second'), (3, 'third')]`                    |
+| インデックスとキー | `for index, key in enumerate(dct):` <br>&nbsp;&nbsp;&nbsp;&nbsp;`print(f'{index}: {key}')`              | `0: 1` <br> `1: 2` <br> `2: 3`                                   |
+| インデックスと値   | `for index, value in enumerate(dct.values()):` <br>&nbsp;&nbsp;&nbsp;&nbsp;`print(f'{index}: {value}')` | `0: first` <br> `1: second` <br> `2: third`                      |
+| インデックスと要素 | `for index, item in enumerate(dct.items()):` <br>&nbsp;&nbsp;&nbsp;&nbsp;`print(f'{index}: {item}')`    | `0: (1, 'first')` <br> `1: (2, 'second')` <br> `2: (3, 'third')` |
 
-> dict_values(['first', 'second', 'third'])
->
-> ['first', 'second', 'third']
+#### 複数の辞書を同時に繰り返す
 
-> dict_items([(1, 'first'), (2, 'second'), (3, 'third')])
+```py
+dct1 = {
+    'key1-1':'val1-1',
+    'key1-2':'val1-2',
+    'key1-3':'val1-3'
+    }
+dct2 = {
+    'key2-1':'val2-1',
+    'key2-2': 'val2-2',
+    'key2-3': 'val2-3'
+    }
+for index, item in enumerate(zip(dct1, dct1.values(), dct1.items(), dct2, dct2.values(), dct2.items())):
+    print(f'{index}: {item}')
+```
+
+> 0: ('key1-1', 'val1-1', ('key1-1', 'val1-1'), 'key2-1', 'val2-1', ('key2-1', 'val2-1'))
 >
-> [(1, 'first'), (2, 'second'), (3, 'third')]
+> 1: ('key1-2', 'val1-2', ('key1-2', 'val1-2'), 'key2-2', 'val2-2', ('key2-2', 'val2-2'))
+>
+> 2: ('key1-3', 'val1-3', ('key1-3', 'val1-3'), 'key2-3', 'val2-3', ('key2-3', 'val2-3'))
+
+#### 辞書のキーと値を交換する
+
+```py
+dct1 = dict(('1f', '2s', '3t'))
+print(dct1)
+dct2 = {v: k for k, v in dct1.items()}
+print(dct2)
+```
+
+> {'1': 'f', '2': 's', '3': 't'}
+>
+> {'f': '1', 's': '2', 't': '3'}
+
+### 辞書をソート
+
+#### 辞書の値でソート
+
+```py
+dct1 = dict(('1b', '4a', '3c'))
+print(dct1)
+dct2 = dict(sorted(dct1.items(), key=lambda x: x[1], reverse=True))
+print(dct2)
+```
+
+> {'1': 'b', '4': 'a', '3': 'c'}
+>
+> {'3': 'c', '1': 'b', '4': 'a'}
+
+### 辞書の内包表記
