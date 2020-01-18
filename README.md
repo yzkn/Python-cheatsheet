@@ -3983,6 +3983,22 @@ print(dct)
 
 > {1: 'first', 2: 'second', 3: 'third'}
 
+###### 条件に合致する要素のみからなる辞書を生成(抽出)
+
+```py
+keys = [1, 2, 3, 4, 5, 10, 12]
+values = ['v1', 'v2', 'v3', 'v4', 'v5', 'v10', 'v12']
+dct1 = {k: v for k, v in zip(keys, values) if k % 5 == 0 and k <= 50}
+print(dct1)
+
+dct2 = {k: v if k % 5 == 0 and k <= 50 else -1 for k, v in zip(keys, values)}
+print(dct2)
+```
+
+> {5: 'v5', 10: 'v10'}
+>
+> {1: -1, 2: -1, 3: -1, 4: -1, 5: 'v5', 10: 'v10', 12: -1}
+
 ##### リストのタプルから生成
 
 ```py
@@ -4207,3 +4223,22 @@ print(dct2)
 ```
 
 `キー:`を忘れるとセット(Set／集合)になる
+
+#### 文字の出現頻度を調べる
+
+```py
+code = 'Lorem ipsum dolor sit amet, dico quidam percipitur mea no, labitur scaevola molestiae in vis, malis veniam tacimates mea cu.'
+{letter: code.count(letter) for letter in code}
+
+# 文字でソート
+dict(sorted({letter: code.count(letter) for letter in code}.items(), key=lambda x: x[0]))
+
+# 多い順にソート
+dict(sorted({letter: code.count(letter) for letter in code}.items(), key=lambda x: x[1], reverse=True))
+```
+
+> {'L': 1, 'o': 7, 'r': 5, 'e': 10, 'm': 10, ' ': 19, 'i': 13, 'p': 3, 's': 7, 'u': 5, 'd': 3, 'l': 5, 't': 7, 'a': 12, ',': 3, 'c': 5, 'q': 1, 'n': 3, 'b': 1, 'v': 3, '.': 1}
+>
+> [(' ', 19), (',', 3), ('.', 1), ('L', 1), ('a', 12), ('b', 1), ('c', 5), ('d', 3), ('e', 10), ('i', 13), ('l', 5), ('m', 10), ('n', 3), ('o', 7), ('p', 3), ('q', 1), ('r', 5), ('s', 7), ('t', 7), ('u', 5), ('v', 3)]
+>
+> [(' ', 19), ('i', 13), ('a', 12), ('e', 10), ('m', 10), ('o', 7), ('s', 7), ('t', 7), ('r', 5), ('u', 5), ('l', 5), ('c', 5), ('p', 3), ('d', 3), (',', 3), ('n', 3), ('v', 3), ('L', 1), ('q', 1), ('b', 1), ('.', 1)]
