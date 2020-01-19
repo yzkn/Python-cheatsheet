@@ -4264,6 +4264,26 @@ dict(sorted({letter: code.count(letter) for letter in code}.items(), key=lambda 
 >
 > [(' ', 19), ('i', 13), ('a', 12), ('e', 10), ('m', 10), ('o', 7), ('s', 7), ('t', 7), ('r', 5), ('u', 5), ('l', 5), ('c', 5), ('p', 3), ('d', 3), (',', 3), ('n', 3), ('v', 3), ('L', 1), ('q', 1), ('b', 1), ('.', 1)]
 
+## 順序つき辞書(OrderedDict)
+
+```py
+from collections import OrderedDict
+
+testOrderedDict = OrderedDict()
+testOrderedDict['k1'] = 'v1'
+testOrderedDict['k2'] = 'v2'
+testOrderedDict['k3'] = 'v3'
+
+for k, v in testOrderedDict:
+    print(k, v)
+```
+
+> k 1
+>
+> k 2
+>
+> k 3
+
 ## タプル
 
 リストとは異なり、タプルは読み取り専用
@@ -4332,17 +4352,6 @@ print(tpl2)
 >
 > ('foo', ['bar', 'hoge'], 123, 456)
 
-#### リストから生成
-
-```py
-tpl = tuple(['foo', 'bar', 123, 456])
-print(tpl)
-```
-
-> ('foo', 'bar', 123, 456)
-
-### タプルに要素を追加
-
 #### タプルに要素を追加した新しいタプルを生成
 
 ```py
@@ -4354,6 +4363,15 @@ print(tpl3)
 ```
 
 > ('123', '456', '78', '90')
+
+#### リストから生成
+
+```py
+tpl = tuple(['foo', 'bar', 123, 456])
+print(tpl)
+```
+
+> ('foo', 'bar', 123, 456)
 
 ### タプルの要素を参照
 
@@ -4567,3 +4585,73 @@ tuple(i * 2 for i in l) # 正
 > \<generator object \<genexpr\> at 0x000001E1C99F7F90\> \# 誤
 >
 > (0, 2, 4, 6, 8, 10, 12, 14, 16, 18) \# 正
+
+## セット
+
+リストとは異なり、重複する要素があれば削除される
+
+### セットが空か判定
+
+### セットを生成
+
+#### 空のセットを生成
+
+```py
+s1 = {}
+```
+
+#### 初期値を指定して生成
+
+```py
+s1 = {'ab', 'cd', 'ab', 'cd'}
+print(s1)
+```
+
+> {'ab', 'cd'}
+
+#### リストから生成
+
+```py
+ls2 = ['ab', 'cd', 'ef', 'cd']
+s2 = set(ls2)
+print(s2)
+```
+
+> {'cd', 'ab', 'ef'}
+
+### 辞書に要素を追加
+
+```py
+s1 = {'ab', 'cd'}
+s1.add('yz')
+print(s1)
+```
+
+> {'ab', 'yz', 'cd'}
+
+### セットの要素を参照
+
+#### セットの要素の存在チェック
+
+```py
+s1 = {'ab', 'cd', 'ab', 'cd'}
+print('ab' in s1)
+```
+
+> True
+
+### セットの演算
+
+```py
+s1 = {'ab', 'cd'}
+s1 = {'ef', 'ab', 'cd'}
+```
+
+| 関数      | 値                   |
+| --------- | -------------------- |
+| `s1`      | `{'ab', 'cd'}`       |
+| `s2`      | `{'ef', 'ab', 'cd'}` |
+| `s1 - s2` | `set()`              |
+| `s1 | s2` | `{'ab', 'cd', 'ef'}` |
+| `s1 & s2` | `{'ab', 'cd'}`       |
+| `s1 ^ s2` | `{'ef'}`             |
