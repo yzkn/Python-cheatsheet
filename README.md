@@ -3479,6 +3479,16 @@ for (i1, i2) in zip_longest(l1, l2, fillvalue=999):
 >
 > 2 7
 >
+> 3 None
+>
+> 4 None
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
 > 3 999
 >
 > 4 999
@@ -4188,6 +4198,17 @@ for index, item in enumerate(zip(dct1, dct1.values(), dct1.items(), dct2, dct2.v
 >
 > 2: ('key1-3', 'val1-3', ('key1-3', 'val1-3'), 'key2-3', 'val2-3', ('key2-3', 'val2-3'))
 
+#### タプルの要素を連結した文字列を取得
+
+```py
+dct = { 1:'first', 2:'second', 3:'third'}
+print(
+    ','.join(['"{0}":"{1}"'.format(key, value) for (key, value) in dct.items()])
+)
+```
+
+> "1":"first","2":"second","3":"third"
+
 #### 辞書のキーと値を交換する
 
 ```py
@@ -4242,3 +4263,307 @@ dict(sorted({letter: code.count(letter) for letter in code}.items(), key=lambda 
 > [(' ', 19), (',', 3), ('.', 1), ('L', 1), ('a', 12), ('b', 1), ('c', 5), ('d', 3), ('e', 10), ('i', 13), ('l', 5), ('m', 10), ('n', 3), ('o', 7), ('p', 3), ('q', 1), ('r', 5), ('s', 7), ('t', 7), ('u', 5), ('v', 3)]
 >
 > [(' ', 19), ('i', 13), ('a', 12), ('e', 10), ('m', 10), ('o', 7), ('s', 7), ('t', 7), ('r', 5), ('u', 5), ('l', 5), ('c', 5), ('p', 3), ('d', 3), (',', 3), ('n', 3), ('v', 3), ('L', 1), ('q', 1), ('b', 1), ('.', 1)]
+
+## タプル
+
+リストとは異なり、タプルは読み取り専用
+
+### タプルが空か検査
+
+| 判定方法      |
+| ------------- |
+| `not tpl`     |
+| `len(tpl)==0` |
+| `tpl == ()`   |
+
+```py
+tpl = ()
+if not tpl:
+  print('empty')
+
+if len(tpl)==0:
+  print('empty')
+
+if tpl == ():
+  print('empty')
+```
+
+### タプルを生成
+
+#### 空のタプルを生成
+
+```py
+tpl = ()
+```
+
+#### 初期値を指定して生成
+
+```py
+tpl = 'foo', 'bar', 123, 456
+tpl = ('foo', 'bar', 123, 456)
+print(str(tpl))
+```
+
+> ('foo', 'bar', 123, 456)
+
+1 要素のタプルを宣言するときは後ろにカンマをつける(カンマをつけないとただの変数として代入される)
+
+```py
+tpl = 'hoge',
+
+print('%s' % (tpl,)) # print('%s' % tpl)とするとTypeError: not all arguments converted during string formatting
+```
+
+> ('hoge',)
+
+#### タプルをコピーして生成
+
+```py
+import copy
+
+tpl1 = 'foo', ['bar'], 123, 456
+tpl2 = copy.deepcopy(tpl1) # copy()と異なり、要素の参照しているデータもコピー
+tpl2[1].append('hoge')
+print(tpl1)
+print(tpl2)
+```
+
+> ('foo', ['bar'], 123, 456)
+>
+> ('foo', ['bar', 'hoge'], 123, 456)
+
+#### リストから生成
+
+```py
+tpl = tuple(['foo', 'bar', 123, 456])
+print(tpl)
+```
+
+> ('foo', 'bar', 123, 456)
+
+### タプルに要素を追加
+
+#### タプルに要素を追加した新しいタプルを生成
+
+```py
+tpl1 = ("123", "456")
+tpl2 = ("78", "90")
+
+tpl3 = tpl1 + tpl2
+print(tpl3)
+```
+
+> ('123', '456', '78', '90')
+
+### タプルの要素を参照
+
+#### タプルの要素の存在チェック
+
+### タプルの要素を削除
+
+### タプルの反復処理(インデックスを取得)
+
+```py
+tpl = tuple(range(5, 10))
+for (index, item) in enumerate(tpl):
+    print(index, item)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 8
+>
+> 4 9
+
+#### 複数のタプルを同時に繰り返す
+
+```py
+tpl1 = tuple(range(5)) # タプルの要素数が同じ場合
+tpl2 = tuple(range(5,10))
+
+for (i1, i2) in zip(tpl1, tpl2):
+    print(i1, i2)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 8
+>
+> 4 9
+
+```py
+tpl1 = tuple(range(5)) # タプルの要素数が異なる場合
+tpl2 = tuple(range(5,8))
+
+# 要素数の少ないタプルの要素数分だけ繰り返す
+for (i1, i2) in zip(tpl1, tpl2):
+    print(i1, i2)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+
+```py
+from itertools import zip_longest
+
+tpl1 = tuple(range(5)) # タプルの要素数が異なる場合
+tpl2 = tuple(range(5,8))
+
+# 要素数の多いタプルの要素数分だけ繰り返す
+for (i1, i2) in zip_longest(tpl1, tpl2):
+    print(i1, i2)
+
+# 要素数の多いタプルの要素数分だけ繰り返す(不足している要素にNoneではなく指定した値を使用)
+for (i1, i2) in zip_longest(tpl1, tpl2, fillvalue=999):
+    print(i1, i2)
+```
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 None
+>
+> 4 None
+
+> 0 5
+>
+> 1 6
+>
+> 2 7
+>
+> 3 999
+>
+> 4 999
+
+#### 多重タプル
+
+```py
+tpl = 'foo', ['bar'], 123, 456
+tpl = tpl, (('hoge', 'piyo'), 789)
+print(tpl)
+```
+
+> (('foo', ['bar'], 123, 456), (('hoge', 'piyo'), 789))
+
+##### 平坦化(flatten)
+
+###### 2 重タプルを平坦化(flatten)
+
+```py
+tpl1 = ((3, 1, 4), (1, 5, 9), (2, 6, 5))
+print(tpl1)
+
+tpl2 = [ f for i in tpl1 for f in i ]
+print(tuple(tpl2))
+# or
+tpl2 = ()
+for rows in tpl1:
+    tpl2 = tpl2 + rows
+
+print(tpl2)
+```
+
+###### 多重タプルを平坦化(flatten)
+
+#### タプルの要素を連結した文字列を取得
+
+```py
+lst = 'foo', 'bar', 'hoge'
+''.join(lst)
+','.join(lst) # 区切り文字を指定
+```
+
+> 'foobarhoge'
+>
+> 'foo,bar,hoge'
+
+### シーケンス・アンパッキング
+
+タプルから複数の変数に展開(一括代入)する
+
+```py
+t = 'foo', 'bar', 123, 456
+x, y, z, w = t
+```
+
+```py
+def fibonacci(n):
+    x, y = 0, 1
+    for i in range(n):
+        print(x)
+        x, y = y, x+y # tmp変数が不要になる
+
+fibonacci(10)
+```
+
+代入元の要素数と代入先の変数の数が異なる場合
+
+```py
+x, y, z = 'foo', 'bar', 123, 456 # ValueError
+
+x, y, *z = 'foo', 'bar', 123, 456 # アスタリスクをつけるとリストに格納
+print(x, y, z)
+
+x, y, z, *w = 'foo', 'bar', 123, 456
+print(x, y, z, w)
+
+x, y, z, w, *v = 'foo', 'bar', 123, 456
+print(x, y, z, w, v)
+```
+
+> ValueError: too many values to unpack (expected 3)
+
+> 'foo', 'bar', [123, 456]
+
+> foo bar 123 [456]
+
+> foo bar 123 456 []
+
+入れ子のタプルを展開
+
+```py
+x, (y, z) = 'foo', (123, 456)
+print(x, y, z)
+```
+
+> foo 123 456
+
+不要な要素を展開しない
+
+```py
+x, y, *_ = 'foo', 'bar', 123, 456
+print(x, y)
+```
+
+> foo bar
+
+### タプルをソート
+
+### タプルの内包表記
+
+丸括弧 `()` の内包表記はタプルではなくジェネレータとなる
+
+```py
+l = list(range(10))
+(i * 2 for i in l) # 誤
+
+tuple(i * 2 for i in l) # 正
+```
+
+> \<generator object \<genexpr\> at 0x000001E1C99F7F90\> \# 誤
+>
+> (0, 2, 4, 6, 8, 10, 12, 14, 16, 18) \# 正
