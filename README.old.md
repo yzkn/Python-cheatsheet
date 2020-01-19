@@ -1,39 +1,3 @@
-
-### タプルを生成
-
-タプルは変更不可
-
-```py
-# 空のタプル
-empty = ()
-
-# 1要素のタプルを宣言するときは後ろにカンマをつける
-t = 'hoge',
-t = 'hoge'  # カンマをつけないとただの変数
-
-t = 'foo', 'bar', 123, 456
-
-# デバッグ表示
-print(str(t))
-print('%s' % (t,)) # print('%s' % t)とするとTypeError: not all arguments converted during string formatting
-
-t[2]
-
-# リストからタプルを生成
-print(tuple([1, 2, 3]))  # リストからタプル
-print(list((1, 2, 3))  # タプルからリスト
-```
-
-> ('foo', 'bar', 123, 456)
->
-> ('foo', 'bar', 123, 456)
-
-> 123
-
-> (1, 2, 3)
->
-> [1, 2, 3]
-
 ### タプルの反復処理
 
 #### インデックスを取得
