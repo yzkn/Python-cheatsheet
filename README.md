@@ -5257,3 +5257,3886 @@ print4('foobar')
 > \<function <lambda> at 0x00000206FF1A40D8\>
 >
 > foobar
+
+# I/O
+
+## コマンドライン引数
+
+```py
+import sys
+
+args = sys.argv
+print(args)
+
+for i, arg in enumerate(args):
+    print('第{}引数: {}'.format(i, args[i]))
+```
+
+> ['python3md-arg.py', 'aaa', 'bbb', 'ccc']
+>
+> 第 1 引数: python3md-arg.py
+>
+> 第 2 引数: aaa
+>
+> 第 3 引数: bbb
+>
+> 第 4 引数: ccc
+
+## 標準入力
+
+```py
+s = input('Enter your name:').strip() # stripで空白文字を除去
+print(s)
+
+# 数値の場合
+if s.isnumeric():
+    print(int(s))
+```
+
+```
+aaaaa
+```
+
+> aaaaa
+
+```py
+s = input() # splitで空白文字ごとに分割
+ss = s.split()
+for item in ss:
+    print(item)
+```
+
+```
+aaa bbb ccc
+```
+
+> aaa
+>
+> bbb
+>
+> ccc
+
+```py
+s = input()
+num = int(s) if s.isnumeric() else 1 # 引数の要求数
+ss = [input() for i in range(num)]
+print(ss)
+```
+
+```
+aaa
+bbb
+ccc
+```
+
+> ['aaa', 'bbb', 'ccc']
+
+### 無限ループをキー入力で抜ける
+
+```py
+import fcntl
+import termios
+import sys
+import os
+
+def getkey():
+    fno = sys.stdin.fileno()
+
+    #stdinの端末属性を取得
+    attr_old = termios.tcgetattr(fno)
+
+    # エコーバック・行単位での編集(カノニカルモード)を無効化する
+    attr = termios.tcgetattr(fno)
+
+    # Ctrl + CでKeyboardInterruptとする場合
+    # attr[3] = attr[3] & ~termios.ECHO & ~termios.ICANON
+    # Ctrl + Cをキー入力として利用する場合
+    attr[3] = attr[3] & ~termios.ECHO & ~termios.ICANON & ~termios.ISIG
+    # ##
+
+    termios.tcsetattr(fno, termios.TCSADRAIN, attr)
+
+    # NONBLOCKモードを設定して、リアルタイムに取る
+    fcntl_old = fcntl.fcntl(fno, fcntl.F_GETFL)
+    fcntl.fcntl(fno, fcntl.F_SETFL, fcntl_old | os.O_NONBLOCK)
+
+    chr = 0
+
+    try:
+        # キーを取得
+        c = sys.stdin.read(1)
+        if len(c):
+            while len(c):
+                chr = (chr << 8) + ord(c)
+                c = sys.stdin.read(1)
+    finally:
+        # stdinを元に戻す
+        fcntl.fcntl(fno, fcntl.F_SETFL, fcntl_old)
+        termios.tcsetattr(fno, termios.TCSANOW, attr_old)
+
+    return chr
+
+if __name__ == '__main__':
+    while 1:
+        key = getkey()
+        if key == 10:
+            # Enter
+            break
+        elif key == 27:
+            # Esc
+            break
+        elif key == 1792836:
+            # ←
+            break
+        elif key == 1792833:
+            # ↑
+            break
+        elif key == 1792834:
+            # ↓
+            break
+        elif key == 1792835:
+            # →
+            break
+        elif key:
+            print(key)
+```
+
+## 標準出力
+
+```py
+print('Hello Python!')
+
+# すぐにフラッシュする(Python3.3以降)
+print('Hello Python!', flush=True)
+
+# すぐにフラッシュする(Python3.2以前)
+import sys
+print('Hello Python!')
+sys.stdout.flush()
+```
+
+### 末尾に改行文字をつけずに出力する
+
+```py
+print('Hello Python!', end='');print('Hello Python!', end='')
+```
+
+> Hello Python!Hello Python!
+
+### pprint()でデータ出力の整然化
+
+辞書・リストなどのオブジェクトを整形して出力する
+
+```py
+from pprint import pprint
+
+dctlst = [{ 1:'first', 2:'second', 3:'third'},{ 11:'first', 12:'second', 13:'third'},{ 21:'first', 22:'second', 23:'third'}]
+pprint(dctlst, stream=f)
+```
+
+> [{1: 'first', 2: 'second', 3: 'third'},
+>
+> {11: 'first', 12: 'second', 13: 'third'},
+>
+> {21: 'first', 22: 'second', 23: 'third'}]
+
+```py
+from pprint import pprint
+
+dctlst = [{ 1:'first', 2:'second', 3:'third'},{ 11:'first', 12:'second', 13:'third'},{ 21:'first', 22:'second', 23:'third'}]
+
+# 深さを指定
+pprint(dctlst, depth=1)
+
+# 横幅を指定
+pprint(dctlst, width=20)
+```
+
+> [{...}, {...}, {...}]
+
+> [{1: 'first',
+>
+> 2: 'second',
+>
+> 3: 'third'},
+>
+> {11: 'first',
+>
+> 12: 'second',
+>
+> 13: 'third'},
+>
+> {21: 'first',
+>
+> 22: 'second',
+>
+> 23: 'third'}]
+
+### 標準出力の内容をファイルに書き出す
+
+#### stdout
+
+```py
+import sys
+temp_sysout = sys.stdout
+f = open('./path/to/file.txt', 'w')
+sys.stdout = f
+
+print('to file')
+
+sys.stdout = temp_sysout
+f.close()
+
+print('to console')
+```
+
+- file.txt
+
+> to file
+
+- Console
+
+> to console
+
+#### print()
+
+```py
+with open('./path/to/file.txt', 'w') as f:
+    print('contents', file=f)
+```
+
+## 環境変数
+
+### 環境変数の読み書き
+
+#### 環境変数の読み出し
+
+##### 一覧の取得
+
+```py
+import os
+print(os.environ)
+```
+
+> environ({
+>
+>     'ALLUSERSPROFILE': 'C:\\ProgramData',
+>
+>     'APPDATA': 'C:\\Users\\y\\AppData\\Roaming',
+>
+>     (中略)
+>
+>     'COLORTERM': 'truecolor'
+>
+> })
+
+※整形済
+
+```py
+import os
+for k in os.environ: # そのままforループで回す
+    print(k)
+
+for k in os.environ.keys(): # keys()メソッドをつけてforループで回す
+    print(k)
+```
+
+> ALLUSERSPROFILE
+>
+> APPDATA
+>
+> (中略)
+>
+> COLORTERM
+
+```py
+import os
+for v in os.environ.values():
+    print(v)
+
+for v in list(os.environ.values()): # list型で取得
+    print(v)
+```
+
+> C:\ProgramData
+>
+> C:\Users\y\AppData\Roaming
+>
+> (中略)
+>
+> truecolor
+
+```py
+import os
+for k, v in os.environ.items():
+    print(k, v)
+
+for k, v in list(os.environ.items()): # list型で取得
+    print(k, v)
+```
+
+> ALLUSERSPROFILE C:\ProgramData
+>
+> APPDATA C:\Users\y\AppData\Roaming
+>
+> (中略)
+>
+> COLORTERM truecolor
+
+##### 環境変数の存在チェック
+
+```py
+import os
+
+# キーの存在チェック
+print('ALLUSERSPROFILE' in os.environ)
+print('ALLUSERSPROFILE' not in os.environ.keys())
+
+# 値の存在チェック
+print('C:\\ProgramData' in os.environ.values())
+
+# キーと値を組み合わせてチェック
+print(('ALLUSERSPROFILE', 'C:\\ProgramData') in os.environ.items())
+```
+
+> True
+>
+> False
+
+> True
+
+> True
+
+##### キーを指定して値を取得
+
+```py
+import os
+
+print(os.environ['ALLUSERSPROFILE'])
+print(os.environ.get('ALLUSERSPROFILE'))
+print(os.getenv('ALLUSERSPROFILE'))
+
+print(os.environ['_ALLUSERSPROFILE']) # 指定されたキーが存在しない場合はエラー
+print(os.environ.get('_ALLUSERSPROFILE')) # 指定されたキーが存在しない場合はNone
+print(os.environ.get('_ALLUSERSPROFILE', 'NULL')) # 指定されたキーが存在しない場合は第2引数に指定された値
+print(os.getenv('_ALLUSERSPROFILE', 'NULL')) # 指定されたキーが存在しない場合は第2引数に指定された値
+```
+
+> C:\ProgramData
+>
+> C:\ProgramData
+>
+> C:\ProgramData
+
+> KeyError: '\_ALLUSERSPROFILE'
+>
+> None
+>
+> NULL
+>
+> NULL
+
+#### 環境変数の書き込み
+
+以下の手順で環境変数を設定／上書きしても、システムの環境変数が変更されるわけではなく、実行中のスクリプトでのみ反映される
+
+```py
+import os
+
+os.environ['SAMPLE'] = 'foobar'
+print(os.environ['SAMPLE'])
+
+os.environ['SAMPLE'] = 'hogepiyo' # 上書きされる
+print(os.environ['SAMPLE'])
+
+os.environ['SAMPLE'] = 123 # 文字列以外を代入しようとするとTypeError
+print(os.environ['SAMPLE'])
+```
+
+> foobar
+>
+> hogepiyo
+>
+> TypeError: str expected, not int
+>
+> hogepiyo
+
+#### 環境変数の削除
+
+```py
+import os
+
+os.environ['SAMPLE'] = 'foobar'
+print(os.environ['SAMPLE'])
+
+print(os.environ.pop('SAMPLE'))
+print(os.environ['SAMPLE'])
+
+print(os.environ.pop('SAMPLE', None))
+```
+
+> foobar
+
+> foobar
+>
+> KeyError: 'SAMPLE'
+
+> None
+
+```py
+import os
+
+os.environ['SAMPLE'] = 'foobar'
+print(os.environ['SAMPLE'])
+
+del os.environ['SAMPLE']
+
+del os.environ['SAMPLE']
+```
+
+> foobar
+
+>
+
+> KeyError: 'SAMPLE'
+
+### .env ファイルに記述した設定値を環境変数に設定
+
+- 1. `python-dotenv` モジュールをインストールする
+
+```sh
+$ pip install python-dotenv
+```
+
+- 2. `.env` ファイルを作成
+
+```
+PASSWORD=my_password
+```
+
+- 3. `settings.py` を呼び出す
+
+- settings.py
+
+```py
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+
+load_dotenv(join(dirname(__file__), '.env'))
+PASSWORD = os.environ.get('PASSWORD')
+```
+
+- app.py
+
+```py
+import settings
+
+PASSWORD = settings.PASSWORD
+print(PASSWORD)
+```
+
+## ハッシュ
+
+### 文字列からハッシュを取得
+
+```py
+import hashlib
+
+dat = 'foobar'
+
+print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
+
+print(hashlib.md5(dat.encode()).hexdigest()) # MD5
+print(hashlib.sha1(dat.encode()).hexdigest()) # SHA-1
+print(hashlib.sha256(dat.encode()).hexdigest()) # SHA256
+print(hashlib.sha512(dat.encode()).hexdigest()) # SHA512
+```
+
+> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
+>
+> 3858f62230ac3c915f300c664312c63f
+>
+> 8843d7f92416211de9ebb963ff4ce28125932878
+>
+> c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2
+>
+> 0a50261ebd1a390fed2bf326f2673c145582a6342d523204973d0219337f81616a8069b012587cf5635f6925f1b56c360230c19b273500ee013e030601bf2425
+
+#### 巨大なデータのハッシュを取得
+
+```py
+import hashlib
+
+dat = b'hoge'*0x100000
+
+# 比較用
+print(hashlib.md5(dat).hexdigest())
+
+h = hashlib.new('md5')
+
+# 処理単位
+chunk_size = h.block_size * 4096
+
+while dat:
+    chunk = dat[:chunk_size]
+    dat = dat[chunk_size:]
+    # ハッシュオブジェクトを更新
+    h.update(chunk)
+
+print(h.hexdigest())
+```
+
+> 58e20228105b868ae22ac4e3f5074631
+>
+> 58e20228105b868ae22ac4e3f5074631
+
+### ファイルのハッシュを取得
+
+```py
+import hashlib
+import os
+
+with open(os.path.join('test-fileio', 'inputsjis.txt'),'rb') as f:
+    dat = f.read()
+    print(hashlib.algorithms_guaranteed) # サポートしているアルゴリズムの一覧を取得
+    print(hashlib.md5(dat).hexdigest()) # MD5
+    print(hashlib.sha1(dat).hexdigest()) # SHA-1
+    print(hashlib.sha256(dat).hexdigest()) # SHA256
+    print(hashlib.sha512(dat).hexdigest()) # SHA512
+```
+
+> {'shake_128', 'sha384', 'blake2b', 'sha3_224', 'blake2s', 'sha224', 'sha256', 'sha512', 'sha3_256', 'sha3_384', 'shake_256', 'sha3_512', 'md5', 'sha1'}
+>
+> 8618e191816aeee9ad8e3444be9a26b5
+>
+> 7904da5abecff2cfa009df4262140d2f55e4d3da
+>
+> 9f4b600039cc7d66def7f25be7c6e1b998f3afc6c23eb52fb840b19480dd1ca2
+>
+> 3e5df2441e594ce512d81de7db1574e8c5f3187610ac0855d1d8f9111b983ced5af1277ee036c7e6817419553a3f7c910986fbd9d6d754b57cd82f2ee0d25fcc
+
+#### 巨大なファイルのハッシュを取得
+
+```py
+import hashlib
+import os
+
+h = hashlib.new('md5')
+
+# 処理単位
+chunk_size = h.block_size * 4096
+
+with open(os.path.join('test-fileio', 'inputsjis.txt'),'rb') as f:
+    chunk = f.read(chunk_size)
+    while chunk:
+        # ハッシュオブジェクトを更新
+        h.update(chunk)
+        chunk = f.read(chunk_size)
+
+print(h.hexdigest())
+```
+
+> 8618e191816aeee9ad8e3444be9a26b5
+
+## ローカルファイル
+
+### パス文字列の操作
+
+```py
+import os
+
+# パス文字列を組み立てる
+print(os.path.sep)
+
+joined = os.path.join('.', 'test' + '-' + 'join', 'test.txt')
+print(joined)
+
+# ファイル名を取得する
+bname = os.path.basename('./test-join/test.txt')
+print(bname)
+
+# ディレクトリ名を取得する
+dname = os.path.dirname('./test-join/test.txt')
+print(dname)
+
+# ファイル名とディレクトリ名のペアを取得する
+dname, bname = os.path.split('./test-join/test.txt')
+print(dname, bname)
+
+# 拡張子を取得する
+root, ext = os.path.splitext('./test-join/test.txt')
+print(root, ext)
+spltext = os.path.splitext('./test-join/test.txt')
+print(spltext[0], spltext[1])
+
+# 絶対パスを取得する
+absp = os.path.abspath('./test-join/test.txt')
+print(absp)
+if os.path.isabs(absp): # パス文字列が絶対パスか検査する
+    print('ABSPATH')
+
+# パス文字列がシンボリックリンクか検査する
+absp = os.path.abspath('./test-join/test.txt')
+os.path.islink(path)
+
+# パス文字列がマウントポイントか検査する
+absp = os.path.abspath('./test-join/test.txt')
+os.path.ismount(path)
+
+# 2つのパス間の相対パスを取得する
+relp = os.path.relpath(absp, '.')
+print(relp)
+
+# 共通パス(階層単位／文字単位)を取得する
+paths = [
+    os.path.abspath('./test-join/test1.txt'),
+    os.path.abspath('./test-join/test2.txt'),
+]
+cmnpath = os.path.commonpath(paths)
+print(cmnpath)
+cmnprefix = os.path.commonprefix(paths)
+print(cmnprefix)
+
+
+# ドライブレターを取得する
+drive, tail = os.path.splitdrive(absp)
+print(drive[0])
+print(os.path.samefile(os.path.join(drive, tail), absp))
+```
+
+> \# パス文字列を組み立てる
+>
+> /
+>
+> './test-join/test.txt'
+>
+> \# ファイル名を取得する
+>
+> test.txt
+>
+> \# ディレクトリ名を取得する
+>
+> ./test-join
+>
+> \# ファイル名とディレクトリ名のペアを取得する
+>
+> ./test-join test.txt
+>
+> \# 拡張子を取得する
+>
+> ./test-join/test .txt
+>
+> \# 絶対パスを取得する
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-join/test.txt'
+>
+> ABSPATH
+>
+> \# パス文字列がシンボリックリンクか検査する
+>
+> False
+>
+> \# パス文字列がマウントポイントか検査する
+>
+> False
+>
+> \# 2 つのパス間の相対パスを取得する
+>
+> test-join/test.txt'
+>
+> \# 共通パス(階層単位／文字単位)を取得する
+>
+> C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join
+>
+> C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join\test
+>
+> \# ドライブレターを取得する
+>
+> C
+>
+> True
+
+#### 複数のパスが同一のファイルを示しているか検査
+
+```py
+paths = [
+    os.path.abspath('./test-join/test1.txt'),
+    os.path.abspath('./test-join/test/../test1.txt'),
+]
+
+print(os.path.samefile(paths[0], paths[1])) # ファイルパスが同じファイルを参照しているか
+
+with open(paths[0], 'r') as f1, open(paths[1], 'r') as f2:
+    print(os.path.sameopenfile(f1.fileno(), f2.fileno())) # ファイル記述子が同じファイルを参照しているか
+
+stat1 = os.stat(paths[0])
+stat2 = os.stat(paths[1])
+print(os.path.samestat(stat1, stat2)) # os.fstat(), os.lstat()，os.stat() の返り値 (stat1, stat2) が同じファイルを参照しているか
+```
+
+> True
+>
+> True
+>
+> True
+
+#### パス文字列を正規化する(不要な区切り文字、 `..` の除去　／　 Windows 環境での大文字小文字の置換、スラッシュとバックスラッシュの置換)
+
+```py
+import os
+
+dirpath = 'path/to/to/to/../../folder/'
+
+# 不要な区切り文字、 `..` の除去
+nrmpath = os.path.normpath(dirpath)
+print(nrmpath)
+
+# Windows環境での大文字小文字の置換、スラッシュとバックスラッシュの置換
+nrmcase = os.path.normcase(path)
+print(nrmcase)
+```
+
+> path\to\folder
+>
+> c:\users\y\path\to\file.txt
+
+#### ホームディレクトリのパスを取得
+
+```py
+import os.path
+
+filepath = os.path.join('~', 'path', 'to', 'file.txt')
+path  = os.path.expanduser(filepath)
+print(path)
+```
+
+> C:\Users\y\path\to\file.txt
+
+#### 環境変数を取得
+
+```py
+import os.path
+
+# for Linux
+filepath = os.path.join('$HOME', 'path', 'to', 'file.txt')
+path  = os.path.expandvars(filepath)
+print(path)
+
+# for Windows
+filepath = os.path.join('%USERPROFILE%', 'path', 'to', 'file.txt')
+path  = os.path.expandvars(filepath)
+print(path)
+```
+
+> /home/y/path/to/file.txt
+
+> C:\Users\y\path\to\file.txt
+
+#### 親ディレクトリのパスを取得
+
+```py
+import os
+
+def get_parent(path='.', lev=0):
+    return str((os.path.sep).join(os.path.abspath(path).split(os.path.sep)[0:-1-lev]))
+
+get_parent('__file__')
+get_parent('__file__', 1)
+```
+
+> '/mnt/c/Users/y/Documents/GitHub'
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet'
+
+```py
+from pathlib import Path
+
+def get_parent(path='.', lev=0):
+    return Path(path).resolve().parents[lev]
+
+get_parent('__file__')
+get_parent('__file__', 1)
+```
+
+> PosixPath('/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet')
+>
+> PosixPath('/mnt/c/Users/y/Documents/GitHub')
+
+#### シンボリックリンクのパスを正規化
+
+```py
+import os
+
+os.path.realpath(__file__)
+```
+
+#### Linux 上で Windows 形式のパスを操作
+
+```py
+import ntpath
+
+print(ntpath.sep)
+print(ntpath.sep is '\\')
+
+bname = ntpath.basename('\\path\\to\\file')
+print(bname)
+```
+
+> \
+>
+> True
+
+> file
+
+### カレントディレクトリ
+
+[python3md-cwd.py](python3md-cwd.py)
+
+```py
+import os
+
+
+CURRENT_DIRECTORY = os.getcwd()
+os.chdir(CURRENT_DIRECTORY)
+```
+
+#### スクリプトファイルのパスを取得
+
+```py
+import os
+
+print(os.getcwd())
+print(__file__)
+
+print(os.path.basename(__file__))
+print(os.path.abspath(__file__))
+print(os.path.dirname(os.path.abspath(__file__)))
+```
+
+> /mnt/c/Users/y/Documents/GitHub/Python-cheatsheet
+>
+> python3-cwd.py
+>
+> python3-cwd.py
+>
+> /mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/python3-cwd.py
+>
+> /mnt/c/Users/y/Documents/GitHub/Python-cheatsheet
+
+### ファイル・フォルダを存在チェック
+
+```
+import os
+
+FILEPATH = '.'
+print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
+print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
+
+FILEPATH = './'
+print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
+print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
+
+FILEPATH = './Python3.md'
+print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
+print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
+```
+
+> True
+>
+> False
+
+> True
+>
+> False
+
+> False
+>
+> True
+
+### ファイル・フォルダの一覧を取得
+
+| 文字          | 内容                          |
+| ------------- | ----------------------------- |
+| \*            | 長さ 0 文字以上の任意の文字列 |
+| ?             | 任意の一文字                  |
+| []            | 括弧の中の文字                |
+| [*], [?], [[] | エスケープ                    |
+
+```py
+from glob import glob
+import os
+
+
+DIRPATH = os.getcwd() # '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet'
+os.chdir(DIRPATH)
+
+DIRPATH = '.'
+DIRPATH = os.path.join(DIRPATH, 'test-glob') # './test-glob'
+DIRPATH += '' if DIRPATH.endswith(os.path.sep) else os.path.sep # './test-glob/'
+```
+
+#### 直下のファイル・フォルダ一覧を取得
+
+```py
+dirs = glob(os.path.join(DIRPATH, '*'), recursive=True)
+# または dirs = glob(os.path.join(DIRPATH, '*'), recursive=False) も同じ
+```
+
+> [
+>
+> './test-glob/test-glob-1',
+>
+> './test-glob/test-glob-2',
+>
+> './test-glob/test-glob-3.dat'
+>
+> ]
+
+```py
+dirs = glob(os.path.join(DIRPATH, '**'), recursive=False)
+```
+
+> [
+>
+> './test-glob/test-glob-1',
+>
+> './test-glob/test-glob-2',
+>
+> './test-glob/test-glob-3.dat'
+>
+> ]
+
+#### 直下のファイル一覧を取得
+
+```py
+dirs = glob(os.path.join(DIRPATH, '*.*'), recursive=True)
+```
+
+> ['./test-glob/test-glob-3.dat']
+
+```py
+[f for f in glob(os.path.join(DIRPATH, '*')) if os.path.isfile(f)]
+```
+
+> [
+>
+> './test-glob/test-glob-3.dat'
+>
+> ]
+
+#### 直下のフォルダ一覧を取得
+
+```py
+[f for f in glob(os.path.join(DIRPATH, '*')) if os.path.isdir(f)]
+```
+
+> [
+>
+> './test-glob/test-glob-1',
+>
+> './test-glob/test-glob-2'
+>
+> ]
+
+#### 再帰的にファイル・フォルダ一覧を取得 ⇒ _recursive_ が _True_ かつ、パスに _\*\*_
+
+```py
+dirs = glob(os.path.join(DIRPATH, '**'), recursive=True)
+```
+
+> [
+>
+> './test-glob/',
+>
+> './test-glob/test-glob-1',
+>
+> './test-glob/test-glob-1/test-glob-1-1',
+>
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
+>
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
+>
+> './test-glob/test-glob-1/test-glob-1-2.dat',
+>
+> './test-glob/test-glob-2',
+>
+> './test-glob/test-glob-2/test-glob-2-2.dat',
+>
+> './test-glob/test-glob-3.dat'
+>
+> ]
+
+#### Python3.4 以前で、再帰的にファイル・フォルダ一覧を取得
+
+```py
+import os
+
+files = []
+def glb(directory):
+    for root, dirs, files in os.walk(directory):
+        yield root
+        for file in files:
+            yield os.path.join(root, file)
+
+for file in glb(DIRPATH):
+    files.append(file)
+
+print(files)
+```
+
+> [
+>
+> './test-glob',
+>
+> './test-glob/test-glob-3.dat',
+>
+> './test-glob/test-glob-1',
+>
+> './test-glob/test-glob-1/test-glob-1-2.dat',
+>
+> './test-glob/test-glob-1/test-glob-1-1',
+>
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
+>
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
+>
+> './test-glob/test-glob-2',
+>
+> './test-glob/test-glob-2/.test-glob-2-1.dat',
+>
+> './test-glob/test-glob-2/test-glob-2-2.dat'
+>
+> ]
+
+#### 再帰的にフォルダ一覧を取得 ⇒ パスの末尾が _os.path.sep_
+
+```py
+[f for f in glob(os.path.join(DIRPATH, '**'), recursive=True) if os.path.isdir(f)]
+```
+
+> [
+>
+> './test-glob/',
+>
+> './test-glob/test-glob-1',
+>
+> './test-glob/test-glob-1/test-glob-1-1',
+>
+> './test-glob/test-glob-2'
+>
+> ]
+
+```py
+dirs = glob(os.path.join(DIRPATH, '**' + os.path.sep), recursive=True)
+```
+
+> [
+>
+> './test-glob/',
+>
+> './test-glob/test-glob-1/',
+>
+> './test-glob/test-glob-1/test-glob-1-1/',
+>
+> './test-glob/test-glob-2/'
+>
+> ]
+
+#### 再帰的にファイル一覧を取得
+
+```py
+dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True)
+```
+
+> [
+>
+> './test-glob/test-glob-3.dat',
+>
+> './test-glob/test-glob-1/test-glob-1-2.dat',
+>
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
+>
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
+>
+> './test-glob/test-glob-2/test-glob-2-2.dat'
+>
+> ]
+
+#### ワイルドカードを利用
+
+```py
+dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*-[0-1].???')), recursive=True)
+```
+
+> [
+>
+> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'
+>
+> ]
+
+#### 正規表現を利用
+
+```py
+import re
+
+dirs = [p for p in glob.glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True) if re.search('test-glob(-1){3}.dat', p)]
+```
+
+### ファイル情報を取得
+
+```py
+import math
+
+def roundstr(size):
+    return '{}'.format(round(size, 1))
+
+def human_readable(bytesize):
+    if bytesize < 1024:
+        return str(bytesize) + ' B'
+    elif bytesize < 1024 ** 2:
+        return roundstr(bytesize / 1024.0) + ' KB'
+    elif bytesize < 1024 ** 3:
+        return roundstr(bytesize / (1024.0 ** 2)) + ' MB'
+    elif bytesize < 1024 ** 4:
+        return roundstr(bytesize / (1024.0 ** 3)) + ' GB'
+    elif bytesize < 1024 ** 5:
+        return roundstr(bytesize / (1024.0 ** 4)) + ' TB'
+    else:
+        return str(bytesize) + ' B'
+
+```
+
+```py
+from datetime import datetime, timezone, timedelta
+import os
+
+filepath = './Python3.md'
+
+# 最終アクセス日時
+# datetime.fromtimestamp(os.path.getatime(filepath))
+atime = datetime.fromtimestamp(os.path.getatime(filepath), timezone(timedelta(hours=9)))
+print(atime)
+print(atime.tzinfo)
+
+# 最終更新日時
+# datetime.fromtimestamp(os.path.getmtime(filepath))
+mtime = datetime.fromtimestamp(os.path.getmtime(filepath), timezone(timedelta(hours=9)))
+print(mtime)
+print(mtime.tzinfo)
+
+# ファイルサイズ
+size = os.path.getsize(filepath)
+print(human_readable(size))
+```
+
+> 2019-08-02 21:40:27.305819+09:00
+>
+> UTC+09:00
+>
+> 2019-08-02 21:43:47.294729+09:00
+>
+> UTC+09:00
+>
+> 27661
+
+### ファイルを作成
+
+#### touch()
+
+```py
+from pathlib import Path
+def touch(filepath):
+    Path(filepath).touch()
+```
+
+```py
+import os
+def touch(filepath):
+    if os.path.isfile(filepath):
+        pass
+    else:
+        with open(filepath, 'w', encoding='UTF-8') as f:
+            pass
+```
+
+#### 既存のファイルがある場合はバックアップを作成して再作成
+
+```py
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+FILEPATH = './test-file'
+
+bkup_dt = datetime.now().strftime('%Y%m%d%H%M%S')
+NEW_FILEPATH = os.path.splitext(FILEPATH)[0] + bkup_dt + os.path.splitext(FILEPATH)[1]
+
+if os.path.exists(FILEPATH):
+    RESULT_FILEPATH = shutil.move(
+        FILEPATH,
+        NEW_FILEPATH
+        )
+    print(RESULT_FILEPATH)
+
+touch(FILEPATH)
+```
+
+### フォルダを作成
+
+#### 既存のフォルダがある場合はバックアップを作成して再作成
+
+```py
+import os
+import shutil
+
+DIRPATH = './test-folder/'
+
+NEW_DIRPATH = os.path.dirname(DIRPATH) # './test-folder' # 末尾のスラッシュなし
+bkup_dt = datetime.now().strftime('%Y%m%d%H%M%S')
+NEW_DIRPATH += bkup_dt
+
+if os.path.exists(DIRPATH):
+    RESULT_DIRPATH = shutil.move(
+        DIRPATH,
+        NEW_DIRPATH
+        )
+    print(RESULT_DIRPATH)
+
+# os.makedirs(DIRPATH, exist_ok=True)
+os.makedirs(DIRPATH)
+```
+
+### ファイルをコピー
+
+```py
+from pathlib import Path
+import os
+import shutil
+
+srcpath = './test-copy1.txt'
+dstpath = './test-copy2.txt'
+
+Path(srcpath).touch()
+
+# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+result_path = shutil.copyfile(srcpath, dstpath)
+print(result_path)
+
+# ファイル→ファイル (同名のファイルが既に存在すれば上書き)
+result_path = shutil.copy(srcpath, dstpath)
+print(result_path)
+
+dst1 = os.path.join(os.path.dirname(dstpath), 'test-copy2')
+result_path = shutil.copy(srcpath, dst1)
+print(result_path)
+
+# ファイル→フォルダ (同名のファイルが既に存在すればエラー)
+#  コピー先として指定されたディレクトリが予め存在し、その中に同名の既存ファイルが存在しなければコピーされる
+dst2 = os.path.join(os.path.dirname(dstpath), 'test-copy2/') # dst1との差異は、末尾の'/'のみ
+os.makedirs(dst2, exist_ok=True) # 予めディレクトリを作成しておかないとIsADirectoryError
+
+dst_file_path = os.path.join(os.path.dirname(dst2), os.path.basename(srcpath))
+if os.path.exists(dst_file_path):
+    os.remove(dst_file_path)
+
+result_path = shutil.copy(srcpath, dst2)
+print(result_path)
+
+# ファイル→ファイル (ファイル情報を保持)
+result_path = shutil.copy2(srcpath, dstpath)
+print(result_path)
+
+result_path = shutil.copy2(srcpath, dst2) # 予めディレクトリを作成しておかないとIsADirectoryError
+print(result_path)
+```
+
+> \# ファイル → ファイル (同名のファイルが既に存在すれば上書き)
+>
+> ./test-copy2.txt
+
+> \# ファイル → ファイル (同名のファイルが既に存在すれば上書き)
+>
+> ./test-copy2.txt
+>
+> ./test-copy2
+
+> \# ファイル → フォルダ (同名のファイルが既に存在すればエラー)
+>
+> ./test-copy2/test-copy1.txt
+
+> \# ファイル → ファイル (ファイル情報を保持)
+>
+> ./test-copy2.txt
+>
+> ./test-copy2/test-copy1.txt
+
+### フォルダをコピー
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-dirtree/dir1'
+srcfpath = './test-dirtree/dir1/file1.txt'
+dstpath = './test-dirtree/dir2'
+
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+
+result_path = shutil.copytree(srcpath, dstpath) # ディレクトリが既に存在するとFileExistsError
+print(result_path)
+
+glob('./test-dirtree/**', recursive=True)
+```
+
+> './test-dirtree/dir2'
+>
+> [
+>
+> './test-dirtree/',
+>
+> './test-dirtree/dir1',
+>
+> './test-dirtree/dir1/file1.txt',
+>
+> './test-dirtree/dir2',
+>
+> './test-dirtree/dir2/file1.txt'
+>
+> ]
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+from distutils.dir_util import copy_tree
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-dirtree/dir1'
+srcfpath = './test-dirtree/dir1/file1.txt'
+dstpath = './test-dirtree/dir2'
+
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+os.makedirs(dstpath, exist_ok=True)
+
+# distutils.dir_util
+result_path = copy_tree(srcpath, dstpath) # ディレクトリが既に存在してもコピーされる
+print(result_path)
+
+glob('./test-dirtree/**', recursive=True)
+```
+
+> ['./test-dirtree/dir2/file1.txt']
+>
+> ['./test-dirtree/', './test-dirtree/dir1', './test-dirtree/dir1/file1.txt', './test-dirtree/dir2', './test-dirtree/dir2/file1.txt']
+
+### ファイルをリネーム
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+dirpath = './test-rename/'
+srcpath = './test-rename/file1.txt'
+dstpath = './test-rename/file2.txt'
+
+os.makedirs(dirpath, exist_ok=True)
+touch(srcpath)
+
+os.rename(srcpath, dstpath)
+glob('./test-rename/**', recursive=True)
+
+touch(srcpath)
+glob('./test-rename/**', recursive=True)
+
+os.rename(srcpath, dstpath) # dstpathのファイルが既に存在すると、上書きされる
+glob('./test-rename/**', recursive=True)
+```
+
+> ['./test-rename/', './test-rename/file2.txt']
+>
+> ['./test-rename/', './test-rename/file1.txt', './test-rename/file2.txt']
+>
+> ['./test-rename/', './test-rename/file2.txt'] \# dstpath のファイルが既に存在すると、上書きされる
+
+### フォルダをリネーム
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-rename/dir1'
+srcfpath = './test-rename/dir1/file1.txt'
+dstpath = './test-rename/dir2'
+dstfpath = './test-rename/dir2/file1.txt'
+
+# 移動元ディレクトリと配下のファイルが存在
+shutil.rmtree(srcpath, ignore_errors=True)
+shutil.rmtree(dstpath, ignore_errors=True)
+os.makedirs(srcpath, exist_ok=True)
+# os.makedirs(dstpath, exist_ok=True)
+touch(srcfpath)
+# touch(dstfpath)
+
+os.rename(srcpath, dstpath)
+glob('./test-rename/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+shutil.rmtree(srcpath, ignore_errors=True)
+shutil.rmtree(dstpath, ignore_errors=True)
+os.makedirs(srcpath, exist_ok=True)
+os.makedirs(dstpath, exist_ok=True)
+touch(srcfpath)
+# touch(dstfpath)
+
+os.rename(srcpath, dstpath)
+glob('./test-rename/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+shutil.rmtree(srcpath, ignore_errors=True)
+shutil.rmtree(dstpath, ignore_errors=True)
+os.makedirs(srcpath, exist_ok=True)
+os.makedirs(dstpath, exist_ok=True)
+touch(srcfpath)
+touch(dstfpath)
+
+os.rename(srcpath, dstpath) # OSError: [Errno 39] Directory not empty: './test-rename/dir1' -> './test-rename/dir2'
+```
+
+> \# 移動元ディレクトリと配下のファイルが存在
+>
+> ['./test-rename/', './test-rename/dir2', './test-rename/dir2/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+>
+> ['./test-rename/', './test-rename/dir2', './test-rename/dir2/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+>
+> OSError: [Errno 39] Directory not empty: './test-rename/dir1' -> './test-rename/dir2'
+
+### ファイルを移動
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-move/dir1'
+srcfpath = './test-move/dir1/file1.txt'
+dstpath = './test-move/dir2'
+dstfpath = './test-move/dir2/file2.txt'
+
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+os.makedirs(dstpath, exist_ok=True)
+
+result_path = shutil.move(srcfpath, dstpath)
+print(result_path)
+
+touch(srcfpath)
+
+result_path = shutil.move(srcfpath, dstfpath)
+print(result_path)
+```
+
+> ./test-move/dir2/file1.txt
+>
+> ./test-move/dir2/file2.txt
+
+### フォルダを移動
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+srcpath = './test-move/dir1'
+srcfpath = './test-move/dir1/file1.txt'
+dstpath = './test-move/dir2'
+dstdpath = './test-move/dir2/dir1'
+dstfpath = './test-move/dir2/file1.txt'
+dstfpath2 = './test-move/dir2/dir1/file1.txt'
+
+
+# 移動元ディレクトリと配下のファイルが存在
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+shutil.rmtree(dstpath, ignore_errors=True)
+
+result_path = shutil.move(srcpath, dstpath)
+print(result_path)
+
+glob('./test-move/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+os.remove(dstfpath)
+
+result_path = shutil.move(srcpath, dstpath)
+print(result_path)
+
+glob('./test-move/**', recursive=True)
+
+# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+os.makedirs(srcpath, exist_ok=True)
+touch(srcfpath)
+shutil.rmtree(dstdpath, ignore_errors=True)
+touch(dstfpath2)
+
+result_path = shutil.move(srcpath, dstpath)
+
+glob('./test-move/**', recursive=True) # shutil.Error: Destination path './test-move/dir2/dir1' already exists
+```
+
+> \# 移動元ディレクトリと配下のファイルが存在
+>
+> ./test-move/dir2
+>
+> ['./test-move/', './test-move/dir2', './test-move/dir2/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリが存在
+>
+> ./test-move/dir2/dir1
+>
+> ['./test-move/', './test-move/dir2', './test-move/dir2/dir1', './test-move/dir2/dir1/file1.txt']
+
+> \# 移動元ディレクトリと配下のファイル、移動先ディレクトリと配下の(同名)ファイルが存在
+>
+> shutil.Error: Destination path './test-move/dir2/dir1' already exists
+
+### ファイルを削除
+
+#### 特定のファイルを削除
+
+```py
+from pathlib import Path
+import os
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+path = './test-remove.txt'
+touch(path)
+
+# ファイルを削除
+os.remove(path)
+
+if not os.path.exists(path):
+    print('removed')
+```
+
+> removed
+
+#### ファイルを検索して削除
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+path = './test-remove'
+fpath = './test-remove/test1.txt'
+os.makedirs(path, exist_ok=True)
+touch(fpath)
+
+# ファイルを検索して削除
+[os.remove(f) for f in glob('./test-remove/*.txt')]
+
+os.rmdir(path)
+```
+
+### フォルダを削除
+
+```py
+from pathlib import Path
+import os
+import shutil
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+path = './test-remove'
+fpath = './test-remove/test1.txt'
+
+os.makedirs(path, exist_ok=True)
+
+os.remove(path) # IsADirectoryError
+
+# 空フォルダを削除
+os.rmdir(path)
+
+os.makedirs(path, exist_ok=True)
+touch(fpath)
+
+# 中身ごとフォルダを削除
+# shutil.rmtree(path, ignore_errors=True)
+shutil.rmtree(path)
+
+if not os.path.exists(path):
+    print('removed')
+```
+
+> removed
+
+### タイプ別のファイル読み書き
+
+#### ZIP ファイル
+
+##### ZIP ファイル圧縮
+
+###### shutil を使ってフォルダごと圧縮
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+import zipfile
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+archive_path = './test-archive/archive' # 拡張子なし : './test-archive/archive.zip'が作成される
+
+srcdpath1 = './test-archive/dir1'
+srcdpath2 = './test-archive/dir1/dir2'
+srcfpath1 = './test-archive/dir1/file1.txt'
+srcfpath2 = './test-archive/dir1/dir2/file2.txt'
+
+os.makedirs(srcdpath1, exist_ok=True)
+os.makedirs(srcdpath2, exist_ok=True)
+touch(srcfpath1)
+touch(srcfpath2)
+
+# base_dirを指定しない
+shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=None)
+
+with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
+    print(zip_contents.namelist())
+
+# base_dirを指定する
+rlpath = os.path.relpath(srcdpath2, srcdpath1) # dir2
+shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=rlpath) # 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+
+with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
+    print(zip_contents.namelist())
+
+```
+
+> \# base_dir を指定しない
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
+>
+> ['dir2/', 'file1.txt', 'dir2/file2.txt']
+
+> \# base_dir を指定する
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
+>
+> ['dir2/', 'dir2/file2.txt']
+
+###### 個別にファイルを追加して圧縮ファイルを作成
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import zipfile
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+archive_path = './test-archive/archive.zip'
+
+srcdpath1 = './test-archive/dir1'
+srcdpath2 = './test-archive/dir1/dir2'
+srcfpath1 = './test-archive/dir1/file1.txt'
+srcfpath2 = './test-archive/dir1/dir2/file2.txt'
+
+os.makedirs(srcdpath1, exist_ok=True)
+os.makedirs(srcdpath2, exist_ok=True)
+touch(srcfpath1)
+touch(srcfpath2)
+
+
+
+with zipfile.ZipFile(archive_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath1, arcname=srcfpath1)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+with zipfile.ZipFile(archive_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath2, arcname=srcfpath2)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+# 既存の圧縮ファイルに、ファイルを追加する
+with zipfile.ZipFile(archive_path, 'a', compression=zipfile.ZIP_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath1, arcname=srcfpath1)
+    z.write(srcfpath2, arcname=srcfpath2)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+```
+
+> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/file1.txt']
+>
+> \# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+>
+> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/dir2/file2.txt']
+>
+> \# 既存の圧縮ファイルに、ファイルを追加する
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/'
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/dir2/'
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/dir2/file2.txt'
+>
+> [
+>
+> > 'test-archive/dir1/',
+> > 'test-archive/dir1/dir2/',
+> > 'test-archive/dir1/dir2/file2.txt',
+> > 'test-archive/dir1/',
+> > 'test-archive/dir1/dir2/',
+> > 'test-archive/dir1/file1.txt',
+> > 'test-archive/dir1/dir2/file2.txt'
+> > ]
+
+##### ZIP ファイル解凍
+
+```py
+import zipfile
+
+
+archive_path = './test-archive/archive.zip'
+extract_path = '.'
+
+
+# 内容を確認
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    zip_contents.extractall(extract_path)
+
+# 特定のファイルのみ解凍
+with zipfile.ZipFile(archive_path) as zip_contents:
+    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path)
+    print(result_path)
+
+
+# パスワードつきzipファイルを解凍
+pw = 'Password'
+with zipfile.ZipFile(archive_path) as zip_contents:
+    zip_contents.extractall(extract_path, pwd=pw)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path, pwd=pw)
+    print(result_path)
+```
+
+#### ログファイル(テキストファイル・追記)
+
+標準出力をログファイルに書き出す
+
+```py
+from datetime import datetime
+import sys
+
+startTimeStr = datetime.now().strftime('%Y%m%d%H%M%S')
+LOGFILE = 'log_{}.txt'.format(startTimeStr)
+
+if __name__ == '__main__':
+    try:
+        sys.stdout = open(LOGFILE, 'a', encoding='utf-8')
+        main()
+    except Exception as e:
+        with open(LOGFILE, 'a', encoding='utf-8') as logfile:
+            nowStr = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            print('Exception: {} {}'.format(e, nowStr), file=logfile, flush=True)
+    finally:
+        sys.stdout.close()
+        sys.stdout = sys.__stdout__
+```
+
+#### 設定ファイル(configparser)
+
+- config.ini
+
+```ini
+[settings]
+user = foobar
+pw = 12345
+```
+
+```py
+import configparser
+import os
+
+# save
+config = configparser.ConfigParser()
+config['settings'] = {'user': 'foobar',
+                     'pw': '12345'}
+with open('config.ini', 'w') as configfile:
+    config.write(configfile)
+
+# read
+inifile = configparser.ConfigParser()
+inifile.read(os.path.join('.', 'config.ini'), 'UTF-8')
+
+print(inifile.get('settings', 'user'))
+print(inifile.get('settings', 'pw'))
+
+print(config['settings']['user'])
+print(config['settings']['pw'])
+```
+
+> ['./config.ini']
+>
+> foobar
+>
+> 12345
+>
+> foobar
+>
+> 12345
+
+#### テキストファイル
+
+##### モード
+
+| mode | 読み込み | 書き込み | ファイルポインタ | 既存ファイルが存在する | 既存ファイルが存在しない |
+| ---- | -------- | -------- | ---------------- | ---------------------- | ------------------------ |
+| r    | ○        | ×        | 先頭             | ○                      | FileNotFoundError        |
+| x    |          |          | 先頭             | FileExistsError        | 新規作成                 |
+| w    | ×        | ○        | 先頭             | ○                      | 新規作成                 |
+| a    | ×        | ○        | 終端             | ○                      | 新規作成                 |
+| r+   | ○        | ○        | 先頭             | ○                      | FileNotFoundError        |
+| w+   | ○        | ○        | 先頭             | ○                      | 新規作成                 |
+| a+   | ○        | ○        | 終端             | ○                      | 新規作成                 |
+
+r+ 読み書き両用。
+ファイルがない場合はエラー。
+w+ 読み書き両用。
+ファイルがある場合は「w」と同じ処理。
+a+ 追記・読み書き両用。
+ファイルがない場合は新規作成。
+
+##### 文字コードの推測
+
+ファイルの文字エンコーディングが OS 標準のものと異なる場合はエラーとなるため、Web から入手したファイルなど文字コードが不明のファイルを読み込む際には、推測する必要がある
+
+```py
+import codecs
+import os
+
+def detect_encode(filepath):
+    cs = [
+        'utf-8',
+        'utf_8_sig',
+        'euc_jp',
+        'cp932',
+        #
+        'euc_jis_2004',
+        'euc_jisx0213',
+        'iso2022_jp_1',
+        'iso2022_jp_2',
+        'iso2022_jp_3',
+        'iso2022_jp_2004',
+        'iso2022_jp_ext',
+        'iso2022_jp',
+        'shift_jis_2004',
+        'shift_jis',
+        'shift_jisx0213',
+        'utf_7',
+        'utf_16_be',
+        'utf_16_le',
+        'utf_16',
+    ]
+
+    for c in cs:
+        try:
+            with codecs.open(filepath, 'r', c, errors='strict') as f:
+                print(f.read())
+                return c
+        except Exception as e:
+            continue
+    return None
+
+c = detect_encode(os.path.join('test-fileio', 'inputsjis.txt'))
+print(c)
+```
+
+> cp932
+
+###### エラーハンドラ
+
+| 値       | 意味                                                                                                                  |
+| -------- | --------------------------------------------------------------------------------------------------------------------- |
+| 'strict' | UnicodeError (または、そのサブクラス) を送出します。これがデフォルトの動作です。 strict_errors() で実装されています。 |
+| 'ignore' | 不正な形式のデータを無視し、何も通知することなく処理を継続します。ignore_errors() で実装されています。                |
+
+ユニコード文字列をエンコードするコーデックでのみ有効な値:
+
+| 値                  | 意味                                                                                                                                                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 'replace'           | 適当な置換マーカーで置換します。Python では、組み込み codec のデコード時には公式の U+FFFD 代替文字が、エンコード時には '?' が使用されます。 replace_errors() で実装されています。                                                     |
+| 'xmlcharrefreplace' | 適切な XML 文字参照で置換します (エンコードのみ)。 xmlcharrefreplace_errors() で実装されています。                                                                                                                                    |
+| 'backslashreplace'  | バックスラッシュつきのエスケープシーケンスで置換します。 backslashreplace_errors() で実装されています。                                                                                                                               |
+| 'namereplace'       | \N{...} エスケープシーケンスで置換します (エンコードのみ)。 namereplace_errors() で実装されています。                                                                                                                                 |
+| 'surrogateescape'   | デコード時には、バイト列を U+DC80 から U+DCFF の範囲の個々のサロゲートコードで置き換えます。データのエンコード時に 'surrogateescape' エラーハンドラが使用されると、このコードは同じバイト列に戻されます。 (詳しくは PEP 383 を参照。) |
+
+`utf-8, utf-16, utf-32, utf-16-be, utf-16-le, utf-32-be, utf-32-le` でのみ有効な値:
+
+| 値              | 意味                                                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 'surrogatepass' | サロゲートコードのエンコードとデコードを許可します。通常、これらの codecc は、サロゲートの存在をエラーとして扱います。 |
+
+###### cChardet モジュールを使用
+
+chardet モジュールだと `windows-1252` と判定されがちなので [cChardet](https://github.com/PyYoshi/cChardet) モジュールを利用する
+
+```py
+import cchardet
+
+def detect_enc(filepath):
+    with open(filepath, mode='rb') as f:
+        return cchardet.detect(f.read())
+
+print(detect_enc('./test-fileio/inputsjis.txt'))
+```
+
+> {'encoding': 'SHIFT_JIS', 'confidence': 1.0}
+
+##### 読み込み
+
+###### 単一の文字列として読み込み(r: 読み取り)
+
+mode が `'r'` の場合、指定したパスにファイルが存在しない場合はエラーとなる
+
+```py
+import os
+with open('NOT.FOUND', 'r') as file:
+    file.read()
+```
+
+> FileNotFoundError
+
+```py
+import os
+
+filepath = './NOT.FOUND'
+if os.path.exists(os.path.dirname(os.path.abspath(filepath))):
+    if os.path.exists(os.path.abspath(filepath)):
+        with open(filepath, 'r') as file:
+            file.write('')
+    else:
+        print('File Not Found')
+else:
+    print('Directory Not Found')
+```
+
+####### SHIFT-JIS
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='sjis') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='shiftjis') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='shift-jis') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inputsjis.txt'), 'r', encoding='shift_jis') as file:
+    string = file.read()
+    print(string)
+```
+
+####### UTF-8 BOM なし
+
+```
+あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf8') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf-8') as file:
+    string = file.read()
+    print(string)
+```
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') as file:
+    string = file.read()
+    print(string)
+```
+
+```
+?あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
+```
+
+####### UTF-8 BOM あり
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8_sig') as file:
+    string = file.read()
+    print(string)
+```
+
+```
+あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
+```
+
+###### 1 行ずつ読み込み(r: 読み取り)
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') as file:
+    string = file.readline()
+    while string:
+        print(string)
+        string = file.readline()
+```
+
+###### リストへ格納(r: 読み取り)
+
+```py
+import os
+with open(os.path.join('test-fileio', 'inpututf8.txt'), 'r', encoding='utf_8') as file:
+    strings = file.readlines()
+    print(strings)
+```
+
+```
+[
+    '\ufeffあいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD\n',
+    'かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC\n'
+]
+```
+
+##### 書き込み
+
+- mode が `'a'` の場合、指定したパスにファイルが存在する場合は追記、存在しない場合は新規作成、親フォルダが存在しない場合はエラーとなる
+
+```py
+import os
+with open('PATH/NOT/FOUND', 'a') as file:
+    file.write('')
+```
+
+> FileNotFoundError
+
+- mode が `'r+'` の場合、読み書きモードで開く(ファイルポインタが先頭)
+
+- mode が `'w'` の場合、指定したパスにファイルが存在する場合は上書き、存在しない場合は新規作成、親フォルダが存在しない場合はエラーとなる
+
+```py
+import os
+with open('PATH/NOT/FOUND', 'w') as file:
+    file.write('')
+```
+
+> FileNotFoundError
+
+- mode が `'ｘ'` の場合、指定したパスにファイルが既に存在する場合はエラーとなる
+
+```py
+import os
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x') as file:
+    file.write('')
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x') as file:
+    file.write('')
+```
+
+> FileExistsError
+
+###### 単一の文字列として書き込み(x: 新規作成)
+
+```py
+import os
+string = 'foobar\nhoge\n'
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') as file:
+    file.write(string)
+```
+
+> 11
+
+###### リストを書き込み(x: 新規作成)
+
+```py
+import os
+lst = ['foobar', 'hoge']
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'x', encoding='utf_8') as file:
+    file.writelines(lst) # 要素間には空白文字等は挿入されない
+```
+
+###### 単一の文字列として書き込み(w: 新規作成／上書き)
+
+```py
+import os
+string = 'foobar\nhoge\n'
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') as file:
+    file.write(string)
+```
+
+> 11
+
+###### 既存ファイルが存在するときに上書きするか確認する
+
+```py
+import os
+string = 'foobar\nhoge\n'
+
+if os.path.exists(os.path.join('test-fileio', 'outpututf8.txt')):
+    while True:
+        answer = input('Overwrite?: (y/n)').lower()
+        if answer == 'y':
+            with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w') as file:
+                file.write(string)
+            break
+        elif answer == 'n':
+            break
+else:
+    print('File Not Found')
+```
+
+###### リストを書き込み(w: 新規作成／上書き)
+
+```py
+import os
+lst = ['foobar', 'hoge']
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'w', encoding='utf_8') as file:
+    file.writelines(lst) # 要素間には空白文字等は挿入されない
+```
+
+###### 単一の文字列として書き込み(a: 追記)
+
+```py
+import os
+string = 'foobar\nhoge\n'
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') as file:
+    file.write(string)
+```
+
+###### リストを書き込み(a: 追記)
+
+```py
+import os
+lst = ['foobar', 'hoge']
+with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') as file:
+    file.writelines(lst) # 要素間には空白文字等は挿入されない
+```
+
+#### CSV ファイル
+
+##### 読み込み
+
+Windows 環境の場合は、明示的に UTF-8 を指定しないと SJIS として読み書きされる
+
+###### リストに格納(csv.reader)
+
+```py
+import csv
+import os
+
+with open(os.path.join('test-fileio', 'inputsjis.csv'), encoding='shift_jis', newline='') as csvfile:
+    for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
+        print(', '.join(row))
+
+with open(os.path.join('test-fileio', 'inpututf8.csv'), encoding='utf_8', newline='') as csvfile:
+    for row in csv.reader(csvfile, delimiter=',', quotechar='"'):
+        print(', '.join(row))
+```
+
+> 1, 2, 3
+> 4, 5, 6
+> 7, 8, 9
+
+###### 辞書に格納(csv.DictReader)
+
+```py
+import csv
+import os
+
+with open(os.path.join('test-fileio', 'inputsjis.csv'), encoding='shift_jis', newline='') as csvfile:
+    f = csv.DictReader(csvfile, delimiter=',', quotechar='"')
+    l = [row for row in f]
+    print(l)
+
+# 1行目がヘッダでない場合は、fieldnamesにヘッダ項目を指定する
+with open(os.path.join('test-fileio', 'inputsjis.csv'), encoding='shift_jis', newline='') as csvfile:
+    f = csv.DictReader(csvfile, fieldnames=['h1', 'h2', 'h3'])
+    for row in f:
+        print(row)
+
+# 1列目がデータではない場合(IDなど)
+fieldnames = ['h1', 'h2', 'h3']
+with open(os.path.join('test-fileio', 'inpututf8.csv'), encoding='utf_8', newline='') as csvfile:
+    f = csv.DictReader(csvfile, fieldnames=fieldnames)
+    l = [row for row in f]
+
+print([m.pop(fieldnames[0]) for m in l])
+print(l)
+```
+
+> [{'1': '4', '2': '5', '3': '6'}, {'1': '7', '2': '8', '3': '9'}]
+
+> \# 1 行目がヘッダでない場合は、fieldnames にヘッダ項目を指定する
+>
+> {'h1': '1', 'h2': '2', 'h3': '3'}
+>
+> {'h1': '4', 'h2': '5', 'h3': '6'}
+>
+> {'h1': '7', 'h2': '8', 'h3': '9'}
+
+> \# 1 列目がデータではない場合(ID など)
+>
+> [{'h2': '2', 'h3': '3'}, {'h2': '5', 'h3': '6'}, {'h2': '8', 'h3': '9'}]
+
+###### メモリ上の CSV 文字列の読み込み
+
+```py
+import csv
+from io import StringIO
+
+csv_str = """
+1-1,1-2,1-3
+2-1,2-2,"2-3-1
+2-3-2"
+"""
+
+# sio = StringIO(csv_str.strip())
+
+# try:
+#     # 区切り文字を判別
+#     dialect = csv.Sniffer().sniff(sio.readline())
+# except:
+#     dialect = csv.excel
+
+# sio.seek(0)
+
+for row in csv.reader(StringIO(csv_str.strip())):
+    print(row)
+
+```
+
+> ['1-1', '1-2', '1-3']
+>
+> ['2-1', '2-2', '2-3-1\n2-3-2']
+
+##### 書き込み
+
+###### 上書き(mode:w)
+
+```py
+import csv
+
+# リストを1行ずつ書き込み
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    # delimiter='\t'とすればタブ区切り(tsv)
+    # quoting=csv.QUOTE_ALLとすれば区切り文字などを含まない要素もquotecharで囲まれ、
+    # quoting=csv.QUOTE_NONNUMERICとすれば数値以外が囲まれる
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+
+# 2次元配列を一括書き込み
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+    spamwriter.writerows([['foo', 'bar'],['hoge', 'piyo']]) # 2次元配列
+
+# 辞書の値を書き込み
+dct1 = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4, 'h5': 5}
+
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.DictWriter(csvfile, ['h1', 'h2', 'h3', 'h4', 'unknownkey', 'h5']) # ['h1', 'h2', 'h3', 'h5']のように、不足している場合はwriterowでValueError
+    spamwriter.writeheader()
+    spamwriter.writerow(dct1)
+
+# 辞書の値を書き込み(fieldnamesに指定した以外のキーを無視)
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.DictWriter(csvfile, ['h1', 'h2', 'h3', 'h5'], extrasaction='ignore')
+    spamwriter.writeheader()
+    spamwriter.writerow(dct1)
+
+# 辞書の配列を書き込み
+dct1 = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4, 'h5': 5}
+dct2 = {'h1': 11, 'h2': 12, 'h3': 13, 'h5': 15}
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'w', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.DictWriter(csvfile, dct1.keys())
+    spamwriter.writeheader()
+    spamwriter.writerows([dct1,dct2])
+```
+
+> \# 1 行ずつ書き込み
+>
+> 14
+>
+> 14
+
+> \# 2 次元配列を一括書き込み
+>
+> foo,bar,hoge
+>
+> foo,bar
+>
+> hoge,piyo
+
+> \# 辞書の値を書き込み
+>
+> h1,h2,h3,h4,unknownkey,h5
+>
+> 1,2,3,4,,5
+
+> \# 辞書の値を書き込み(fieldnames に指定した以外のキーを無視)
+>
+> h1,h2,h3,h5
+>
+> 1,2,3,5
+
+> \# 辞書の配列を書き込み
+>
+> h1,h2,h3,h4,h5
+>
+> 1,2,3,4,5
+>
+> 11,12,13,,15
+
+###### 追記(mode:a)
+
+```py
+import csv
+with open(os.path.join('test-fileio', 'outpututf8.csv'), 'a', encoding='utf_8', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+    spamwriter.writerow(['foo', 'bar', 'hoge'])
+```
+
+> 14
+>
+> 14
+
+#### JSON ファイル
+
+##### json.tool
+
+```sh
+$ python -m json.tool inpututf8.json
+```
+
+##### ファイルから読み込み
+
+```py
+import json
+import os
+
+with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
+    string = file.read()
+    print(string)
+    json_dict = json.load(file)
+    print('json_dict:{}'.format(type(json_dict)))
+```
+
+> {
+>
+>     "key1":"val1",
+>
+>     "key2":"val2"
+>
+> }
+>
+> json_dict:\<class 'dict'\>
+
+###### スクリプトを書かず、json.tool で解析する
+
+```sh
+$ python -m json.tool ./test-fileio/inpututf8.json
+```
+
+##### 文字列から読み込み
+
+```py
+import json
+
+json_str = '''
+{
+    'key1':'val1',
+    'key2':'val2'
+}
+'''
+
+json_dict = json.loads(json_str)
+print('json_dict:{}'.format(type(json_dict)))
+```
+
+> json_dict:\<class 'dict'\>
+
+##### 文字列から読み込み(順序を保つ)
+
+```py
+import collections
+import json
+
+json_str = '''
+{
+    'key1':'val1',
+    'key2':'val2'
+}
+'''
+
+decoder = json.JSONDecoder(object_pairs_hook=collections.OrderedDict)
+print(decoder.decode(json_str))
+```
+
+> OrderedDict([('key1', 'val1'), ('key2', 'val2')])
+
+##### 要素の読み込み
+
+```py
+import json
+
+json_str = '''
+{
+    'key1':'val1',
+    'key2':{
+        'key2-1':'val2-1',
+        vkey2-2':'val2-2'
+    }
+}
+'''
+
+json_dict = json.loads(json_str)
+print('json_dict:{}'.format(type(json_dict)))
+
+for x in json_dict:
+    print('{0}:{1}'.format(x, json_dict[x]))
+
+for x in json_dict:
+    print(json_dict[x])
+    for y in json_dict[x]:
+        if isinstance(y, dict):
+            print('{0}:{1}'.format(y, json_dict[y]))
+```
+
+> json_dict:<class 'dict'>
+>
+> key1:val1
+>
+> key2:{'key2-1': 'val2-1', 'key2-2': 'val2-2'}
+>
+> val1
+>
+> {'key2-1': 'val2-1', 'key2-2': 'val2-2'}
+
+###### 要素の検索
+
+```py
+import json
+import os
+
+def search(arg, cond):
+    res =[]
+    if cond(arg):
+        res.append(arg)
+    if isinstance(arg, list):
+        for item in arg:
+            res += search(item, cond)
+    elif isinstance(arg, dict):
+        for value in arg.values():
+            res += search(value, cond)
+    return res
+
+def is_valid_value(arg):
+    if isinstance(arg, str):
+        return 'val3-' in arg
+    if isinstance(arg, dict):
+        return arg.keys() == {'key5-1', 'key5-2'}
+
+with open(os.path.join('test-fileio', 'inpututf8nest.json'), encoding='utf-8') as f:
+    json_str = json.load(f)
+    result = search(json_str, is_valid_value)
+    print(result)
+```
+
+##### 書き込み
+
+```py
+import json
+import os
+
+# 書き出すオブジェクト
+jsondata = {
+    'title': 'foobar',
+    'items': [
+        {
+            'title': '1',
+            'description': 'hoge'
+        },
+        {
+            'title': '2',
+            'description': 'hogehoge'
+        }
+    ]
+}
+
+savepath = os.path.join('test-fileio', 'outpututf8.json')
+with open(savepath, 'w', encoding='utf_8') as outfile:
+    json.dump(jsondata, outfile)
+```
+
+#### ini ファイル
+
+##### ファイルから読み込み
+
+- settings.ini
+
+```ini
+[DEFAULT]
+host = fuga
+
+[db]
+user = foobar
+password = hogepiyo
+```
+
+- app.py
+
+```py
+import configparser
+import os
+
+ini = configparser.ConfigParser()
+ini.read(os.path.join('test-fileio', 'settings.ini'), 'UTF-8')
+
+print(ini['db']['user'])
+print(ini['db']['password'])
+
+print(ini.get('db', 'user'))
+print(ini.get('db', 'password'))
+
+print(ini['db']['host'])
+```
+
+> ['test-fileio\\settings.ini'] # ini.read() の戻り値
+
+> foobar
+>
+> hogepiyo
+
+> foobar
+>
+> hogepiyo
+
+> fuga
+
+#### TSV ファイル
+
+###### メモリ上の TSV 文字列の読み込み
+
+```py
+import csv
+from io import StringIO
+
+csv_str = """
+1-1\t1-2\t1-3
+2-1\t2-2\t"2-3-1
+2-3-2"
+"""
+
+for row in csv.reader(StringIO(csv_str.strip()), csv.excel_tab):
+    print(row)
+
+```
+
+> ['1-1', '1-2', '1-3']
+>
+> ['2-1', '2-2', '2-3-1\n2-3-2']
+
+#### XML ファイル
+
+##### ファイルから一括読み込み
+
+```py
+import os
+import xml.etree.ElementTree as ET
+
+filepath = os.path.join('test-fileio', 'inpututf8.xml')
+tree = ET.parse(filepath)
+
+# root要素を取得
+root = tree.getroot()
+print(root.tag)
+print(dir(root))
+
+# 子要素を取得
+for child in root:
+    print(child.tag, child.attrib)
+```
+
+> breakfast_menu
+>
+> ['__class__', '__copy__', '__deepcopy__', '__delattr__', '__delitem__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', 'append', 'attrib', 'clear', 'extend', 'find', 'findall', 'findtext', 'get', 'getchildren', 'getiterator', 'insert', 'items', 'iter', 'iterfind', 'itertext', 'keys', 'makeelement', 'remove', 'set', 'tag', 'tail', 'text']
+
+> food {'title': '001'}
+>
+> food {'title': '002'}
+>
+> food {'title': '003'}
+>
+> food {'title': '004'}
+>
+> food {'title': '005'}
+
+##### ファイルから逐次的に読み込み
+
+```py
+import os
+import xml.etree.ElementTree as ET
+
+filepath = os.path.join('test-fileio', 'inpututf8.xml')
+for event, elem in ET.iterparse(filepath):
+    print(event, elem.tag)
+    elem.clear()
+```
+
+##### 文字列から読み込み
+
+```py
+import os
+import xml.etree.ElementTree as ET
+
+# <?xml version="1.0" encoding="UTF-8"?>
+xml_str = '''<?xml version="1.0" encoding="UTF-8"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>
+'''
+
+# root要素を取得
+root = ET.fromstring(xml_str)
+print(root.tag)
+print(root.text)
+
+# 子要素を取得
+for child in root:
+    print(child.tag, child.attrib)
+
+# 指定した名前の要素を取得
+for name in root.iter('from'):
+    print(name.text)
+
+# 指定したインデックスの要素を取得
+print(root[0].text)
+print(root[1].text)
+```
+
+> note
+
+> to {}
+>
+> from {}
+>
+> heading {}
+>
+> body {}
+
+> Jani
+
+> Tove
+>
+> Jani
+
+##### 書き込み
+
+#### ARFF ファイル
+
+##### 読み込み
+
+```py
+import arff
+data = arff.load(open('test.arff', 'rb'))
+```
+
+##### 書き込み
+
+```py
+
+import arff
+arff.dumps(data)
+```
+
+## ネットワーク
+
+### URL 文字列の操作
+
+#### URL エンコーディング
+
+```py
+from urllib import parse
+
+# エンコード
+print(parse.quote('検索クエリ', encoding='utf-8'))
+
+# デコード
+print(parse.unquote('%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA', encoding='utf-8'))
+```
+
+> %E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA
+>
+> 検索クエリ
+
+##### 変換対象の文字の違いと利用する関数
+
+```py
+print(urllib.parse.quote('+ /'))
+print(urllib.parse.quote_plus('+ /'))
+print(urllib.parse.quote_plus('+ /', safe='+/'))
+```
+
+> %2B%20/
+>
+> %2B+%2F
+>
+> ++/
+
+```py
+print(urllib.parse.unquote('a+b'))
+print(urllib.parse.unquote_plus('a+b'))
+```
+
+> a+b
+>
+> a b
+
+##### URL の一部の要素に日本語が含まれている場合
+
+```py
+from urllib.parse import urlparse
+import urllib.request
+
+url = 'https://httpbin.org/get/?q=日本語'
+p = urlparse(url)
+url = '{}://{}{}{}{}{}{}{}{}'.format(
+    p.scheme, p.netloc, p.path,
+    ';' if p.params else '', p.params,
+    '?' if p.query else '', urllib.parse.quote_plus(p.query, safe='=&'),
+    '#' if p.fragment else '', p.fragment)
+print(url)
+response = urllib.request.urlopen(url)
+```
+
+#### URL 文字列のパース
+
+```py
+from urllib import parse
+
+parts = parse.urlparse('https://example.net/user?id=12345&pw=678&q='+'%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA')
+print(parts)
+print(parts.path)
+print(parse.parse_qs(parts.query))
+
+```
+
+> ParseResult(scheme='https', netloc='example.net', path='/user', params='', query='id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA', fragment='')
+>
+> /user
+>
+> {'id': ['12345'], 'pw': ['678'], 'q': ['検索クエリ']}
+
+#### URL 文字列の組み立て
+
+```py
+from urllib import parse
+
+new_query = parse.urlencode({'id': ['12345'], 'pw': ['678'], 'q': ['検索クエリ']}, True)
+print(new_query)
+
+
+parts = parse.urlparse('https://example.net/user?id=12345&pw=678&q='+'%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA')
+print(parts)
+new_url = parse.ParseResult(parts.scheme, parts.netloc, parts.path, parts.params, new_query, parts.fragment).geturl()
+print(new_url)
+```
+
+> id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA
+>
+> ParseResult(scheme='https', netloc='example.net', path='/user', params='', query='id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA', fragment='')
+>
+> https://example.net/user?id=12345&pw=678&q=%E6%A4%9C%E7%B4%A2%E3%82%AF%E3%82%A8%E3%83%AA
+
+### リクエストを送信
+
+`urllib` モジュールではなく `Requests` モジュールを利用する場合、以下のコマンドでインストールする
+
+```sh
+$ pip install requests
+```
+
+#### コンテンツを文字列として取得
+
+```py
+import urllib.request
+url = 'http://httpbin.org'
+
+try:
+    with urllib.request.urlopen(url) as response:
+        html = response.read()
+        print(html)
+except urllib.error.HTTPError as e:
+    print(e.code)
+    print(e.read())
+```
+
+```py
+import urllib.request
+url = 'http://httpbin.org'
+req = urllib.request.Request(url) # , method='GET')
+
+try:
+    with urllib.request.urlopen(req) as response:
+        html = response.read()
+        print(html)
+except urllib.error.HTTPError as e:
+    print(e.code)
+    print(e.read())
+```
+
+```py
+import requests
+url = 'http://httpbin.org'
+response = requests.get(url)
+print(response.text)
+```
+
+#### 文字コードを指定
+
+##### 特定の文字コード(Shift-JIS)を指定
+
+```py
+import urllib.request
+url = 'http://www.soumu.go.jp/'
+
+try:
+    with urllib.request.urlopen(url) as response:
+        html = response.read().decode('shift_jis')
+        print(html)
+except urllib.error.HTTPError as e:
+    print(e.code)
+    print(e.read())
+```
+
+```py
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = 'Shift_JIS'
+    print(response.text)
+```
+
+##### コンテンツの内容から文字コードを推定する
+
+###### chardet による推定
+
+```py
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = response.apparent_encoding
+    print(response.text)
+```
+
+###### cChardet による推定(chardet よりも高速)
+
+```sh
+$ pip install cchardet
+```
+
+```py
+import cchardet
+import requests
+url = 'http://www.soumu.go.jp/'
+response = requests.get(url)
+if response.status_code == 200:
+    response.encoding = cchardet.detect(response.content)['encoding']
+    print(response.text)
+```
+
+#### コンテンツをテンポラリファイルとして取得
+
+```py
+import urllib.request
+url = 'http://httpbin.org/get'
+local_filename, headers = urllib.request.urlretrieve(url)
+with open(local_filename) as f:
+    string = f.read()
+
+print(local_filename)
+```
+
+> C:\\Users\\y\\AppData\\Local\\Temp\\tmptkscpwv4
+
+#### バイナリファイルを保存
+
+```py
+import os
+import urllib.request
+url = 'http://httpbin.org/image'
+with urllib.request.urlopen(url) as response:
+    with open(os.path.basename(url), 'wb') as localfile:
+        localfile.write(response.read())
+```
+
+> 8090
+
+```py
+import os
+import requests
+url = 'https://www.python.org/static/img/python-logo.png'
+
+def download_img(url, file_name):
+    r = requests.get(url, stream=True)
+    if r.status_code == 200:
+        with open(file_name, 'wb') as f:
+            f.write(r.content)
+
+download_img(url, os.path.basename(url))
+```
+
+##### 画像ファイルの保存
+
+```sh
+$ pip install Image requests StringIO
+```
+
+```py
+import os
+import requests
+from PIL import Image
+from io import BytesIO
+url = 'https://www.python.org/static/img/python-logo.png'
+r = requests.get(url)
+i = Image.open(BytesIO(r.content))
+i.save(os.path.basename(url))
+```
+
+##### 大容量ファイルの保存
+
+```py
+import os
+import requests
+url = 'https://www.python.org/static/img/python-logo.png'
+r = requests.get(url, stream=True)
+if r.status_code == 200:
+    with open(os.path.basename(url), 'wb') as file:
+        for chunk in r.iter_content(chunk_size=1024):
+            file.write(chunk)
+```
+
+#### GET
+
+```py
+import urllib.parse
+import urllib.request
+
+url = 'http://httpbin.org/get'
+
+with urllib.request.urlopen(url) as response:
+    html = response.read()
+    print(html)
+
+# クエリを送信
+params = {}
+params['name'] = 'Sato'
+params['location'] = 'Tokyo'
+params['age'] = '30'
+query = urllib.parse.urlencode(params)
+url = url + '?' + query
+
+with urllib.request.urlopen(url) as response:
+    html = response.read()
+    print(html)
+```
+
+```py
+import requests
+url = 'http://httpbin.org/get'
+r = requests.get(url)
+print(r.text)
+
+# クエリを送信
+import requests
+r = requests.get('http://httpbin.org/get', params={'key':'value'})
+print(r.url) # http://httpbin.org/get?key=value
+print(r.text)
+
+# 応答
+import requests
+url = 'http://httpbin.org/get'
+r = requests.get(url)
+
+print(r.headers)
+
+print(r.text)
+
+print(r.status_code)  # レスポンスコード
+print(r.status_code == requests.codes.ok)  # 200か判定
+
+r.raise_for_status() # エラー時に例外を発生させる
+# requests.exceptions.HTTPError
+
+print(r.encoding)  # 文字エンコードの確認
+r.encoding = 'Shift-JIS'  # 文字コードの設定(変更)
+print(r.text)  # 変更後のエンコーディングが使用される
+
+# リダイレクト
+import requests
+url = 'http://httpbin.org/get'
+# r = requests.get(url, allow_redirects=True)
+r = requests.get(url)
+print(r.history) # リダイレクト結果を確認する
+
+r = requests.get(url, allow_redirects=False) # リダイレクトさせない
+print(r.text)
+
+# タイムアウト
+import requests
+url = 'https://httpbin.org/deley/5'
+r = requests.get(url, timeout=1)
+print(r.text)
+
+# JSON
+import json
+import requests
+url = 'http://httpbin.org/json'
+r = requests.get(url)
+data = r.json()
+print(json.dumps(data, indent=4))
+```
+
+#### POST
+
+```py
+import urllib.parse
+import urllib.request
+
+url = 'http://httpbin.org/post'
+
+params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
+
+req = urllib.request.Request(url, urllib.parse.urlencode(params).encode('ascii')) # , method='POST')
+with urllib.request.urlopen(req) as response:
+    html = response.read()
+    print(html)
+```
+
+```py
+import requests
+
+params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
+r = requests.post('http://httpbin.org/post', data=params)
+print(r.url)  # 生成されたURL(POSTなのでクエリ文字列がないことを確認)
+
+import json
+print(json.loads(res.content.decode())['form']) # {'age': '30', 'location': 'Tokyo', 'name': 'Sato'}
+```
+
+##### フォーム送信(Multipart エンコード)
+
+```py
+import requests
+url = 'http://httpbin.org/post'
+files = {'file': open('test.png', 'rb')}
+r = requests.post(url, files=files)
+
+import requests
+url = 'http://httpbin.org/post'
+files = {'file': ('test.png', open('test.png', 'rb'))}
+r = requests.post(url, files=files)
+
+import requests
+url = 'http://httpbin.org/post'
+files = {'file': ('test.txt', 'foobar')}
+r = requests.post(url, files=files)
+```
+
+#### PUT
+
+```py
+import requests
+url = 'http://httpbin.org/put'
+r = requests.put(url)
+```
+
+#### DELETE
+
+```py
+import requests
+url = 'http://httpbin.org/delete'
+r = requests.delete(url)
+```
+
+#### HEAD
+
+```py
+import requests
+url = 'http://httpbin.org/get'
+r = requests.head(url)
+```
+
+#### HTTP ヘッダ
+
+```py
+import urllib.parse
+import urllib.request
+
+url = 'http://httpbin.org/headers'
+
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xx Safari/xxx.xx'
+headers = {'User-Agent': user_agent} # ユーザーエージェント
+
+params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
+
+# headers引数
+req = urllib.request.Request(url, data=urllib.parse.urlencode(params).encode('ascii'), method='GET', headers=headers)
+with urllib.request.urlopen(req) as response:
+    html = response.read()
+    print(html)
+
+# add_header()
+req = urllib.request.Request(url, data=query.encode('ascii'), method='GET')
+req.add_header('Referer', 'http://httpbin.org/')
+with urllib.request.urlopen(req) as response:
+    html = response.read()
+    print(html)
+```
+
+```py
+import requests
+url = 'http://httpbin.org/headers'
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xx Safari/xxx.xx'
+headers = {'User-Agent': user_agent, 'Referer': 'http://httpbin.org/'}
+
+payload = {'key1': 'val1', 'key2': 'val2'}
+
+r = requests.get(url, data=json.dumps(payload), headers=headers)
+print(r.status_code)
+print(r.content)
+```
+
+#### BASIC 認証
+
+```py
+import urllib.request
+import getpass
+
+url = 'http://httpbin.org/basic-auth/Username/Password'
+auth_user = 'Username'
+auth_passwd = 'Password'
+
+passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+# If we knew the realm, we could use it instead of None.
+passman.add_password(None, url, auth_user, auth_passwd)
+# HTTPBasicAuthHandler or HTTPDigestAuthHandler
+authhandler = urllib.request.HTTPBasicAuthHandler(passman)
+opener = urllib.request.build_opener(authhandler)
+urllib.request.install_opener(opener)
+
+with urllib.request.urlopen(url) as response:
+    html = response.read()
+```
+
+#### 応答ヘッダ・リダイレクト先 URL
+
+```py
+import urllib.parse
+import urllib.request
+
+url = 'http://httpbin.org/'
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xx Safari/xxx.xx'
+headers = {'User-Agent': user_agent}
+
+params = {'name': 'Sato', 'location': 'Tokyo',  'age': '30'}
+
+req = urllib.request.Request(url, urllib.parse.urlencode(params).encode('ascii'), headers) # , method='POST')
+with urllib.request.urlopen(req) as response:
+    url = response.geturl()
+    headers = response.info()
+    print(headers)
+    # charset=req.info().get_content_charset() # 応答ヘッダから文字コードを取得してデコードする例
+    # content=req.read().decode(charset)
+```
+
+#### セッション
+
+```py
+import requests
+
+session = requests.Session()
+r1 = session.get('http://httpbin.org/cookies/set/key1/value1')
+r2 = session.get('http://httpbin.org/cookies')
+print(r2.text)
+```
+
+> {
+>
+> "cookies": {
+>
+>     "key1": "value1"
+>
+> }
+>
+> }
+
+```py
+import requests
+
+session = requests.Session()
+
+# 共通する項目を設定
+session.auth = ('Username', 'Password')
+session.headers.update({'x-key0': 'value0'})
+
+r = session.get('http://httpbin.org/headers', headers={'x-key1': 'value1'})
+print(r.text)
+
+# 個別項目を設定
+r = session.get('http://httpbin.org/headers', headers={'x-key2': 'value2'})
+print(r.text)
+```
+
+```json
+{
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate",
+    "Host": "httpbin.org",
+    "User-Agent": "python-requests/2.22.0",
+    "X-Key0": "value0",
+    "X-Key1": "value1"
+  }
+}
+
+{
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate",
+    "Host": "httpbin.org",
+    "User-Agent": "python-requests/2.22.0",
+    "X-Key0": "value0",
+    "X-Key2": "value2"
+  }
+}
+```
+
+#### Cookie
+
+```py
+import requests
+
+# 設定
+url = 'http://httpbin.org/get'
+cookies = dict(key1='val1')
+r = requests.get(url, cookies=cookies)
+
+# 取得
+url = 'http://httpbin.org/cookies/set/key1/value1'
+r = requests.get(url)
+r.cookies['key1']  # Cookieが存在する場合は非None
+```
+
+#### 例外処理とレスポンスコード
+
+```py
+import urllib.request
+url = 'http://httpbin.org'
+req = urllib.request.Request(url)
+try:
+    with urllib.request.urlopen(req) as res:
+        body = res.read()
+except urllib.error.HTTPError as e:
+    print(e.code)
+except URLError as e:  # URLErrorはHTTPErrorも拾う
+    print(e.code)
+    print(e.read())
+
+    if hasattr(e, 'reason'):
+        print('Reason: ', e.reason)
+    elif hasattr(e, 'code'):
+        print('Error code: ', e.code)
+else:
+    pass  # リクエストに成功
+```
+
+```py
+import requests
+url = 'http://httpbin.org'
+try:
+    r = requests.get(url)
+except requests.exceptions.RequestException as e:
+    print('Error: {}'.format(e))
+```
+
+# クラス
+
+```py
+class MyClass:
+    '''docstring of MyClass'''
+
+    # クラス変数
+    id = 1
+    name = 'n1'
+    publicClassVariable = 10
+
+    # プライベートクラス変数
+    __privateClassVariable = 20
+
+    # コンストラクタ
+    def __init__(self, iv1, iv2):
+        self.publicInstanceVariable = iv1       # インスタンス変数
+        self.__privateInstanceVariable = iv2    # プライベートインスタンス変数
+
+    # デストラクタ
+    def __del__(self):
+        del(self.publicInstanceVariable)
+        del(self.__privateInstanceVariable)
+
+    # 正式な文字列表現(__str__が定義されていないときに呼び出される)
+    def __repr__(self):
+        return '{}[ID:{}]'.format(self.name, self.id)
+
+    # 非公式な文字列表現(print、format、strなどの組み込み関数でオブジェクトを指定したときに呼び出される)
+    def __str__(self):
+        return 'MyClass: ' + self.__privateInstanceVariable
+
+    def __unicode__(self):
+        return '__unicode__'
+
+    def getName(self):          # getter
+        return self.__privateInstanceVariable
+
+    def setName(self, name):    # setter
+        self.__privateInstanceVariable = name
+
+    # 通常メソッド
+    def Calc(self):
+        self.publicInstanceVariable2 = 3
+        print('パブリックメソッド')
+
+    def __MyCalc(self):
+        print('プライベートメソッド')
+
+    @classmethod
+    def SelfName(cls):
+        publicClassVariable2 = 30
+        print('パブリックメソッド')
+
+    @classmethod
+    def __PrivateSelfName(cls):
+        print('プライベートクラスメソッド')
+
+
+# インスタンス変数
+myClass1.publicInstanceVariable = 3
+
+# インスタンス変数の追加
+myClass1.publicInstanceVariable3 = 4
+
+# プライベートインスタンス変数にアクセス
+# インスタンス._クラス名__変数名
+print(myClass1._MyClass__publicInstanceVariable)
+
+# パプリッククラス変数へアクセス
+# インスタンス名でもクラス名でも可
+# 　インスタンス変数が存在しない場合は「インスタンス.変数名」はクラス変数を参照するが、
+# 　値を代入するとインスタンス変数が追加されるため、それ以降はインスタンス変数が参照される)
+print(Widget.classVal)
+print(w.classVal)
+
+# クラス変数の追加
+MyClass.publicClassVariable3 = 40
+
+# プライベートクラス変数にアクセス
+# インスタンス._クラス名__変数名
+print(myClass1._MyClass__privateInstanceVariable)
+
+
+myClass1 = MyClass(1, 2)    # インスタンス化
+myClass1.getName()          # メソッド実行
+mg = myClass1.getName       # 別名
+mg()                        # メソッド実行
+```
+
+## オブジェクトの文字列表現
+
+```py
+class MyClass:
+
+    id = 1
+    name = 'n1'
+
+    # 正式な文字列表現(__str__が定義されていないときに呼び出される)
+    def __repr__(self):
+        return 'repr: {}[ID:{}]'.format(self.name, self.id)
+
+    # 非公式な文字列表現(print、format、strなどの組み込み関数でオブジェクトを指定したときに呼び出される)
+    def __str__(self):
+        return 'str: {}[ID:{}]'.format(self.name, self.id)
+
+    def __unicode__(self):
+        return 'unicode: {}[ID:{}]'.format(self.name, self.id)
+
+
+myClass1 = MyClass()
+print("myClass1: " + myClass1)
+print("myClass1: " + str(myClass1))
+```
+
+> TypeError: can only concatenate str (not "MyClass") to str
+>
+> myClass1: str: n1[ID:1]
+
+## オブジェクトの属性の参照と存在チェック
+
+```py
+
+class MyClass:
+    publicClassVariable = 10
+    __privateClassVariable = 20
+
+    def __init__(self):
+        self.val1 = 10
+        self.val2 = 20
+
+myClass = MyClass()
+
+# 属性のリスト
+print(dir(myClass))
+
+# dict属性
+print(vars(myClass))
+
+# 属性値の参照
+print(myClass.publicClassVariable)
+
+# 属性の存在チェック
+hasattr(myClass, 'publicClassVariable')
+hasattr(myClass, '__privateClassVariable')
+```
+
+> ['_MyClass__privateClassVariable', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'publicClassVariable', 'val1', 'val2']
+>
+> {'val1': 10, 'val2': 20}
+>
+> 10
+>
+> True
+>
+> False
+
+## クラスの継承
+
+```py
+class MySubClass(MyClass):
+    def Calc(self):  # オーバーロード
+        print('sub  a')
+```
+
+### 多重継承
+
+```py
+class A(object):
+    def __init__(self):
+        print 'Initialize A.'
+
+    def method(self):
+        print 'Call A method.'
+
+
+class B(object):
+    def __init__(self):
+        print 'Initialize B.'
+
+    def method(self):
+        print 'Call B method.'
+
+
+class C(object):
+    def __init__(self):
+        print 'Initialize C.'
+
+    def method(self):
+        print 'Call C method.'
+
+
+class Main(A, B, C):
+    def __init__(self):
+        print('Initialize Main.')
+        super(Main, self).__init__()
+        super(A, self).__init__()
+        super(B, self).__init__()
+
+    def method(self):
+        print('Call Main method')
+        super(Main, self).method()
+        super(A, self).method()
+        super(B, self).method()
+
+
+m = Main()
+m.method()
+```
+
+# モジュール
+
+## モジュールの読み込み
+
+```py
+# import <モジュール名>
+import os
+
+print(type(os))
+
+print(os)
+
+print(type(os.path.join))
+
+print(type(os.sep))
+```
+
+> \<class 'module'\>
+>
+> \<module 'os' from '/home/y/.pyenv/versions/3.6.8/lib/python3.6/os.py'\>
+>
+> \<class 'function'\>
+>
+> <class 'str'>
+
+```py
+from glob import glob, iglob
+```
+
+### 推奨される読み込み順序
+
+1. 標準ライブラリ
+2. サードパーティライブラリ
+3. ローカルライブラリ（自作のライブラリ）
+
+## 外部スクリプトの読み込み
+
+- test-import/main.py
+
+```py
+# subfile.py
+import subfile
+subfile.hello()
+
+
+# subdir/main.py
+import subdir.main
+subdir.main.hello()
+
+# or
+
+from subdir import main
+main.hello()
+
+
+# subdir/subfile.py
+import subdir.subfile
+subdir.subfile.hello()
+```
+
+- test-import/main2.py
+
+```py
+from subdir import *
+main.hello()
+subfile.hello()
+```
+
+- test-import/subfile.py
+
+```py
+def hello():
+    print('test-import/subdir.py hello()')
+```
+
+- test-import/subdir/main.py
+
+```py
+def hello():
+    print('test-import/subdir/main.py hello()')
+```
+
+- test-import/subdir/subfile.py
+
+```py
+def hello():
+    print('test-import/subdir/subfile.py hello()')
+```
+
+- test-import/subdir/**init**.py
+
+```py
+from glob import glob
+from importlib import import_module
+import os
+import re
+import sys
+
+def main():
+    myself = sys.modules[__name__]
+    mod_paths = glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), '*.py'))
+    for py_file in mod_paths:
+        mod_name = os.path.splitext(os.path.basename(py_file))[0]
+        if re.search('.*__init__.*',mod_name) is None:
+            mod = import_module(__name__+ '.' + mod_name)
+            for m in mod.__dict__.keys():
+                if not m in ['__builtins__', '__doc__', '__file__', '__name__', '__package__']:
+                    myself.__dict__[m] = mod.__dict__[m]
+main()
+```
+
+```sh
+$ python test-import/main.py
+```
+
+> test-import/subdir.py hello()
+>
+> test-import/subdir/main.py hello()
+>
+> test-import/subdir/main.py hello()
+>
+> test-import/subdir/subfile.py hello()
+
+```sh
+$ python test-import/main2.py
+```
+
+> test-import/subdir/main.py hello()
+>
+> test-import/subdir/subfile.py hello()
+
+## 一時的にモジュール検索パスを追加
+
+```py
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+```
+
+## 恒久的にモジュール検索パスを追加
+
+```sh
+export PYTHONPATH='/path/to/module:$PYTHONPATH'`
+```
+
+site-packages フォルダの中に、`*.pth`ファイル(ファイル名は任意)を作成し、各行にパスを追加
+
+- example.ptn
+
+```py
+# foo package configuration
+
+path/to/module
+```
+
+# pydoc
+
+- python3md-pydoc.py
+
+```py
+#!/usr/bin/python
+# coding: UTF-8
+
+'''
+ファイルの説明
+'''
+__author__ = 'YA-androidapp<ya.androidapp@gmail.com>'
+# __status__ = 'production'
+__status__ = 'dev'
+__version__ = '0.0.1'
+__date__    = '01 Aug. 2019'
+class Util():
+    '''
+    クラスの説明
+    '''
+    def init():
+        '''
+        メソッドの説明
+        '''
+        pass
+
+def main():
+    print('main')
+
+if __name__ == '__main__':
+    main()
+```
+
+```sh
+# コンソールに出力
+$ pydoc python3md-pydoc
+
+# HTMLファイルを生成
+$ pydoc python3md-pydoc
+```
+
+# ロギング
+
+logging ライブラリを利用する
+
+```py
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s')
+logger = logging.getLogger(__name__)
+
+logger.debug('message')
+logger.info('message')
+logger.warning('message')
+logger.error('message')
+logger.critical('message')
+```
+
+## ファイル出力
+
+```py
+import logging
+import os
+
+LOG_DIR = 'logfile'
+os.makedirs(LOG_DIR, exist_ok=True)
+
+logging.basicConfig(filename=os.path.join(LOG_DIR, 'logger.log'), level=logging.INFO, format='%(asctime)s %(levelname)s %(filename)s %(lineno)d %(funcName)s %(message)s')
+logger = logging.getLogger(__name__)
+
+logger.info('message')
+```
+
+# エラーメッセージ
+
+## シンタックスハイライト
+
+```sh
+pip install colored-traceback
+pip install colorama    # Windows環境下の場合
+```
+
+```py
+import colored_traceback.always
+1/0
+```
+
+> Traceback (most recent call last):
+>
+> File "<stdin>", line 1, in <module>
+>
+> ZeroDivisionError: division by zero
+
+<hr>
+
+Copyright (c) 2019 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
