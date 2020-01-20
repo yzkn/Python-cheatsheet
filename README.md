@@ -4655,3 +4655,605 @@ s1 = {'ef', 'ab', 'cd'}
 | `s1 | s2` | `{'ab', 'cd', 'ef'}` |
 | `s1 & s2` | `{'ab', 'cd'}`       |
 | `s1 ^ s2` | `{'ef'}`             |
+
+# 制御構文
+
+## 条件分岐
+
+### if
+
+```py
+if x < 0:
+    print('N')
+elif x == 0: # else if
+    print('0')
+else:
+    print('P')
+```
+
+## 繰り返し
+
+| 構文    | 備考                             |
+| ------- | -------------------------------- |
+| `for`   | コレクションの各要素に対して処理 |
+| `while` | 条件式が `True` の間繰り返し処理 |
+
+### for
+
+```py
+for i in range(3):
+    j = i + 1
+    print(' ' + str(i) + ' ,')
+
+for i in range(5, 8):
+    j = i + 1
+    print(' ' + str(i) + ' ,')
+
+# Pythonではループ変数やループ内で定義された変数を、ループの外でも参照できる
+print(', ' + str(i) + ' ' + str(j))
+```
+
+### for(リストを与える場合)
+
+```py
+l = ['foo', 'bar', 123, 456]
+for x in l:
+    print(str(x))
+```
+
+### for(タプルを与える場合)
+
+```py
+t = ('foo', 'bar', 123, 456)
+for x in t:
+    print(str(x))
+```
+
+### for(辞書を与える場合)
+
+```py
+d = {'key1': 'foo', 'key2': 'bar', 'key3': 123, 'key4': 456}
+for k in d:
+    print(str(k))
+
+for k, v in d.items():
+    print(str(k), str(v))
+
+for k in d.keys():
+    print(str(k), str(d[k]))
+
+for v in d.values():
+    print(str(v))
+
+# for k, v in d.iteritems():  # Python2
+#     print(str(k), str(v))   # Python3では、items()が関数を返すためiteritemsは廃止
+```
+
+### for(試行回数を与える場合)
+
+```py
+for i in range(4):
+    print(i)    # 0 1 2 3
+for i in range(5, 21, 5):
+    print(i)    # 5 10 15 20
+```
+
+### for 文の else 節
+
+```py
+for i in range(5):
+    print(i)
+else:
+    # ループを抜けたときに実行される
+    print('else')
+```
+
+> 0
+>
+> 1
+>
+> 2
+>
+> 3
+>
+> 4
+>
+> else
+
+```py
+for i in (0, 1, 2):
+    print(i)
+```
+
+> 0
+>
+> 1
+>
+> 2
+
+```py
+for k in {'k1': 1, 'k2': 2, 'k3': 3}:
+    print(k)
+```
+
+> k1
+>
+> k2
+>
+> k3
+
+```py
+for c in '012':
+    print(c)
+```
+
+> 0
+>
+> 1
+>
+> 2
+
+```py
+for line in open('grammer.py', encoding='utf8'):
+    print(line)
+    # 1行ずつ標準出力
+```
+
+```py
+# keyとvalueを一緒に取得する
+for k, v in enumerate(['v1', 'v2', 'v3']):
+    print(k, v)
+```
+
+> 0 v1
+>
+> 1 v2
+>
+> 2 v3
+
+```py
+# 途中でループから脱出
+for i in range(5):
+    if i > 3:
+        break
+    print(i)
+```
+
+> 0
+>
+> 1
+>
+> 2
+>
+> 3
+
+### スキップする(continue)
+
+```py
+for i in range(5):
+    if i == 3:
+        continue
+    print(i)
+```
+
+> 0
+>
+> 1
+>
+> 2
+>
+> 4
+
+### itertools
+
+```py
+import itertools
+for x, y,z in itertools.product(range(3), range(3), range(3)):
+  print('%d,%d,%d' % (x,y,z))
+```
+
+```
+0,0,0
+0,0,1
+0,0,2
+0,1,0
+0,1,1
+0,1,2
+0,2,0
+0,2,1
+0,2,2
+1,0,0
+1,0,1
+1,0,2
+1,1,0
+1,1,1
+1,1,2
+1,2,0
+1,2,1
+1,2,2
+2,0,0
+2,0,1
+2,0,2
+2,1,0
+2,1,1
+2,1,2
+2,2,0
+2,2,1
+2,2,2
+```
+
+### while
+
+```py
+i = 0
+while i < 10:
+    i += 1
+    if i == 3:
+        continue
+    print(i)
+else:
+    print('-1')
+```
+
+> 1
+>
+> 2
+>
+> 4
+>
+> 5
+>
+> 6
+>
+> 7
+>
+> 8
+>
+> 9
+>
+> 10
+>
+> -1
+
+## 例外処理
+
+## try
+
+```py
+import traceback
+
+str = 'ABC'
+try:
+    # 範囲外の文字が指定し、IndexError例外を発生させる
+    c = str[5]
+except IOError as err:
+    print('I/O error: {0}'.format(err))
+except IndexError as err:
+    print('IndexError: {0}'.format(err))
+except (UnicodeEncodeError, UnicodeDecodeError, UnicodeTranslateError) as err:
+    # 複数の例外をまとめて扱う
+    print('UnicodeError: {0}'.format(err))
+except:
+    # その他の例外
+    print(sys.exc_info())   # 現在処理中の例外(type, value, traceback)
+
+    traceback.print_exc()   # 例外情報とスタックトレース項目
+    traceback.format_exc()
+else:
+    # 例外が発生しない場合
+    print('Success')
+finally:
+    # 最終処理
+    print('Finally')
+
+# 例外を発生させる
+raise IOError('IOError')
+```
+
+### assert(アサーション)
+
+`__debug__` が `True` の時のみ動作するので、テスト用に使用できる。
+コマンドラインオプションに-O をつけると、 `__debug__` が `False` になるので assert が動作しなくなる。
+
+```py
+sum = 1 + 2
+assert sum == 3
+assert sum == 4  # AssertionErrorが発生
+assert sum == 4, '期待される値と異なります'  # AssertionErrorが発生
+```
+
+> \# assert sum == 3
+>
+> &nbsp;&nbsp;&nbsp;&nbsp;\# (何も出力されない)
+
+> \# assert sum == 4
+>
+> AssertionError
+
+> \# assert sum == 4, '期待される値と異なります'
+>
+> AssertionError: 期待される値と異なります
+
+## 評価
+
+### eval
+
+```py
+result = eval('1 + 2')
+print(result)
+
+eval('a = 1 + 2')
+```
+
+> 3
+>
+> SyntaxError: invalid syntax
+
+```py
+# 式、グローバル、ローカル
+result = eval('a + b', {}, {'a': 1, 'b': 2})
+result = eval('a + b', {'a': 1, 'b': 2})
+print(result)
+result = eval('a + b', {'a': 3, 'b': 4}, {'a': 1, 'b': 2})
+print(result)
+```
+
+> 3
+>
+> 3
+
+```py
+result = eval(compile('1 + 2', '<string>', 'eval'))
+print(result)
+```
+
+> 3
+
+### exec
+
+```py
+exec('a = 1 + 2')
+exec('print(a)')
+```
+
+> 3
+
+```py
+exec('print(a)', {}, {'a': 4})
+```
+
+> 4
+
+```py
+# 式、グローバル、ローカル
+a = {}
+exec('b = 3', {}, a)
+print(a)
+```
+
+> {'b': 3}
+
+```py
+for i, s in enumerate(["'foo'","'bar'", "'hoge'"]):
+    exec(f'var{i+1} = {s}')
+
+print(var1)
+print(var2)
+print(var3)
+```
+
+> foo
+>
+> bar
+>
+> hoge
+
+### グローバル名前空間の参照・変更を制限
+
+```py
+exec('import os;os.system("echo foobar")', {}, {})
+
+exec('import os;os.system("echo foobar")', {'__builtins__':None}, {})
+```
+
+> foobar
+>
+> ImportError: **import** not found
+
+## del
+
+オブジェクトを削除
+
+```py
+s = 'foo'
+i = [1, 2, 3]
+b = Bar()
+del s, i, b
+```
+
+## exit(プログラム実行を終了)
+
+```py
+import sys
+sys.exit()  # SystemExit例外を出して終了
+
+import sys
+sys.exit('error!') # 引数をstderrに出力し、SystemExit例外を出して終了
+
+import os
+status = 1
+os._exit(status) # 例外を出さずに終了
+
+raise exception # 例外を投げて終了
+```
+
+## pass
+
+空の関数や空の型を定義する
+
+```py
+def empty_func():
+    pass
+
+
+class EmptyClass:
+    pass
+```
+
+## with
+
+with ブロックが終了するとオブジェクトの終了処理が自動的に呼ばれる
+
+```py
+with open(filepath, 'w') as f:
+    pass
+```
+
+### 複数の with をまとめる
+
+入力ファイルと出力ファイルを同時に開く場合など、複数の with ブロックによってネストが深くなってしまうのを防ぐために、「,」で区切って 1 つの with ブロックにまとめることができる
+
+```py
+with open(filepath1, 'r') as f1:
+    with open(filepath2, 'w') as f2:
+        pass
+
+with open(filepath1, 'r') as f1, with open(filepath2, 'w') as f2:
+    pass
+```
+
+# 関数
+
+## 引数なし
+
+```py
+# 定義
+def func1():
+    print('hello')
+
+# 呼出
+func1()
+```
+
+## 引数あり
+
+```py
+# 定義
+def func2(arg):
+    print(arg)
+
+# 呼出
+func2('hello')
+```
+
+## 既定値を持つ引数あり
+
+```py
+# 定義
+def func3(arg='bye'):
+    print(arg)
+
+# 呼出
+func3()
+func3(arg='hi')
+```
+
+## 戻り値あり
+
+```py
+# 定義
+def func4(arg):
+    return arg
+
+# 呼出
+print(func4('hello'))
+```
+
+## docstring あり
+
+```py
+# 定義
+def func5():
+    '''helloと表示する関数'''
+    print('hello')
+
+# 呼出
+func5()
+```
+
+### ヘルプを表示
+
+```py
+help(func5)
+```
+
+## タプルと辞書を受け取る
+
+```py
+# 定義
+def func_vl(arg, *t, **d):
+    for val in t:
+        print(val)
+    keys = sorted(d.keys())
+    for val in keys:
+        print(val)
+
+# 呼出
+func_vl('foobar',
+        't1',
+        't2',
+        dk1='dv1',
+        dk2='dv2',
+        dk3='dv3')
+```
+
+## 引数のアンパック
+
+```py
+args = [1, 5]
+list(range(*args))
+
+list(range(1, 5))   # と同じ
+```
+
+## 関数オブジェクト
+
+### 関数を変数に代入
+
+- def
+  - 中身は複数の文。単独の文になる
+- lambda
+  - 中身は単一の式。式になる
+
+```py
+print(print)
+
+def print2(x):
+    print(x)
+
+print(print2)
+
+print3 = print2
+print(print3)
+
+print3('foobar')
+```
+
+> \<built-in function print\>
+>
+> \<function print2 at 0x00000206FF1A4558\>
+>
+> \<function print2 at 0x00000206FF1A4558\>
+>
+> foobar
+
+```py
+print4 = lambda x: print(x)
+print(print4)
+
+print4('foobar')
+```
+
+> \<function <lambda> at 0x00000206FF1A40D8\>
+>
+> foobar
