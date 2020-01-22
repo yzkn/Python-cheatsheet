@@ -4662,7 +4662,10 @@ s1 = {'ef', 'ab', 'cd'}
 
 ### if
 
+switch 文や case 文はなく、すべて if 文を使う
+
 ```py
+x = 1
 if x < 0:
     print('N')
 elif x == 0: # else if
@@ -4670,6 +4673,49 @@ elif x == 0: # else if
 else:
     print('P')
 ```
+
+条件式が長い場合は、各文末に `\` を付けるか、全体を括弧で囲む
+
+```py
+x = 1
+y = 1
+z = -1
+
+if x > 0 \
+    and \
+    ( \
+    y > 0 \
+    or \
+    z > 0 \
+    ):
+        print('true')
+else:
+    print('false')
+
+if ( x > 0
+    and
+    (
+    y > 0
+    or
+    z > 0
+    )
+    ):
+        print('true')
+else:
+    print('false')
+```
+
+### 条件演算子(三項演算子)
+
+```py
+con = 0
+
+result = 'true' if con == 1 else 'false'
+
+print(result)
+```
+
+> false
 
 ## 繰り返し
 
@@ -4681,170 +4727,108 @@ else:
 ### for
 
 ```py
-for i in range(3):
-    j = i + 1
-    print(' ' + str(i) + ' ,')
+for i in [0, 1, 2, 3]:
+    j = 99
+    print(i, end=' ')
 
-for i in range(5, 8):
-    j = i + 1
-    print(' ' + str(i) + ' ,')
-
-# Pythonではループ変数やループ内で定義された変数を、ループの外でも参照できる
-print(', ' + str(i) + ' ' + str(j))
+# ループ変数やループ内で定義された変数を、ループの外でも参照できる
+print(i, j)
 ```
 
-### for(リストを与える場合)
+> 0 1 2 3
+>
+> 3 99
 
-```py
-l = ['foo', 'bar', 123, 456]
-for x in l:
-    print(str(x))
-```
-
-### for(タプルを与える場合)
-
-```py
-t = ('foo', 'bar', 123, 456)
-for x in t:
-    print(str(x))
-```
-
-### for(辞書を与える場合)
-
-```py
-d = {'key1': 'foo', 'key2': 'bar', 'key3': 123, 'key4': 456}
-for k in d:
-    print(str(k))
-
-for k, v in d.items():
-    print(str(k), str(v))
-
-for k in d.keys():
-    print(str(k), str(d[k]))
-
-for v in d.values():
-    print(str(v))
-
-# for k, v in d.iteritems():  # Python2
-#     print(str(k), str(v))   # Python3では、items()が関数を返すためiteritemsは廃止
-```
-
-### for(試行回数を与える場合)
-
-```py
-for i in range(4):
-    print(i)    # 0 1 2 3
-for i in range(5, 21, 5):
-    print(i)    # 5 10 15 20
-```
-
-### for 文の else 節
+#### for 文の else 節
 
 ```py
 for i in range(5):
-    print(i)
+    print(i, end=' ')
 else:
     # ループを抜けたときに実行される
     print('else')
 ```
 
-> 0
->
-> 1
->
-> 2
->
-> 3
->
-> 4
->
-> else
+> 0 1 2 3 4 else
+
+#### 途中でループから脱出(break)
 
 ```py
-for i in (0, 1, 2):
-    print(i)
-```
 
-> 0
->
-> 1
->
-> 2
-
-```py
-for k in {'k1': 1, 'k2': 2, 'k3': 3}:
-    print(k)
-```
-
-> k1
->
-> k2
->
-> k3
-
-```py
-for c in '012':
-    print(c)
-```
-
-> 0
->
-> 1
->
-> 2
-
-```py
-for line in open('grammer.py', encoding='utf8'):
-    print(line)
-    # 1行ずつ標準出力
-```
-
-```py
-# keyとvalueを一緒に取得する
-for k, v in enumerate(['v1', 'v2', 'v3']):
-    print(k, v)
-```
-
-> 0 v1
->
-> 1 v2
->
-> 2 v3
-
-```py
-# 途中でループから脱出
 for i in range(5):
     if i > 3:
         break
-    print(i)
+    print(i, end=' ')
 ```
 
-> 0
->
-> 1
->
-> 2
->
-> 3
+> 0 1 2 3
 
-### スキップする(continue)
+#### スキップする(continue)
 
 ```py
 for i in range(5):
     if i == 3:
         continue
-    print(i)
+    print(i, end=' ')
 ```
 
-> 0
->
-> 1
->
-> 2
->
-> 4
+> 0 1 2 4
 
-### itertools
+#### ループ回数を与える場合
+
+| 関数                       | 内容                                             |
+| -------------------------- | ------------------------------------------------ |
+| `range(stop)`              | ループ回数                                       |
+| `range(start, stop)`       | 指定された開始位置／終了位置の範囲をループ       |
+| `range(start, stop, step)` | 指定された開始位置／終了位置／増分の範囲をループ |
+
+```py
+for i in range(4):
+    print(i, end=' ')
+
+for i in range(5, 8):
+    j = i + 1
+    print(i, end=' ')
+
+for i in range(5, 20, 5):
+    print(i, end=' ')
+
+for i in range(5, 21, 5):
+    print(i, end=' ')
+```
+
+> 0 1 2 3
+>
+> 5 6 7
+>
+> 5 10 15
+>
+> 5 10 15 20
+
+#### 文字列型を与える場合
+
+```py
+for c in '012':
+    print(c, end=' ')
+```
+
+> 0 1 2
+
+#### ファイルオブジェクトを場合
+
+```py
+for line in open('test-fileio/inpututf8.txt', encoding='utf8'):
+    print(line)
+```
+
+```
+あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD
+かきくけこxahfE6WkxNFpU-4KgnJ4jS2jZUyWf9spDbKRaFyC
+...
+tRR_6_JHDbL27G24P2NaMb-znLJs5iC3wQbPxnyyJc6HV9XYjQ
+```
+
+#### 複数リストの直積を取得
 
 ```py
 import itertools
@@ -4890,30 +4874,12 @@ while i < 10:
     i += 1
     if i == 3:
         continue
-    print(i)
+    print(i, end=' ')
 else:
     print('-1')
 ```
 
-> 1
->
-> 2
->
-> 4
->
-> 5
->
-> 6
->
-> 7
->
-> 8
->
-> 9
->
-> 10
->
-> -1
+> 1 2 4 5 6 7 8 9 10 -1
 
 ## 例外処理
 
@@ -4950,6 +4916,14 @@ finally:
 raise IOError('IOError')
 ```
 
+### 例外を発生させる
+
+例外を投げてプログラム実行を終了させる
+
+```py
+raise exception
+```
+
 ### assert(アサーション)
 
 `__debug__` が `True` の時のみ動作するので、テスト用に使用できる。
@@ -4976,6 +4950,11 @@ assert sum == 4, '期待される値と異なります'  # AssertionErrorが発�
 
 ## 評価
 
+| 関数 | 用途         |
+| ---- | ------------ |
+| eval | 式として評価 |
+| exec | 文として評価 |
+
 ### eval
 
 ```py
@@ -4992,20 +4971,33 @@ eval('a = 1 + 2')
 ```py
 # 式、グローバル、ローカル
 result = eval('a + b', {}, {'a': 1, 'b': 2})
-result = eval('a + b', {'a': 1, 'b': 2})
 print(result)
-result = eval('a + b', {'a': 3, 'b': 4}, {'a': 1, 'b': 2})
+
+result = eval('a + b', {'a': 3, 'b': 4})
+print(result)
+
+result = eval('a + b', {'a': 5, 'b': 6}, {'a': 7, 'b': 8})
 print(result)
 ```
 
 > 3
 >
-> 3
+> 7
+>
+> 15
 
 ```py
+# compile(source, filename, mode, flags=0, dont_inherit=False, optimize=-1)
+# 第1引数に文字列を与えている(コードの読み出し元のファイルがない)ので、慣習的に第2引数にファイル名ではなく空文字か「<string>」を指定
 result = eval(compile('1 + 2', '<string>', 'eval'))
 print(result)
 ```
+
+| mode     | 意味                                 |
+| -------- | ------------------------------------ |
+| `eval`   | 単一の式としてコンパイルする         |
+| `single` | 単一の文としてコンパイルする         |
+| `exec`   | 単一のモジュールとしてコンパイルする |
 
 > 3
 
@@ -5048,7 +5040,7 @@ print(var3)
 >
 > hoge
 
-### グローバル名前空間の参照・変更を制限
+#### グローバル名前空間の参照・変更を制限
 
 ```py
 exec('import os;os.system("echo foobar")', {}, {})
@@ -5071,7 +5063,9 @@ b = Bar()
 del s, i, b
 ```
 
-## exit(プログラム実行を終了)
+## exit
+
+プログラム実行を終了させる
 
 ```py
 import sys
