@@ -78,11 +78,75 @@
         - [日付時刻の format 文字列に埋め込むディレクティブ](#日付時刻の-format-文字列に埋め込むディレクティブ)
   - [str(文字列)](#str文字列)
     - [エスケープシーケンス](#エスケープシーケンス)
-  - [RAW 文字列](#raw-文字列)
+    - [RAW 文字列](#raw-文字列)
     - [ヒアドキュメント](#ヒアドキュメント)
     - [文字列のフォーマット](#文字列のフォーマット)
       - [ゼロ埋め](#ゼロ埋め)
-- [書式指定子](#書式指定子) - [format 関数](#format-関数) - [str.format 関数](#strformat-関数) - [整列](#整列) - [小数点以下の桁数](#小数点以下の桁数) - [桁区切り文字](#桁区切り文字) - [指数表記](#指数表記) - [2 進数、8 進数、16 進数](#2-進数8-進数16-進数) - [リストの値を代入](#リストの値を代入) - [タプルの値を代入](#タプルの値を代入) - [辞書の値を代入](#辞書の値を代入) - [クラスの属性値を代入](#クラスの属性値を代入) - [f 文字列](#f-文字列) - [リストの値を代入](#リストの値を代入-1) - [タプルの値を代入](#タプルの値を代入-1) - [辞書の値を代入](#辞書の値を代入-1) - [フォーマット演算子](#フォーマット演算子) - [文字種チェック](#文字種チェック) - [数値チェック](#数値チェック) - [バイト列(byte), Unicode](#バイト列byte-unicode) - [Python 3](#python-3) - [Python 2](#python-2) - [文字列とバイト列の変換](#文字列とバイト列の変換) - [区切り文字による分割](#区切り文字による分割) - [split の引数を指定しないと、空白文字(タブ文字、改行文字を含む)で分割される](#split-の引数を指定しないと空白文字タブ文字改行文字を含むで分割される) - [split で分割した後、各要素の先頭・末尾の空白文字を除去する](#split-で分割した後各要素の先頭・末尾の空白文字を除去する) - [部分文字列](#部分文字列) - [1 文字ずつ処理する](#1-文字ずつ処理する) - [インデックスを取得](#インデックスを取得) - [部分文字列を全パターン取得する](#部分文字列を全パターン取得する) - [エンコード・デコード](#エンコード・デコード) - [Base64](#base64) - [URL safe な Base64](#url-safe-な-base64) - [検索](#検索) - [単純な検索](#単純な検索) - [前方一致](#前方一致) - [後方一致](#後方一致) - [正規表現による検索](#正規表現による検索) - [パターンのコンパイル](#パターンのコンパイル) - [パターンを文字列型変数からコンパイル](#パターンを文字列型変数からコンパイル) - [文字列の先頭でマッチ](#文字列の先頭でマッチ) - [文字列の途中でマッチ](#文字列の途中でマッチ) - [マッチした最初の場所](#マッチした最初の場所) - [文字列の途中でマッチした全ての箇所のリスト](#文字列の途中でマッチした全ての箇所のリスト) - [文字列の途中でマッチした全ての箇所のイテレーター](#文字列の途中でマッチした全ての箇所のイテレーター) - [グループ化](#グループ化) - [グループ番号](#グループ番号) - [シンボリックグループ名](#シンボリックグループ名) - [フラグを利用](#フラグを利用) - [文字種のフィルタリング](#文字種のフィルタリング) - [文字列全体が半角英数だけ含まれているか検査](#文字列全体が半角英数だけ含まれているか検査) - [半角カナなどが含まれていないか検査](#半角カナなどが含まれていないか検査) - [文字種別のパターン](#文字種別のパターン) - [文字種のフィルタリング](#文字種のフィルタリング-1) - [置換](#置換) - [単純な置換](#単純な置換) - [改行文字を除去](#改行文字を除去) - [前後の空白文字を除去](#前後の空白文字を除去) - [大文字化・小文字化](#大文字化・小文字化) - [正規表現による置換](#正規表現による置換) - [数字のみ抽出](#数字のみ抽出) - [ファイル名に使用できない文字を除去](#ファイル名に使用できない文字を除去) - [1 文字ごとの置換](#1-文字ごとの置換) - [絵文字](#絵文字) - [ランダムな文字列の生成](#ランダムな文字列の生成)
+      - [書式指定子](#書式指定子)
+      - [format 関数](#format-関数)
+      - [str.format 関数](#strformat-関数)
+        - [整列](#整列)
+        - [小数点以下の桁数](#小数点以下の桁数)
+        - [桁区切り文字](#桁区切り文字)
+        - [指数表記](#指数表記)
+        - [2 進数、8 進数、16 進数](#2-進数8-進数16-進数)
+        - [リストの値を代入](#リストの値を代入)
+        - [タプルの値を代入](#タプルの値を代入)
+        - [辞書の値を代入](#辞書の値を代入)
+        - [クラスの属性値を代入](#クラスの属性値を代入)
+      - [f 文字列](#f-文字列)
+        - [リストの値を代入](#リストの値を代入-1)
+        - [タプルの値を代入](#タプルの値を代入-1)
+        - [辞書の値を代入](#辞書の値を代入-1)
+      - [フォーマット演算子](#フォーマット演算子)
+    - [文字種チェック](#文字種チェック)
+      - [数値チェック](#数値チェック)
+    - [バイト列(byte), Unicode](#バイト列byte-unicode)
+      - [Python 3](#python-3)
+      - [Python 2](#python-2)
+      - [文字列とバイト列の変換](#文字列とバイト列の変換)
+    - [区切り文字による分割](#区切り文字による分割)
+      - [split の引数を指定しないと、空白文字(タブ文字、改行文字を含む)で分割される](#split-の引数を指定しないと空白文字タブ文字改行文字を含むで分割される)
+      - [split で分割した後、各要素の先頭・末尾の空白文字を除去する](#split-で分割した後各要素の先頭・末尾の空白文字を除去する)
+    - [部分文字列](#部分文字列)
+      - [1 文字ずつ処理する](#1-文字ずつ処理する)
+        - [インデックスを取得](#インデックスを取得)
+      - [部分文字列を全パターン取得する](#部分文字列を全パターン取得する)
+    - [エンコード・デコード](#エンコード・デコード)
+      - [Base64](#base64)
+      - [URL safe な Base64](#url-safe-な-base64)
+    - [検索](#検索)
+      - [単純な検索](#単純な検索)
+        - [前方一致](#前方一致)
+        - [後方一致](#後方一致)
+      - [正規表現による検索](#正規表現による検索)
+        - [パターンのコンパイル](#パターンのコンパイル)
+          - [パターンを文字列型変数からコンパイル](#パターンを文字列型変数からコンパイル)
+        - [文字列の先頭でマッチ](#文字列の先頭でマッチ)
+        - [文字列の途中でマッチ](#文字列の途中でマッチ)
+          - [マッチした最初の場所](#マッチした最初の場所)
+          - [文字列の途中でマッチした全ての箇所のリスト](#文字列の途中でマッチした全ての箇所のリスト)
+          - [文字列の途中でマッチした全ての箇所のイテレーター](#文字列の途中でマッチした全ての箇所のイテレーター)
+        - [グループ化](#グループ化)
+          - [グループ番号](#グループ番号)
+          - [シンボリックグループ名](#シンボリックグループ名)
+        - [フラグを利用](#フラグを利用)
+      - [文字種のフィルタリング](#文字種のフィルタリング)
+        - [文字列全体が半角英数だけ含まれているか検査](#文字列全体が半角英数だけ含まれているか検査)
+        - [半角カナなどが含まれていないか検査](#半角カナなどが含まれていないか検査)
+        - [文字種別のパターン](#文字種別のパターン)
+      - [文字種のフィルタリング](#文字種のフィルタリング-1)
+    - [置換](#置換)
+      - [単純な置換](#単純な置換)
+        - [改行文字を除去](#改行文字を除去)
+        - [前後の空白文字を除去](#前後の空白文字を除去)
+        - [大文字化・小文字化](#大文字化・小文字化)
+      - [正規表現による置換](#正規表現による置換)
+        - [数字のみ抽出](#数字のみ抽出)
+        - [ファイル名に使用できない文字を除去](#ファイル名に使用できない文字を除去)
+      - [1 文字ごとの置換](#1-文字ごとの置換)
+    - [絵文字](#絵文字)
+    - [ランダムな文字列の生成](#ランダムな文字列の生成)
   - [リスト](#リスト)
     - [リストが空か検査](#リストが空か検査)
     - [リストを生成](#リストを生成)
@@ -99,7 +163,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
     - [リストの要素を除去](#リストの要素を除去)
     - [リストの反復処理](#リストの反復処理)
       - [インデックスを取得](#インデックスを取得-1)
@@ -246,13 +309,12 @@
       - [stdout](#stdout)
       - [print()](#print)
   - [環境変数](#環境変数)
-    - [環境変数の読み書き](#環境変数の読み書き)
-      - [環境変数の読み出し](#環境変数の読み出し)
-        - [一覧の取得](#一覧の取得)
-        - [環境変数の存在チェック](#環境変数の存在チェック)
-        - [キーを指定して値を取得](#キーを指定して値を取得)
-      - [環境変数の書き込み](#環境変数の書き込み)
-      - [環境変数の削除](#環境変数の削除)
+    - [環境変数の読み出し](#環境変数の読み出し)
+      - [一覧の取得](#一覧の取得)
+      - [環境変数の存在チェック](#環境変数の存在チェック)
+      - [キーを指定して値を取得](#キーを指定して値を取得)
+    - [環境変数の書き込み](#環境変数の書き込み)
+    - [環境変数の削除](#環境変数の削除)
     - [.env ファイルに記述した設定値を環境変数に設定](#env-ファイルに記述した設定値を環境変数に設定)
   - [ハッシュ](#ハッシュ)
     - [文字列からハッシュを取得](#文字列からハッシュを取得)
@@ -262,7 +324,7 @@
   - [ローカルファイル](#ローカルファイル)
     - [パス文字列の操作](#パス文字列の操作)
       - [複数のパスが同一のファイルを示しているか検査](#複数のパスが同一のファイルを示しているか検査)
-      - [パス文字列を正規化する(不要な区切り文字、 `..` の除去　／　 Windows 環境での大文字小文字の置換、スラッシュとバックスラッシュの置換)](#パス文字列を正規化する不要な区切り文字--の除去　／　-windows-環境での大文字小文字の置換スラッシュとバックスラッシュの置換)
+      - [パス文字列を正規化する](#パス文字列を正規化する)
       - [ホームディレクトリのパスを取得](#ホームディレクトリのパスを取得)
       - [環境変数を取得](#環境変数を取得)
       - [親ディレクトリのパスを取得](#親ディレクトリのパスを取得)
@@ -272,15 +334,7 @@
       - [スクリプトファイルのパスを取得](#スクリプトファイルのパスを取得)
     - [ファイル・フォルダを存在チェック](#ファイル・フォルダを存在チェック)
     - [ファイル・フォルダの一覧を取得](#ファイル・フォルダの一覧を取得)
-      - [直下のファイル・フォルダ一覧を取得](#直下のファイル・フォルダ一覧を取得)
-      - [直下のファイル一覧を取得](#直下のファイル一覧を取得)
-      - [直下のフォルダ一覧を取得](#直下のフォルダ一覧を取得)
-      - [再帰的にファイル・フォルダ一覧を取得 ⇒ _recursive_ が _True_ かつ、パスに _\*\*_](#再帰的にファイル・フォルダ一覧を取得-⇒-_recursive_-が-_true_-かつパスに-__)
       - [Python3.4 以前で、再帰的にファイル・フォルダ一覧を取得](#python34-以前で再帰的にファイル・フォルダ一覧を取得)
-      - [再帰的にフォルダ一覧を取得 ⇒ パスの末尾が _os.path.sep_](#再帰的にフォルダ一覧を取得-⇒-パスの末尾が-_ospathsep_)
-      - [再帰的にファイル一覧を取得](#再帰的にファイル一覧を取得)
-      - [ワイルドカードを利用](#ワイルドカードを利用)
-      - [正規表現を利用](#正規表現を利用)
     - [ファイル情報を取得](#ファイル情報を取得)
     - [ファイルを作成](#ファイルを作成)
       - [touch()](#touch)
@@ -298,13 +352,6 @@
       - [ファイルを検索して削除](#ファイルを検索して削除)
     - [フォルダを削除](#フォルダを削除)
     - [タイプ別のファイル読み書き](#タイプ別のファイル読み書き)
-      - [ZIP ファイル](#zip-ファイル)
-        - [ZIP ファイル圧縮](#zip-ファイル圧縮)
-          - [shutil を使ってフォルダごと圧縮](#shutil-を使ってフォルダごと圧縮)
-          - [個別にファイルを追加して圧縮ファイルを作成](#個別にファイルを追加して圧縮ファイルを作成)
-        - [ZIP ファイル解凍](#zip-ファイル解凍)
-      - [ログファイル(テキストファイル・追記)](#ログファイルテキストファイル・追記)
-      - [設定ファイル(configparser)](#設定ファイルconfigparser)
       - [テキストファイル](#テキストファイル)
         - [モード](#モード)
         - [文字コードの推測](#文字コードの推測)
@@ -325,15 +372,16 @@
           - [リストを書き込み(w: 新規作成／上書き)](#リストを書き込みw-新規作成／上書き)
           - [単一の文字列として書き込み(a: 追記)](#単一の文字列として書き込みa-追記)
           - [リストを書き込み(a: 追記)](#リストを書き込みa-追記)
-      - [CSV ファイル](#csv-ファイル)
+      - [csv ファイル](#csv-ファイル)
         - [読み込み](#読み込み-1)
           - [リストに格納(csv.reader)](#リストに格納csvreader)
           - [辞書に格納(csv.DictReader)](#辞書に格納csvdictreader)
-          - [メモリ上の CSV 文字列の読み込み](#メモリ上の-csv-文字列の読み込み)
+          - [メモリ上の csv 文字列の読み込み](#メモリ上の-csv-文字列の読み込み)
         - [書き込み](#書き込み-1)
           - [上書き(mode:w)](#上書きmodew)
           - [追記(mode:a)](#追記modea)
-      - [JSON ファイル](#json-ファイル)
+      - [tsv ファイル](#tsv-ファイル) - [メモリ上の tsv 文字列の読み込み](#メモリ上の-tsv-文字列の読み込み)
+      - [json ファイル](#json-ファイル)
         - [json.tool](#jsontool)
         - [ファイルから読み込み](#ファイルから読み込み)
           - [スクリプトを書かず、json.tool で解析する](#スクリプトを書かずjsontool-で解析する)
@@ -342,9 +390,6 @@
         - [要素の読み込み](#要素の読み込み)
           - [要素の検索](#要素の検索)
         - [書き込み](#書き込み-2)
-      - [ini ファイル](#ini-ファイル)
-        - [ファイルから読み込み](#ファイルから読み込み-1)
-      - [TSV ファイル](#tsv-ファイル) - [メモリ上の TSV 文字列の読み込み](#メモリ上の-tsv-文字列の読み込み)
       - [XML ファイル](#xml-ファイル)
         - [ファイルから一括読み込み](#ファイルから一括読み込み)
         - [ファイルから逐次的に読み込み](#ファイルから逐次的に読み込み)
@@ -353,6 +398,13 @@
       - [ARFF ファイル](#arff-ファイル)
         - [読み込み](#読み込み-2)
         - [書き込み](#書き込み-4)
+      - [ini ファイル](#ini-ファイル)
+      - [ログファイル(テキストファイル・追記)](#ログファイルテキストファイル・追記)
+      - [zip ファイル](#zip-ファイル)
+        - [zip ファイル圧縮](#zip-ファイル圧縮)
+          - [shutil を使ってフォルダごと圧縮](#shutil-を使ってフォルダごと圧縮)
+          - [個別にファイルを追加して圧縮ファイルを作成](#個別にファイルを追加して圧縮ファイルを作成)
+        - [zip ファイル解凍](#zip-ファイル解凍)
   - [ネットワーク](#ネットワーク)
     - [URL 文字列の操作](#url-文字列の操作)
       - [URL エンコーディング](#url-エンコーディング)
@@ -1867,7 +1919,7 @@ print('cq' 'cq' 'cq') # 文字列を演算子なしでつなげる
 
 <a id="markdown-raw-文字列" name="raw-文字列"></a>
 
-## RAW 文字列
+### RAW 文字列
 
 ```py
 print(r'str\nstr') # エスケープシーケンスが無視される
@@ -1955,7 +2007,7 @@ print(fuga)
 
 <a id="markdown-書式指定子" name="書式指定子"></a>
 
-# 書式指定子
+#### 書式指定子
 
 | 項目 | \*  | fill                              | \*           | align | \*                 | sign     | \*        | `#`  | `0`    | width        | \*           | grouping_option | \*         | precision             | \*                                      | type   | \*                                   |
 | ---- | --- | --------------------------------- | ------------ | ----- | ------------------ | -------- | --------- | ---- | ------ | ------------ | ------------ | --------------- | ---------- | --------------------- | --------------------------------------- | ------ | ------------------------------------ |
@@ -1976,9 +2028,7 @@ print(fuga)
 |      |     |                                   |              |       |                    |          |           |      |        |              |              |                 |            |                       |                                         | `X`    | `A`以降の数字に大文字を使う 16 進数  |
 |      |     |                                   |              |       |                    |          |           |      |        |              |              |                 |            |                       |                                         | `%`    | 数値を 100 倍して%表記               |
 
-注)
-
-- f 文字列や str.format()では、fill に `{` と `}`を使えない
+注)f 文字列や str.format()では、fill に `{` と `}`を使えない
 
 <a id="markdown-format-関数" name="format-関数"></a>
 
@@ -4097,8 +4147,6 @@ print(lst[len(lst) - 1])
 > foo
 >
 > hoge
-
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
 
 ```py
 lst = ['foo', 'bar', 'hoge']
@@ -6518,17 +6566,13 @@ with open('./path/to/file.txt', 'w') as f:
 
 ## 環境変数
 
-<a id="markdown-環境変数の読み書き" name="環境変数の読み書き"></a>
-
-### 環境変数の読み書き
-
 <a id="markdown-環境変数の読み出し" name="環境変数の読み出し"></a>
 
-#### 環境変数の読み出し
+### 環境変数の読み出し
 
 <a id="markdown-一覧の取得" name="一覧の取得"></a>
 
-##### 一覧の取得
+#### 一覧の取得
 
 ```py
 import os
@@ -6602,7 +6646,7 @@ for k, v in list(os.environ.items()): # list型で取得
 
 <a id="markdown-環境変数の存在チェック" name="環境変数の存在チェック"></a>
 
-##### 環境変数の存在チェック
+#### 環境変数の存在チェック
 
 ```py
 import os
@@ -6628,7 +6672,7 @@ print(('ALLUSERSPROFILE', 'C:\\ProgramData') in os.environ.items())
 
 <a id="markdown-キーを指定して値を取得" name="キーを指定して値を取得"></a>
 
-##### キーを指定して値を取得
+#### キーを指定して値を取得
 
 ```py
 import os
@@ -6659,7 +6703,7 @@ print(os.getenv('_ALLUSERSPROFILE', 'NULL')) # 指定されたキーが存在し
 
 <a id="markdown-環境変数の書き込み" name="環境変数の書き込み"></a>
 
-#### 環境変数の書き込み
+### 環境変数の書き込み
 
 以下の手順で環境変数を設定／上書きしても、システムの環境変数が変更されるわけではなく、実行中のスクリプトでのみ反映される
 
@@ -6686,7 +6730,7 @@ print(os.environ['SAMPLE'])
 
 <a id="markdown-環境変数の削除" name="環境変数の削除"></a>
 
-#### 環境変数の削除
+### 環境変数の削除
 
 ```py
 import os
@@ -6884,119 +6928,29 @@ print(h.hexdigest())
 
 ### パス文字列の操作
 
-```py
-import os
+| 取得内容                           | 関数(`import os`が必要)                                                                                        | 値                                                                       | パスにファイルが存在しない場合                                           |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| パス区切り文字                     | `os.path.sep`                                                                                                  | `'/'`                                                                    |                                                                          |
+| パス文字列を組み立て(結合)         | `os.path.join('.', 'test' + '-' + 'join', 'test.txt')`                                                         | `'./test-join/test.txt'`                                                 | `'./test-join/test.txt'`                                                 |
+|                                    |                                                                                                                |                                                                          |                                                                          |
+| ファイル名                         | `os.path.basename('./test-join/test.txt')`                                                                     | `'test.txt'`                                                             | `'test.txt'`                                                             |
+| ディレクトリ名                     | `os.path.dirname('./test-join/test.txt')`                                                                      | `'./test-join'`                                                          | `'./test-join'`                                                          |
+| ファイル名とディレクトリ名のタプル | `dname, bname = os.path.split('./test-join/test.txt')` <br> `print(dname, bname)`                              | `./test-join test.txt`                                                   | `./test-join test.txt`                                                   |
+| パス～ファイル名と拡張子           | `root, ext = os.path.splitext('./test-join/test.txt')` <br> `print(root, ext)`                                 | `./test-join/test .txt`                                                  | `./test-join/test .txt`                                                  |
+|                                    | `spltext = os.path.splitext('./test-join/test.txt')` <br> `print(spltext[0], spltext[1])`                      | `./test-join/test .txt`                                                  | `./test-join/test .txt`                                                  |
+|                                    |                                                                                                                |                                                                          |                                                                          |
+| 絶対パス                           | `os.path.abspath('./test-join/test.txt')`                                                                      | `'/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-join/test.txt'` | `'/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-join/test.txt'` |
+| 2 つのパス間の相対パス             | `os.path.relpath(os.path.abspath('./test-join/test.txt'), '.')`                                                | `'test-join/test.txt'`                                                   | `'test-join/test.txt'`                                                   |
+| 共通パス(階層単位)                 | `os.path.commonpath( [os.path.abspath('./test-join/test1.txt'), os.path.abspath('./test-join/test2.txt')] )`   | `'C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join'`              | `'C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join'`              |
+| 共通パス(文字単位)                 | `os.path.commonprefix( [os.path.abspath('./test-join/test1.txt'), os.path.abspath('./test-join/test2.txt')] )` | `'C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join\test'`         | `'C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join\test'`         |
+| ドライブレター                     | `os.path.splitdrive(os.path.abspath('./test-join/test.txt'))[0]`                                               | `'C:'`                                                                   |                                                                          |
 
-# パス文字列を組み立てる
-print(os.path.sep)
-
-joined = os.path.join('.', 'test' + '-' + 'join', 'test.txt')
-print(joined)
-
-# ファイル名を取得する
-bname = os.path.basename('./test-join/test.txt')
-print(bname)
-
-# ディレクトリ名を取得する
-dname = os.path.dirname('./test-join/test.txt')
-print(dname)
-
-# ファイル名とディレクトリ名のペアを取得する
-dname, bname = os.path.split('./test-join/test.txt')
-print(dname, bname)
-
-# 拡張子を取得する
-root, ext = os.path.splitext('./test-join/test.txt')
-print(root, ext)
-spltext = os.path.splitext('./test-join/test.txt')
-print(spltext[0], spltext[1])
-
-# 絶対パスを取得する
-absp = os.path.abspath('./test-join/test.txt')
-print(absp)
-if os.path.isabs(absp): # パス文字列が絶対パスか検査する
-    print('ABSPATH')
-
-# パス文字列がシンボリックリンクか検査する
-absp = os.path.abspath('./test-join/test.txt')
-os.path.islink(path)
-
-# パス文字列がマウントポイントか検査する
-absp = os.path.abspath('./test-join/test.txt')
-os.path.ismount(path)
-
-# 2つのパス間の相対パスを取得する
-relp = os.path.relpath(absp, '.')
-print(relp)
-
-# 共通パス(階層単位／文字単位)を取得する
-paths = [
-    os.path.abspath('./test-join/test1.txt'),
-    os.path.abspath('./test-join/test2.txt'),
-]
-cmnpath = os.path.commonpath(paths)
-print(cmnpath)
-cmnprefix = os.path.commonprefix(paths)
-print(cmnprefix)
-
-
-# ドライブレターを取得する
-drive, tail = os.path.splitdrive(absp)
-print(drive[0])
-print(os.path.samefile(os.path.join(drive, tail), absp))
-```
-
-> \# パス文字列を組み立てる
->
-> /
->
-> './test-join/test.txt'
->
-> \# ファイル名を取得する
->
-> test.txt
->
-> \# ディレクトリ名を取得する
->
-> ./test-join
->
-> \# ファイル名とディレクトリ名のペアを取得する
->
-> ./test-join test.txt
->
-> \# 拡張子を取得する
->
-> ./test-join/test .txt
->
-> \# 絶対パスを取得する
->
-> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-join/test.txt'
->
-> ABSPATH
->
-> \# パス文字列がシンボリックリンクか検査する
->
-> False
->
-> \# パス文字列がマウントポイントか検査する
->
-> False
->
-> \# 2 つのパス間の相対パスを取得する
->
-> test-join/test.txt'
->
-> \# 共通パス(階層単位／文字単位)を取得する
->
-> C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join
->
-> C:\Users\y\Documents\GitHub\Python-cheatsheet\test-join\test
->
-> \# ドライブレターを取得する
->
-> C
->
-> True
+| 検査内容                         | 関数                                                                            | 値      | パスにファイルが存在しない場合                                         |
+| -------------------------------- | ------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
+| パス文字列が絶対パスか           | `os.path.isabs(os.path.abspath('./test-join/test.txt'))`                        | `True`  | `True`                                                                 |
+| パス文字列がシンボリックリンクか | `os.path.islink(os.path.abspath('./test-join/test.txt'))`                       | `False` | `False`                                                                |
+| パス文字列がマウントポイントか   | `os.path.ismount(os.path.abspath('./test-join/test.txt'))`                      | `False` | `False`                                                                |
+| パスが示すファイルが同一か       | `os.path.samefile('./test-join/test.txt', './test-join/../test-join/test.txt')` | `True`  | `FileNotFoundError: [WinError 2] 指定されたファイルが見つかりません。` |
 
 <a id="markdown-複数のパスが同一のファイルを示しているか検査" name="複数のパスが同一のファイルを示しているか検査"></a>
 
@@ -7024,9 +6978,11 @@ print(os.path.samestat(stat1, stat2)) # os.fstat(), os.lstat()，os.stat() の�
 >
 > True
 
-<a id="markdown-パス文字列を正規化する不要な区切り文字--の除去　／　-windows-環境での大文字小文字の置換スラッシュとバックスラッシュの置換" name="パス文字列を正規化する不要な区切り文字--の除去　／　-windows-環境での大文字小文字の置換スラッシュとバックスラッシュの置換"></a>
+<a id="markdown-パス文字列を正規化する" name="パス文字列を正規化する"></a>
 
-#### パス文字列を正規化する(不要な区切り文字、 `..` の除去　／　 Windows 環境での大文字小文字の置換、スラッシュとバックスラッシュの置換)
+#### パス文字列を正規化する
+
+不要な区切り文字、 `..` の除去　／　 Windows 環境での大文字小文字の置換、スラッシュとバックスラッシュの置換
 
 ```py
 import os
@@ -7193,27 +7149,14 @@ import os
 FILEPATH = '.'
 print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
 print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
-
-FILEPATH = './'
-print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
-print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
-
-FILEPATH = './Python3.md'
-print(os.path.exists(FILEPATH) and os.path.isdir(FILEPATH))
-print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
 ```
 
-> True
->
-> False
-
-> True
->
-> False
-
-> False
->
-> True
+| FILEPATH           | `os.path.exists(FILEPATH)` | `os.path.isdir(FILEPATH)` | `os.path.isfile(FILEPATH)` |
+| ------------------ | -------------------------- | ------------------------- | -------------------------- |
+| `'.'`              | `True`                     | `True`                    | `False`                    |
+| `'./'`             | `True`                     | `True`                    | `False`                    |
+| `'./README.md'`    | `True`                     | `False`                   | `True`                     |
+| `'./NOTFOUND.txt'` | `False`                    | `False`                   | `False`                    |
 
 <a id="markdown-ファイル・フォルダの一覧を取得" name="ファイル・フォルダの一覧を取得"></a>
 
@@ -7230,113 +7173,41 @@ print(os.path.exists(FILEPATH) and os.path.isfile(FILEPATH))
 from glob import glob
 import os
 
-
-DIRPATH = os.getcwd() # '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet'
-os.chdir(DIRPATH)
-
-DIRPATH = '.'
-DIRPATH = os.path.join(DIRPATH, 'test-glob') # './test-glob'
+DIRPATH = os.path.join('.', 'test-glob') # './test-glob'
 DIRPATH += '' if DIRPATH.endswith(os.path.sep) else os.path.sep # './test-glob/'
 ```
 
-<a id="markdown-直下のファイル・フォルダ一覧を取得" name="直下のファイル・フォルダ一覧を取得"></a>
+| 取得内容                             | 関数                                                                                                                                           | 値                                                                                            | 備考                                           |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 直下のファイル・フォルダ一覧を取得   | `glob(os.path.join(DIRPATH, '*'), recursive=False)`                                                                                            | `['.\\test-glob\\test-glob-1', '.\\test-glob\\test-glob-2', '.\\test-glob\\test-glob-3.dat']` |                                                |
+|                                      | `glob(os.path.join(DIRPATH, '*'), recursive=True)`                                                                                             | `['.\\test-glob\\test-glob-1', '.\\test-glob\\test-glob-2', '.\\test-glob\\test-glob-3.dat']` | `**` を指定していないため `recursive` は無関係 |
+| 直下のファイル一覧を取得             | `glob(os.path.join(DIRPATH, '*.*'), recursive=True)`                                                                                           | `['./test-glob/test-glob-3.dat']`                                                             |                                                |
+|                                      | `[f for f in glob(os.path.join(DIRPATH, '*')) if os.path.isfile(f)]`                                                                           | `['./test-glob/test-glob-3.dat']`                                                             |                                                |
+| 直下のフォルダ一覧を取得             | `[f for f in glob(os.path.join(DIRPATH, '*')) if os.path.isdir(f)]`                                                                            | `['.\\test-glob\\test-glob-1', '.\\test-glob\\test-glob-2']`                                  |                                                |
+|                                      |                                                                                                                                                |                                                                                               |                                                |
+| 再帰的にファイル・フォルダ一覧を取得 | `glob(os.path.join(DIRPATH, '**'), recursive=True)`                                                                                            | [1]                                                                                           | _recursive_ が `True` かつ、パスに `**`        |
+| 再帰的にファイル一覧を取得           | `glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True)`                                                                       | [2]                                                                                           |                                                |
+| 再帰的にフォルダ一覧を取得           | `[f for f in glob(os.path.join(DIRPATH, '**'), recursive=True) if os.path.isdir(f)]`                                                           | [3]                                                                                           |                                                |
+|                                      | `glob(os.path.join(DIRPATH, '**' + os.path.sep), recursive=True)`                                                                              | [4]                                                                                           | パスの末尾が `os.path.sep` になる              |
+|                                      |                                                                                                                                                |                                                                                               |                                                |
+| ワイルドカードを利用                 | `glob(os.path.join(DIRPATH, os.path.join('**', '*-[0-1].???')), recursive=True)`                                                               | `['.\\test-glob\\test-glob-1\\test-glob-1-1\\test-glob-1-1-1.dat']`                           |                                                |
+| 正規表現を利用                       | `import re` <br> `[p for p in glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True) if re.search('test-glob(-1){3}.dat', p)]` | `['.\\test-glob\\test-glob-1\\test-glob-1-1\\test-glob-1-1-1.dat']`                           |                                                |
 
-#### 直下のファイル・フォルダ一覧を取得
+[1]
 
-```py
-dirs = glob(os.path.join(DIRPATH, '*'), recursive=True)
-# または dirs = glob(os.path.join(DIRPATH, '*'), recursive=False) も同じ
-```
+> ['.\\test-glob\\', '.\\test-glob\\test-glob-1', '.\\test-glob\\test-glob-1\\test-glob-1-1', '.\\test-glob\\test-glob-1\\test-glob-1-1\\test-glob-1-1-1.dat', '.\\test-glob\\test-glob-1\\test-glob-1-1\\test-glob-1-1-2.dat', '.\\test-glob\\test-glob-1\\test-glob-1-2.dat', '.\\test-glob\\test-glob-2', '.\\test-glob\\test-glob-2\\test-glob-2-2.dat', '.\\test-glob\\test-glob-3.dat']
 
-> [
->
-> './test-glob/test-glob-1',
->
-> './test-glob/test-glob-2',
->
-> './test-glob/test-glob-3.dat'
->
-> ]
+[2]
 
-```py
-dirs = glob(os.path.join(DIRPATH, '**'), recursive=False)
-```
+> ['.\\test-glob\\test-glob-3.dat', '.\\test-glob\\test-glob-1\\test-glob-1-2.dat', '.\\test-glob\\test-glob-1\\test-glob-1-1\\test-glob-1-1-1.dat', '.\\test-glob\\test-glob-1\\test-glob-1-1\\test-glob-1-1-2.dat', '.\\test-glob\\test-glob-2\\test-glob-2-2.dat']
 
-> [
->
-> './test-glob/test-glob-1',
->
-> './test-glob/test-glob-2',
->
-> './test-glob/test-glob-3.dat'
->
-> ]
+[3]
 
-<a id="markdown-直下のファイル一覧を取得" name="直下のファイル一覧を取得"></a>
+> ['.\\test-glob\\', '.\\test-glob\\test-glob-1', '.\\test-glob\\test-glob-1\\test-glob-1-1', '.\\test-glob\\test-glob-2']
 
-#### 直下のファイル一覧を取得
+[4]
 
-```py
-dirs = glob(os.path.join(DIRPATH, '*.*'), recursive=True)
-```
-
-> ['./test-glob/test-glob-3.dat']
-
-```py
-[f for f in glob(os.path.join(DIRPATH, '*')) if os.path.isfile(f)]
-```
-
-> [
->
-> './test-glob/test-glob-3.dat'
->
-> ]
-
-<a id="markdown-直下のフォルダ一覧を取得" name="直下のフォルダ一覧を取得"></a>
-
-#### 直下のフォルダ一覧を取得
-
-```py
-[f for f in glob(os.path.join(DIRPATH, '*')) if os.path.isdir(f)]
-```
-
-> [
->
-> './test-glob/test-glob-1',
->
-> './test-glob/test-glob-2'
->
-> ]
-
-<a id="markdown-再帰的にファイル・フォルダ一覧を取得-⇒-_recursive_-が-_true_-かつパスに-_\\_" name="再帰的にファイル・フォルダ一覧を取得-⇒-_recursive_-が-_true_-かつパスに-_\\_"></a>
-
-#### 再帰的にファイル・フォルダ一覧を取得 ⇒ _recursive_ が _True_ かつ、パスに _\*\*_
-
-```py
-dirs = glob(os.path.join(DIRPATH, '**'), recursive=True)
-```
-
-> [
->
-> './test-glob/',
->
-> './test-glob/test-glob-1',
->
-> './test-glob/test-glob-1/test-glob-1-1',
->
-> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
->
-> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
->
-> './test-glob/test-glob-1/test-glob-1-2.dat',
->
-> './test-glob/test-glob-2',
->
-> './test-glob/test-glob-2/test-glob-2-2.dat',
->
-> './test-glob/test-glob-3.dat'
->
-> ]
+> ['.\\test-glob\\', '.\\test-glob\\test-glob-1\\', '.\\test-glob\\test-glob-1\\test-glob-1-1\\', '.\\test-glob\\test-glob-2\\']
 
 <a id="markdown-python34-以前で再帰的にファイル・フォルダ一覧を取得" name="python34-以前で再帰的にファイル・フォルダ一覧を取得"></a>
 
@@ -7356,112 +7227,6 @@ for file in glb(DIRPATH):
     files.append(file)
 
 print(files)
-```
-
-> [
->
-> './test-glob',
->
-> './test-glob/test-glob-3.dat',
->
-> './test-glob/test-glob-1',
->
-> './test-glob/test-glob-1/test-glob-1-2.dat',
->
-> './test-glob/test-glob-1/test-glob-1-1',
->
-> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
->
-> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
->
-> './test-glob/test-glob-2',
->
-> './test-glob/test-glob-2/.test-glob-2-1.dat',
->
-> './test-glob/test-glob-2/test-glob-2-2.dat'
->
-> ]
-
-<a id="markdown-再帰的にフォルダ一覧を取得-⇒-パスの末尾が-_ospathsep_" name="再帰的にフォルダ一覧を取得-⇒-パスの末尾が-_ospathsep_"></a>
-
-#### 再帰的にフォルダ一覧を取得 ⇒ パスの末尾が _os.path.sep_
-
-```py
-[f for f in glob(os.path.join(DIRPATH, '**'), recursive=True) if os.path.isdir(f)]
-```
-
-> [
->
-> './test-glob/',
->
-> './test-glob/test-glob-1',
->
-> './test-glob/test-glob-1/test-glob-1-1',
->
-> './test-glob/test-glob-2'
->
-> ]
-
-```py
-dirs = glob(os.path.join(DIRPATH, '**' + os.path.sep), recursive=True)
-```
-
-> [
->
-> './test-glob/',
->
-> './test-glob/test-glob-1/',
->
-> './test-glob/test-glob-1/test-glob-1-1/',
->
-> './test-glob/test-glob-2/'
->
-> ]
-
-<a id="markdown-再帰的にファイル一覧を取得" name="再帰的にファイル一覧を取得"></a>
-
-#### 再帰的にファイル一覧を取得
-
-```py
-dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True)
-```
-
-> [
->
-> './test-glob/test-glob-3.dat',
->
-> './test-glob/test-glob-1/test-glob-1-2.dat',
->
-> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat',
->
-> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat',
->
-> './test-glob/test-glob-2/test-glob-2-2.dat'
->
-> ]
-
-<a id="markdown-ワイルドカードを利用" name="ワイルドカードを利用"></a>
-
-#### ワイルドカードを利用
-
-```py
-dirs = glob(os.path.join(DIRPATH, os.path.join('**', '*-[0-1].???')), recursive=True)
-```
-
-> [
->
-> './test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'
->
-> ]
-
-<a id="markdown-正規表現を利用" name="正規表現を利用"></a>
-
-#### 正規表現を利用
-
-```py
-import re
-
-dirs = [p for p in glob.glob(os.path.join(DIRPATH, os.path.join('**', '*.*')), recursive=True) if re.search('test-glob(-1){3}.dat', p)]
 ```
 
 <a id="markdown-ファイル情報を取得" name="ファイル情報を取得"></a>
@@ -7494,34 +7259,45 @@ def human_readable(bytesize):
 from datetime import datetime, timezone, timedelta
 import os
 
-filepath = './Python3.md'
+filepath = './README.md'
 
-# 最終アクセス日時
-# datetime.fromtimestamp(os.path.getatime(filepath))
-atime = datetime.fromtimestamp(os.path.getatime(filepath), timezone(timedelta(hours=9)))
-print(atime)
-print(atime.tzinfo)
+atime1 = datetime.fromtimestamp(os.path.getatime(filepath))
+atime
+print(atime1)
 
-# 最終更新日時
-# datetime.fromtimestamp(os.path.getmtime(filepath))
-mtime = datetime.fromtimestamp(os.path.getmtime(filepath), timezone(timedelta(hours=9)))
-print(mtime)
-print(mtime.tzinfo)
+atime2 = datetime.fromtimestamp(os.path.getatime(filepath), timezone(timedelta(hours=9)))
+atime2
+print(atime2)
+print(atime2.tzinfo)
 
-# ファイルサイズ
+mtime1 = datetime.fromtimestamp(os.path.getmtime(filepath))
+mtime1
+print(mtime1)
+
+mtime2 = datetime.fromtimestamp(os.path.getmtime(filepath), timezone(timedelta(hours=9)))
+mtime2
+print(mtime2)
+print(mtime2.tzinfo)
+
 size = os.path.getsize(filepath)
+size
 print(human_readable(size))
 ```
 
-> 2019-08-02 21:40:27.305819+09:00
->
-> UTC+09:00
->
-> 2019-08-02 21:43:47.294729+09:00
->
-> UTC+09:00
->
-> 27661
+| 項目             | 関数                          | 値                                                                                                               |
+| ---------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 最終アクセス日時 | `atime1`                      | `datetime.datetime(2020, 1, 24, 8, 38, 56, 106605)`                                                              |
+|                  | `print(atime1)`               | `2020-01-24 08:38:56.106605`                                                                                     |
+|                  | `atime2`                      | `datetime.datetime(2020, 1, 24, 8, 38, 56, 106605, tzinfo=datetime.timezone(datetime.timedelta(seconds=32400)))` |
+|                  | `print(atime2)`               | `2020-01-24 08:38:56.106605+09:00`                                                                               |
+|                  | `print(atime2.tzinfo)`        | `UTC+09:00`                                                                                                      |
+| 最終更新日時     | `mtime1`                      | `datetime.datetime(2020, 1, 24, 8, 38, 56, 106605)`                                                              |
+|                  | `print(mtime1)`               | `2020-01-24 08:38:56.106605`                                                                                     |
+|                  | `mtime2`                      | `datetime.datetime(2020, 1, 24, 8, 38, 56, 106605, tzinfo=datetime.timezone(datetime.timedelta(seconds=32400))`  |
+|                  | `print(mtime2)`               | `2020-01-24 08:38:56.106605+09:00`                                                                               |
+|                  | `print(mtime2.tzinfo)`        | `UTC+09:00`                                                                                                      |
+| ファイルサイズ   | `size`                        | `321480`                                                                                                         |
+|                  | `print(human_readable(size))` | `313.9 KB`                                                                                                       |
 
 <a id="markdown-ファイルを作成" name="ファイルを作成"></a>
 
@@ -8050,257 +7826,6 @@ if not os.path.exists(path):
 
 ### タイプ別のファイル読み書き
 
-<a id="markdown-zip-ファイル" name="zip-ファイル"></a>
-
-#### ZIP ファイル
-
-<a id="markdown-zip-ファイル圧縮" name="zip-ファイル圧縮"></a>
-
-##### ZIP ファイル圧縮
-
-<a id="markdown-shutil-を使ってフォルダごと圧縮" name="shutil-を使ってフォルダごと圧縮"></a>
-
-###### shutil を使ってフォルダごと圧縮
-
-```py
-from glob import glob
-from pathlib import Path
-import os
-import shutil
-import zipfile
-
-
-def touch(filepath):
-    Path(filepath).touch()
-
-
-archive_path = './test-archive/archive' # 拡張子なし : './test-archive/archive.zip'が作成される
-
-srcdpath1 = './test-archive/dir1'
-srcdpath2 = './test-archive/dir1/dir2'
-srcfpath1 = './test-archive/dir1/file1.txt'
-srcfpath2 = './test-archive/dir1/dir2/file2.txt'
-
-os.makedirs(srcdpath1, exist_ok=True)
-os.makedirs(srcdpath2, exist_ok=True)
-touch(srcfpath1)
-touch(srcfpath2)
-
-# base_dirを指定しない
-shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=None)
-
-with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
-    print(zip_contents.namelist())
-
-# base_dirを指定する
-rlpath = os.path.relpath(srcdpath2, srcdpath1) # dir2
-shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=rlpath) # 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
-
-with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
-    print(zip_contents.namelist())
-
-```
-
-> \# base_dir を指定しない
->
-> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
->
-> ['dir2/', 'file1.txt', 'dir2/file2.txt']
-
-> \# base_dir を指定する
->
-> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
->
-> ['dir2/', 'dir2/file2.txt']
-
-<a id="markdown-個別にファイルを追加して圧縮ファイルを作成" name="個別にファイルを追加して圧縮ファイルを作成"></a>
-
-###### 個別にファイルを追加して圧縮ファイルを作成
-
-```py
-from glob import glob
-from pathlib import Path
-import os
-import zipfile
-
-
-def touch(filepath):
-    Path(filepath).touch()
-
-
-archive_path = './test-archive/archive.zip'
-
-srcdpath1 = './test-archive/dir1'
-srcdpath2 = './test-archive/dir1/dir2'
-srcfpath1 = './test-archive/dir1/file1.txt'
-srcfpath2 = './test-archive/dir1/dir2/file2.txt'
-
-os.makedirs(srcdpath1, exist_ok=True)
-os.makedirs(srcdpath2, exist_ok=True)
-touch(srcfpath1)
-touch(srcfpath2)
-
-
-
-with zipfile.ZipFile(archive_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
-    z.write(srcdpath1, arcname=srcdpath1)
-    z.write(srcdpath2, arcname=srcdpath2)
-    z.write(srcfpath1, arcname=srcfpath1)
-
-with zipfile.ZipFile(archive_path) as zip_contents:
-    print(zip_contents.namelist())
-
-# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
-with zipfile.ZipFile(archive_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
-    z.write(srcdpath1, arcname=srcdpath1)
-    z.write(srcdpath2, arcname=srcdpath2)
-    z.write(srcfpath2, arcname=srcfpath2)
-
-with zipfile.ZipFile(archive_path) as zip_contents:
-    print(zip_contents.namelist())
-
-# 既存の圧縮ファイルに、ファイルを追加する
-with zipfile.ZipFile(archive_path, 'a', compression=zipfile.ZIP_DEFLATED) as z:
-    z.write(srcdpath1, arcname=srcdpath1)
-    z.write(srcdpath2, arcname=srcdpath2)
-    z.write(srcfpath1, arcname=srcfpath1)
-    z.write(srcfpath2, arcname=srcfpath2)
-
-with zipfile.ZipFile(archive_path) as zip_contents:
-    print(zip_contents.namelist())
-```
-
-> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/file1.txt']
->
-> \# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
->
-> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/dir2/file2.txt']
->
-> \# 既存の圧縮ファイルに、ファイルを追加する
->
-> UserWarning: Duplicate name: 'test-archive/dir1/'
->
-> UserWarning: Duplicate name: 'test-archive/dir1/dir2/'
->
-> UserWarning: Duplicate name: 'test-archive/dir1/dir2/file2.txt'
->
-> [
->
-> > 'test-archive/dir1/',
-> > 'test-archive/dir1/dir2/',
-> > 'test-archive/dir1/dir2/file2.txt',
-> > 'test-archive/dir1/',
-> > 'test-archive/dir1/dir2/',
-> > 'test-archive/dir1/file1.txt',
-> > 'test-archive/dir1/dir2/file2.txt'
-> > ]
-
-<a id="markdown-zip-ファイル解凍" name="zip-ファイル解凍"></a>
-
-##### ZIP ファイル解凍
-
-```py
-import zipfile
-
-
-archive_path = './test-archive/archive.zip'
-extract_path = '.'
-
-
-# 内容を確認
-with zipfile.ZipFile(archive_path) as zip_contents:
-    print(zip_contents.namelist())
-
-
-with zipfile.ZipFile(archive_path) as zip_contents:
-    zip_contents.extractall(extract_path)
-
-# 特定のファイルのみ解凍
-with zipfile.ZipFile(archive_path) as zip_contents:
-    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path)
-    print(result_path)
-
-
-# パスワードつきzipファイルを解凍
-pw = 'Password'
-with zipfile.ZipFile(archive_path) as zip_contents:
-    zip_contents.extractall(extract_path, pwd=pw)
-
-with zipfile.ZipFile(archive_path) as zip_contents:
-    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path, pwd=pw)
-    print(result_path)
-```
-
-<a id="markdown-ログファイルテキストファイル・追記" name="ログファイルテキストファイル・追記"></a>
-
-#### ログファイル(テキストファイル・追記)
-
-標準出力をログファイルに書き出す
-
-```py
-from datetime import datetime
-import sys
-
-startTimeStr = datetime.now().strftime('%Y%m%d%H%M%S')
-LOGFILE = 'log_{}.txt'.format(startTimeStr)
-
-if __name__ == '__main__':
-    try:
-        sys.stdout = open(LOGFILE, 'a', encoding='utf-8')
-        main()
-    except Exception as e:
-        with open(LOGFILE, 'a', encoding='utf-8') as logfile:
-            nowStr = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-            print('Exception: {} {}'.format(e, nowStr), file=logfile, flush=True)
-    finally:
-        sys.stdout.close()
-        sys.stdout = sys.__stdout__
-```
-
-<a id="markdown-設定ファイルconfigparser" name="設定ファイルconfigparser"></a>
-
-#### 設定ファイル(configparser)
-
-- config.ini
-
-```ini
-[settings]
-user = foobar
-pw = 12345
-```
-
-```py
-import configparser
-import os
-
-# save
-config = configparser.ConfigParser()
-config['settings'] = {'user': 'foobar',
-                     'pw': '12345'}
-with open('config.ini', 'w') as configfile:
-    config.write(configfile)
-
-# read
-inifile = configparser.ConfigParser()
-inifile.read(os.path.join('.', 'config.ini'), 'UTF-8')
-
-print(inifile.get('settings', 'user'))
-print(inifile.get('settings', 'pw'))
-
-print(config['settings']['user'])
-print(config['settings']['pw'])
-```
-
-> ['./config.ini']
->
-> foobar
->
-> 12345
->
-> foobar
->
-> 12345
-
 <a id="markdown-テキストファイル" name="テキストファイル"></a>
 
 #### テキストファイル
@@ -8692,7 +8217,7 @@ with open(os.path.join('test-fileio', 'outpututf8.txt'), 'a', encoding='utf_8') 
 
 <a id="markdown-csv-ファイル" name="csv-ファイル"></a>
 
-#### CSV ファイル
+#### csv ファイル
 
 <a id="markdown-読み込み-1" name="読み込み-1"></a>
 
@@ -8766,7 +8291,7 @@ print(l)
 
 <a id="markdown-メモリ上の-csv-文字列の読み込み" name="メモリ上の-csv-文字列の読み込み"></a>
 
-###### メモリ上の CSV 文字列の読み込み
+###### メモリ上の csv 文字列の読み込み
 
 ```py
 import csv
@@ -8896,9 +8421,36 @@ with open(os.path.join('test-fileio', 'outpututf8.csv'), 'a', encoding='utf_8', 
 >
 > 14
 
+<a id="markdown-tsv-ファイル" name="tsv-ファイル"></a>
+
+#### tsv ファイル
+
+<a id="markdown-メモリ上の-tsv-文字列の読み込み" name="メモリ上の-tsv-文字列の読み込み"></a>
+
+###### メモリ上の tsv 文字列の読み込み
+
+```py
+import csv
+from io import StringIO
+
+csv_str = """
+1-1\t1-2\t1-3
+2-1\t2-2\t"2-3-1
+2-3-2"
+"""
+
+for row in csv.reader(StringIO(csv_str.strip()), csv.excel_tab):
+    print(row)
+
+```
+
+> ['1-1', '1-2', '1-3']
+>
+> ['2-1', '2-2', '2-3-1\n2-3-2']
+
 <a id="markdown-json-ファイル" name="json-ファイル"></a>
 
-#### JSON ファイル
+#### json ファイル
 
 <a id="markdown-jsontool" name="jsontool"></a>
 
@@ -8976,7 +8528,7 @@ json_str = '''
 }
 '''
 
-decoder = json.JSONDecoder(object_pairs_hook=collections.OrderedDict)
+decoder = json.jsonDecoder(object_pairs_hook=collections.OrderedDict)
 print(decoder.decode(json_str))
 ```
 
@@ -9081,82 +8633,6 @@ savepath = os.path.join('test-fileio', 'outpututf8.json')
 with open(savepath, 'w', encoding='utf_8') as outfile:
     json.dump(jsondata, outfile)
 ```
-
-<a id="markdown-ini-ファイル" name="ini-ファイル"></a>
-
-#### ini ファイル
-
-<a id="markdown-ファイルから読み込み-1" name="ファイルから読み込み-1"></a>
-
-##### ファイルから読み込み
-
-- settings.ini
-
-```ini
-[DEFAULT]
-host = fuga
-
-[db]
-user = foobar
-password = hogepiyo
-```
-
-- app.py
-
-```py
-import configparser
-import os
-
-ini = configparser.ConfigParser()
-ini.read(os.path.join('test-fileio', 'settings.ini'), 'UTF-8')
-
-print(ini['db']['user'])
-print(ini['db']['password'])
-
-print(ini.get('db', 'user'))
-print(ini.get('db', 'password'))
-
-print(ini['db']['host'])
-```
-
-> ['test-fileio\\settings.ini'] # ini.read() の戻り値
-
-> foobar
->
-> hogepiyo
-
-> foobar
->
-> hogepiyo
-
-> fuga
-
-<a id="markdown-tsv-ファイル" name="tsv-ファイル"></a>
-
-#### TSV ファイル
-
-<a id="markdown-メモリ上の-tsv-文字列の読み込み" name="メモリ上の-tsv-文字列の読み込み"></a>
-
-###### メモリ上の TSV 文字列の読み込み
-
-```py
-import csv
-from io import StringIO
-
-csv_str = """
-1-1\t1-2\t1-3
-2-1\t2-2\t"2-3-1
-2-3-2"
-"""
-
-for row in csv.reader(StringIO(csv_str.strip()), csv.excel_tab):
-    print(row)
-
-```
-
-> ['1-1', '1-2', '1-3']
->
-> ['2-1', '2-2', '2-3-1\n2-3-2']
 
 <a id="markdown-xml-ファイル" name="xml-ファイル"></a>
 
@@ -9267,6 +8743,28 @@ print(root[1].text)
 
 ##### 書き込み
 
+```py
+import os
+import xml.etree.ElementTree as ET
+
+inputfilepath = os.path.join('test-fileio', 'inpututf8.xml')
+outputfilepath = os.path.join('test-fileio', 'outpututf8.xml')
+
+tree = ET.parse(inputfilepath)
+
+# root要素を取得
+root = tree.getroot()
+print(root.tag)
+print(dir(root))
+
+# 何らかの加工処理
+for child in root:
+  child.text = 'replaced'
+
+# ファイルに書き込み
+tree.write(outputfilepath, encoding='UTF-8')
+```
+
 <a id="markdown-arff-ファイル" name="arff-ファイル"></a>
 
 #### ARFF ファイル
@@ -9288,6 +8786,257 @@ data = arff.load(open('test.arff', 'rb'))
 
 import arff
 arff.dumps(data)
+```
+
+<a id="markdown-ini-ファイル" name="ini-ファイル"></a>
+
+#### ini ファイル
+
+- config.ini
+
+```ini
+[settings]
+user = foobar
+pw = 12345
+```
+
+```py
+import configparser
+import os
+
+# save
+config = configparser.ConfigParser()
+config['settings'] = {'user': 'foobar',
+                     'pw': '12345'}
+with open('config.ini', 'w') as configfile:
+    config.write(configfile)
+
+# read
+inifile = configparser.ConfigParser()
+inifile.read(os.path.join('.', 'config.ini'), 'UTF-8')
+
+print(inifile.get('settings', 'user'))
+print(inifile.get('settings', 'pw'))
+
+print(config['settings']['user'])
+print(config['settings']['pw'])
+```
+
+> ['./config.ini']
+>
+> foobar
+>
+> 12345
+>
+> foobar
+>
+> 12345
+
+<a id="markdown-ログファイルテキストファイル・追記" name="ログファイルテキストファイル・追記"></a>
+
+#### ログファイル(テキストファイル・追記)
+
+標準出力をログファイルに書き出す
+
+```py
+from datetime import datetime
+import sys
+
+startTimeStr = datetime.now().strftime('%Y%m%d%H%M%S')
+LOGFILE = 'log_{}.txt'.format(startTimeStr)
+
+if __name__ == '__main__':
+    try:
+        sys.stdout = open(LOGFILE, 'a', encoding='utf-8')
+        main()
+    except Exception as e:
+        with open(LOGFILE, 'a', encoding='utf-8') as logfile:
+            nowStr = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            print('Exception: {} {}'.format(e, nowStr), file=logfile, flush=True)
+    finally:
+        sys.stdout.close()
+        sys.stdout = sys.__stdout__
+```
+
+<a id="markdown-zip-ファイル" name="zip-ファイル"></a>
+
+#### zip ファイル
+
+<a id="markdown-zip-ファイル圧縮" name="zip-ファイル圧縮"></a>
+
+##### zip ファイル圧縮
+
+<a id="markdown-shutil-を使ってフォルダごと圧縮" name="shutil-を使ってフォルダごと圧縮"></a>
+
+###### shutil を使ってフォルダごと圧縮
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import shutil
+import zipfile
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+archive_path = './test-archive/archive' # 拡張子なし : './test-archive/archive.zip'が作成される
+
+srcdpath1 = './test-archive/dir1'
+srcdpath2 = './test-archive/dir1/dir2'
+srcfpath1 = './test-archive/dir1/file1.txt'
+srcfpath2 = './test-archive/dir1/dir2/file2.txt'
+
+os.makedirs(srcdpath1, exist_ok=True)
+os.makedirs(srcdpath2, exist_ok=True)
+touch(srcfpath1)
+touch(srcfpath2)
+
+# base_dirを指定しない
+shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=None)
+
+with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
+    print(zip_contents.namelist())
+
+# base_dirを指定する
+rlpath = os.path.relpath(srcdpath2, srcdpath1) # dir2
+shutil.make_archive(archive_path, 'zip', root_dir=srcdpath1, base_dir=rlpath) # 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+
+with zipfile.ZipFile(archive_path + '.zip') as zip_contents:
+    print(zip_contents.namelist())
+
+```
+
+> \# base_dir を指定しない
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
+>
+> ['dir2/', 'file1.txt', 'dir2/file2.txt']
+
+> \# base_dir を指定する
+>
+> '/mnt/c/Users/y/Documents/GitHub/Python-cheatsheet/test-archive/archive.zip'
+>
+> ['dir2/', 'dir2/file2.txt']
+
+<a id="markdown-個別にファイルを追加して圧縮ファイルを作成" name="個別にファイルを追加して圧縮ファイルを作成"></a>
+
+###### 個別にファイルを追加して圧縮ファイルを作成
+
+```py
+from glob import glob
+from pathlib import Path
+import os
+import zipfile
+
+
+def touch(filepath):
+    Path(filepath).touch()
+
+
+archive_path = './test-archive/archive.zip'
+
+srcdpath1 = './test-archive/dir1'
+srcdpath2 = './test-archive/dir1/dir2'
+srcfpath1 = './test-archive/dir1/file1.txt'
+srcfpath2 = './test-archive/dir1/dir2/file2.txt'
+
+os.makedirs(srcdpath1, exist_ok=True)
+os.makedirs(srcdpath2, exist_ok=True)
+touch(srcfpath1)
+touch(srcfpath2)
+
+
+
+with zipfile.ZipFile(archive_path, 'w', compression=zipfile.zip_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath1, arcname=srcfpath1)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+with zipfile.ZipFile(archive_path, 'w', compression=zipfile.zip_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath2, arcname=srcfpath2)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+# 既存の圧縮ファイルに、ファイルを追加する
+with zipfile.ZipFile(archive_path, 'a', compression=zipfile.zip_DEFLATED) as z:
+    z.write(srcdpath1, arcname=srcdpath1)
+    z.write(srcdpath2, arcname=srcdpath2)
+    z.write(srcfpath1, arcname=srcfpath1)
+    z.write(srcfpath2, arcname=srcfpath2)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+```
+
+> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/file1.txt']
+>
+> \# 既存の圧縮ファイルがある場合は圧縮ファイル自体が上書きされる
+>
+> ['test-archive/dir1/', 'test-archive/dir1/dir2/', 'test-archive/dir1/dir2/file2.txt']
+>
+> \# 既存の圧縮ファイルに、ファイルを追加する
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/'
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/dir2/'
+>
+> UserWarning: Duplicate name: 'test-archive/dir1/dir2/file2.txt'
+>
+> [
+>
+> > 'test-archive/dir1/',
+> > 'test-archive/dir1/dir2/',
+> > 'test-archive/dir1/dir2/file2.txt',
+> > 'test-archive/dir1/',
+> > 'test-archive/dir1/dir2/',
+> > 'test-archive/dir1/file1.txt',
+> > 'test-archive/dir1/dir2/file2.txt'
+> > ]
+
+<a id="markdown-zip-ファイル解凍" name="zip-ファイル解凍"></a>
+
+##### zip ファイル解凍
+
+```py
+import zipfile
+
+
+archive_path = './test-archive/archive.zip'
+extract_path = '.'
+
+
+# 内容を確認
+with zipfile.ZipFile(archive_path) as zip_contents:
+    print(zip_contents.namelist())
+
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    zip_contents.extractall(extract_path)
+
+# 特定のファイルのみ解凍
+with zipfile.ZipFile(archive_path) as zip_contents:
+    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path)
+    print(result_path)
+
+
+# パスワードつきzipファイルを解凍
+pw = 'Password'
+with zipfile.ZipFile(archive_path) as zip_contents:
+    zip_contents.extractall(extract_path, pwd=pw)
+
+with zipfile.ZipFile(archive_path) as zip_contents:
+    result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path, pwd=pw)
+    print(result_path)
 ```
 
 <a id="markdown-ネットワーク" name="ネットワーク"></a>
