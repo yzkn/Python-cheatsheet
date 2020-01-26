@@ -54,10 +54,12 @@
   - [datetime](#datetime)
     - [日時の比較](#日時の比較)
     - [現在日時](#現在日時)
-    - [祝日判定](#祝日判定)
+    - [日時の各項目を取得](#日時の各項目を取得)
     - [日付の生成](#日付の生成)
       - [一定期間後の日付を生成](#一定期間後の日付を生成)
       - [日時の要素を置換](#日時の要素を置換)
+        - [現在日時を取得し、特定の時刻に変更](#現在日時を取得し特定の時刻に変更)
+          - [今年が閏年かどうか調べる](#今年が閏年かどうか調べる)
       - [日付のリスト](#日付のリスト)
     - [指定日までの残り期間を取得](#指定日までの残り期間を取得)
     - [タイムゾーンを考慮した datetime](#タイムゾーンを考慮した-datetime)
@@ -80,6 +82,7 @@
         - [タイムゾーンを考慮した 文字列型 から datetime 型](#タイムゾーンを考慮した-文字列型-から-datetime-型)
         - [タイムゾーンを考慮した ISO 形式の 文字列型 から datetime 型](#タイムゾーンを考慮した-iso-形式の-文字列型-から-datetime-型)
         - [日付時刻の format 文字列に埋め込むディレクティブ](#日付時刻の-format-文字列に埋め込むディレクティブ)
+    - [祝日判定](#祝日判定)
   - [str(文字列)](#str文字列)
     - [エスケープシーケンス](#エスケープシーケンス)
     - [RAW 文字列](#raw-文字列)
@@ -323,6 +326,9 @@
     - [標準出力の内容をファイルに書き出す](#標準出力の内容をファイルに書き出す)
       - [stdout](#stdout)
       - [print()](#print)
+    - [プログレスバーを表示](#プログレスバーを表示)
+      - [イテラブルなオブジェクトを指定](#イテラブルなオブジェクトを指定)
+      - [全量と割合を指定](#全量と割合を指定)
   - [環境変数](#環境変数)
     - [環境変数の読み出し](#環境変数の読み出し)
       - [一覧の取得](#一覧の取得)
@@ -397,25 +403,27 @@
           - [追記(mode:a)](#追記modea)
       - [tsv ファイル](#tsv-ファイル) - [メモリ上の tsv 文字列の読み込み](#メモリ上の-tsv-文字列の読み込み)
       - [json ファイル](#json-ファイル)
-        - [json.tool](#jsontool)
+        - [スクリプトを書かず、json.tool で解析する](#スクリプトを書かずjsontool-で解析する)
+        - [読み込み](#読み込み-2)
         - [ファイルから読み込み](#ファイルから読み込み)
-          - [スクリプトを書かず、json.tool で解析する](#スクリプトを書かずjsontool-で解析する)
         - [文字列から読み込み](#文字列から読み込み)
         - [文字列から読み込み(順序を保つ)](#文字列から読み込み順序を保つ)
         - [要素の読み込み](#要素の読み込み)
           - [要素の検索](#要素の検索)
         - [要素の追加](#要素の追加)
-        - [要素の置き換え](#要素の置き換え)
+        - [要素の置換](#要素の置換)
         - [要素の削除](#要素の削除)
-        - [文字列として書き込み](#文字列として書き込み)
         - [ファイルに書き込み](#ファイルに書き込み)
+        - [ファイルに書き込み](#ファイルに書き込み-1)
+        - [文字列として出力](#文字列として出力)
+        - [datetime 型を出力する](#datetime-型を出力する)
       - [XML ファイル](#xml-ファイル)
         - [ファイルから一括読み込み](#ファイルから一括読み込み)
         - [ファイルから逐次的に読み込み](#ファイルから逐次的に読み込み)
         - [文字列から読み込み](#文字列から読み込み-1)
         - [書き込み](#書き込み-2)
       - [ARFF ファイル](#arff-ファイル)
-        - [読み込み](#読み込み-2)
+        - [読み込み](#読み込み-3)
         - [書き込み](#書き込み-3)
       - [ini ファイル](#ini-ファイル)
       - [ログファイル(テキストファイル・追記)](#ログファイルテキストファイル・追記)
@@ -1454,6 +1462,10 @@ print(dt)
 >
 > 2019-08-02 08:34:17.354115
 
+<a id="markdown-日時の各項目を取得" name="日時の各項目を取得"></a>
+
+### 日時の各項目を取得
+
 | 項目              | 値                             | 備考           |
 | ----------------- | ------------------------------ | -------------- |
 | `type(dt)`        | `<class 'datetime.datetime'\>` |                |
@@ -1466,12 +1478,6 @@ print(dt)
 | `dt.minute`       | `34`                           |                |
 | `dt.second`       | `17`                           |                |
 | `dt.microsecond`  | `354115`                       |                |
-
-<a id="markdown-祝日判定" name="祝日判定"></a>
-
-### 祝日判定
-
-[emasaka/jpholidayp](https://github.com/emasaka/jpholidayp)
 
 <a id="markdown-日付の生成" name="日付の生成"></a>
 
@@ -1522,6 +1528,40 @@ print(dt.replace(day=22))
 ```
 
 > 2019-08-22 00:00:00
+
+<a id="markdown-現在日時を取得し特定の時刻に変更" name="現在日時を取得し特定の時刻に変更"></a>
+
+##### 現在日時を取得し、特定の時刻に変更
+
+```py
+from datetime import datetime
+
+dt = datetime.now()
+
+# 日時の要素を置換
+print(dt.replace(hour=2,minute=0,second=0,microsecond=0))
+```
+
+> 2020-01-27 02:00:00
+
+<a id="markdown-今年が閏年かどうか調べる" name="今年が閏年かどうか調べる"></a>
+
+###### 今年が閏年かどうか調べる
+
+```py
+from datetime import datetime
+from datetime import timedelta
+
+dt = datetime.now()
+dt = dt.replace(month=3,day=1,hour=0,minute=0,second=0,microsecond=0)
+dt += timedelta(days=-1)
+print(dt)
+
+if 29 == dt.day:
+    print('閏年')
+else:
+    print('not 閏年')
+```
 
 <a id="markdown-日付のリスト" name="日付のリスト"></a>
 
@@ -2001,6 +2041,12 @@ https://docs.python.org/ja/3/library/time.html#time.strftime
 1. strptime() 関数で使う場合、%p ディレクティブが出力結果の時刻フィールドに影響を及ぼすのは、時刻を解釈するために %I を使ったときのみです。
 1. 値の幅は実際に 0 から 61 です; 60 は うるう秒\<leap seconds\> を表し、 61 は歴史的理由によりサポートされています。
 1. strptime() 関数で使う場合、%U および %W を計算に使うのは曜日と年を指定したときだけです。
+
+<a id="markdown-祝日判定" name="祝日判定"></a>
+
+### 祝日判定
+
+[emasaka/jpholidayp](https://github.com/emasaka/jpholidayp)
 
 <a id="markdown-str文字列" name="str文字列"></a>
 
@@ -6866,6 +6912,49 @@ with open('./path/to/file.txt', 'w') as f:
     print('contents', file=f)
 ```
 
+<a id="markdown-プログレスバーを表示" name="プログレスバーを表示"></a>
+
+### プログレスバーを表示
+
+```sh
+$ pip install tqdm
+```
+
+<a id="markdown-イテラブルなオブジェクトを指定" name="イテラブルなオブジェクトを指定"></a>
+
+#### イテラブルなオブジェクトを指定
+
+```py
+from tqdm import tqdm
+import time
+
+for i in tqdm(range(100)):
+    time.sleep(0.1)
+
+for i in tqdm([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]):
+    time.sleep(0.1)
+
+for i in tqdm('Lorem ipsum dolor sit amet, vidit causae eum at.'):
+    time.sleep(0.1)
+```
+
+<a id="markdown-全量と割合を指定" name="全量と割合を指定"></a>
+
+#### 全量と割合を指定
+
+```py
+from tqdm import tqdm
+import time
+
+total = 10000
+per = 100
+
+bar = tqdm(total = total)
+for i in range(100):
+    bar.update(per)
+    time.sleep(0.1)
+```
+
 <a id="markdown-環境変数" name="環境変数"></a>
 
 ## 環境変数
@@ -8756,19 +8845,23 @@ for row in csv.reader(StringIO(csv_str.strip()), csv.excel_tab):
 
 #### json ファイル
 
-<a id="markdown-jsontool" name="jsontool"></a>
+<a id="markdown-スクリプトを書かずjsontool-で解析する" name="スクリプトを書かずjsontool-で解析する"></a>
 
-##### json.tool
+##### スクリプトを書かず、json.tool で解析する
 
 ```sh
-$ python -m json.tool inpututf8.json
+$ python -m json.tool ./test-fileio/inpututf8.json
 ```
+
+<a id="markdown-読み込み-2" name="読み込み-2"></a>
+
+##### 読み込み
+
+`json.load()` にはファイルオブジェクトを指定、 `json.loads()` 文字列またはバイト列を指定する
 
 <a id="markdown-ファイルから読み込み" name="ファイルから読み込み"></a>
 
 ##### ファイルから読み込み
-
-`json.load()` にはファイルオブジェクトを指定、 `json.loads()` 文字列またはバイト列を指定する
 
 ```py
 import json
@@ -8790,14 +8883,6 @@ with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') 
 > }
 >
 > json_dict:\<class 'dict'\>
-
-<a id="markdown-スクリプトを書かずjsontool-で解析する" name="スクリプトを書かずjsontool-で解析する"></a>
-
-###### スクリプトを書かず、json.tool で解析する
-
-```sh
-$ python -m json.tool ./test-fileio/inpututf8.json
-```
 
 <a id="markdown-文字列から読み込み" name="文字列から読み込み"></a>
 
@@ -8912,6 +8997,8 @@ with open(os.path.join('test-fileio', 'inpututf8nest.json'), encoding='utf-8') a
     print(result)
 ```
 
+> ['val3-1', 'val3-2', {'key5-1': 'val5-1', 'key5-2': 'val5-2'}]
+
 <a id="markdown-要素の追加" name="要素の追加"></a>
 
 ##### 要素の追加
@@ -8928,9 +9015,9 @@ with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') 
 
 > {'key1': 'val1', 'key2': 'val2', 'key3': 'added'}
 
-<a id="markdown-要素の置き換え" name="要素の置き換え"></a>
+<a id="markdown-要素の置換" name="要素の置換"></a>
 
-##### 要素の置き換え
+##### 要素の置換
 
 ```py
 import json
@@ -8962,37 +9049,17 @@ with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') 
 >
 > {'key2': 'val2'}
 
-<a id="markdown-文字列として書き込み" name="文字列として書き込み"></a>
-
-##### 文字列として書き込み
-
-`json.dump()` でファイル出力、 `json.dumps()` で文字列出力する
-
-```py
-import json
-import os
-
-with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
-    json_dict = json.load(file)
-
-    jsonstr = json.dumps(json_dict)
-    # Unicodeエスケープせずに出力
-    jsonstr = json.dumps(json_dict, ensure_ascii=False)
-    # 区切り文字を変更して出力
-    jsonstr = json.dumps(json_dict, separators=(';', '='))
-    # インデント幅を変更して出力
-    jsonstr = json.dumps(json_dict, indent=8)
-    # キーでソートして出力
-    jsonstr = json.dumps(json_dict, sort_keys=True)
-
-    print(jsonstr)
-```
-
-> {"key1": "val1", "key2": "val2"}
-
 <a id="markdown-ファイルに書き込み" name="ファイルに書き込み"></a>
 
 ##### ファイルに書き込み
+
+`json.dump()` でファイル出力、 `json.dumps()` で文字列出力する
+
+<a id="markdown-ファイルに書き込み-1" name="ファイルに書き込み-1"></a>
+
+##### ファイルに書き込み
+
+`json.dump()` でファイル出力、 `json.dumps()` で文字列出力する
 
 ```py
 import json
@@ -9017,6 +9084,55 @@ savepath = os.path.join('test-fileio', 'outpututf8.json')
 with open(savepath, 'w', encoding='utf_8') as outfile:
     json.dump(jsondata, outfile)
 ```
+
+<a id="markdown-文字列として出力" name="文字列として出力"></a>
+
+##### 文字列として出力
+
+```py
+import json
+import os
+
+with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
+    json_dict = json.load(file)
+
+    jsonstr = json.dumps(json_dict)
+    # Unicodeエスケープせずに出力
+    jsonstr = json.dumps(json_dict, ensure_ascii=False)
+    # 区切り文字を変更して出力
+    jsonstr = json.dumps(json_dict, separators=(';', '='))
+    # インデント幅を変更して出力
+    jsonstr = json.dumps(json_dict, indent=8)
+    # キーでソートして出力
+    jsonstr = json.dumps(json_dict, sort_keys=True)
+
+    print(jsonstr)
+```
+
+> {"key1": "val1", "key2": "val2"}
+
+<a id="markdown-datetime-型を出力する" name="datetime-型を出力する"></a>
+
+##### datetime 型を出力する
+
+```py
+import json
+from datetime import date, datetime
+
+def json_serial(obj):
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat() # ISO形式の文字列に変換
+    raise TypeError ("Type %s not serializable" % type(obj))
+
+# datetime型を含むdict
+item = { "run_at" : datetime.now() }
+
+# default引数を指定して、JSON文字列を生成します
+jsonstr = json.dumps(item, default=json_serial)
+print(jsonstr)
+```
+
+> {"run_at": "2020-01-27T08:15:26.848402"}
 
 <a id="markdown-xml-ファイル" name="xml-ファイル"></a>
 
@@ -9153,7 +9269,7 @@ tree.write(outputfilepath, encoding='UTF-8')
 
 #### ARFF ファイル
 
-<a id="markdown-読み込み-2" name="読み込み-2"></a>
+<a id="markdown-読み込み-3" name="読み込み-3"></a>
 
 ##### 読み込み
 
