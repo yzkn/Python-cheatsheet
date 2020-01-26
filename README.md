@@ -41,12 +41,15 @@
         - [アラビア数字に変換してからキャスト](#アラビア数字に変換してからキャスト)
         - [kanjize パッケージを利用](#kanjize-パッケージを利用)
     - [四捨五入・数値の切り上げ・切り捨て](#四捨五入・数値の切り上げ・切り捨て)
+    - [整数の乱数を取得する](#整数の乱数を取得する)
+      - [乱数値を固定する](#乱数値を固定する)
   - [float](#float)
     - [整数文字列か判定](#整数文字列か判定-1)
     - [float 型と文字列型](#float-型と文字列型)
       - [float 型のフォーマット](#float-型のフォーマット)
       - [文字列型からのキャスト](#文字列型からのキャスト-1)
     - [数値の指定桁数での四捨五入・切り上げ・切り捨て](#数値の指定桁数での四捨五入・切り上げ・切り捨て)
+    - [小数値の乱数を取得する](#小数値の乱数を取得する)
   - [complex(虚数)](#complex虚数)
   - [datetime](#datetime)
     - [日時の比較](#日時の比較)
@@ -72,6 +75,7 @@
         - [date 型・time 型 から datetime 型](#date-型・time-型-から-datetime-型)
       - [datetime 型と文字列型](#datetime-型と文字列型)
         - [datetime 型 から 文字列型](#datetime-型-から-文字列型)
+          - [ロケールを指定して月・曜日を示す文字列を取得する](#ロケールを指定して月・曜日を示す文字列を取得する)
         - [文字列型 から datetime 型、date 型](#文字列型-から-datetime-型date-型)
         - [タイムゾーンを考慮した 文字列型 から datetime 型](#タイムゾーンを考慮した-文字列型-から-datetime-型)
         - [タイムゾーンを考慮した ISO 形式の 文字列型 から datetime 型](#タイムゾーンを考慮した-iso-形式の-文字列型-から-datetime-型)
@@ -112,6 +116,7 @@
       - [1 文字ずつ処理する](#1-文字ずつ処理する)
         - [インデックスを取得](#インデックスを取得)
       - [部分文字列を全パターン取得する](#部分文字列を全パターン取得する)
+      - [文字列をランダムソートする](#文字列をランダムソートする)
     - [エンコード・デコード](#エンコード・デコード)
       - [Base64](#base64)
       - [URL safe な Base64](#url-safe-な-base64)
@@ -177,6 +182,11 @@
         - [文字数でソート](#文字数でソート)
         - [末尾の文字のアルファベット順でソート](#末尾の文字のアルファベット順でソート)
       - [ソート条件を変える](#ソート条件を変える-1)
+    - [リストのランダム処理](#リストのランダム処理)
+      - [リストから要素を 1 個ランダムに取り出す](#リストから要素を-1-個ランダムに取り出す)
+      - [リストから要素を複数個ランダムに取り出す(重複あり)](#リストから要素を複数個ランダムに取り出す重複あり)
+      - [リストから要素を複数個ランダムに取り出す(重複なし)](#リストから要素を複数個ランダムに取り出す重複なし)
+      - [リストの要素をランダムソート(シャッフル)する](#リストの要素をランダムソートシャッフルする)
     - [リストの重複する要素](#リストの重複する要素)
       - [リストの重複する要素を除去](#リストの重複する要素を除去)
       - [リストの重複する要素を除去](#リストの重複する要素を除去-1)
@@ -250,6 +260,11 @@
       - [タプルの要素を連結した文字列を取得](#タプルの要素を連結した文字列を取得-1)
     - [シーケンス・アンパッキング](#シーケンス・アンパッキング)
     - [タプルをソート](#タプルをソート)
+    - [タプルのランダム処理](#タプルのランダム処理)
+      - [タプルから要素を 1 個ランダムに取り出す](#タプルから要素を-1-個ランダムに取り出す)
+      - [タプルから要素を複数個ランダムに取り出す(重複あり)](#タプルから要素を複数個ランダムに取り出す重複あり)
+      - [タプルから要素を複数個ランダムに取り出す(重複なし)](#タプルから要素を複数個ランダムに取り出す重複なし)
+      - [タプルの要素をランダムソート(シャッフル)する](#タプルの要素をランダムソートシャッフルする)
     - [タプルの内包表記](#タプルの内包表記)
   - [セット](#セット)
     - [セットが空か判定](#セットが空か判定)
@@ -389,15 +404,19 @@
         - [文字列から読み込み(順序を保つ)](#文字列から読み込み順序を保つ)
         - [要素の読み込み](#要素の読み込み)
           - [要素の検索](#要素の検索)
-        - [書き込み](#書き込み-2)
+        - [要素の追加](#要素の追加)
+        - [要素の置き換え](#要素の置き換え)
+        - [要素の削除](#要素の削除)
+        - [文字列として書き出し](#文字列として書き出し)
+        - [ファイルに書き込み](#ファイルに書き込み)
       - [XML ファイル](#xml-ファイル)
         - [ファイルから一括読み込み](#ファイルから一括読み込み)
         - [ファイルから逐次的に読み込み](#ファイルから逐次的に読み込み)
         - [文字列から読み込み](#文字列から読み込み-1)
-        - [書き込み](#書き込み-3)
+        - [書き込み](#書き込み-2)
       - [ARFF ファイル](#arff-ファイル)
         - [読み込み](#読み込み-2)
-        - [書き込み](#書き込み-4)
+        - [書き込み](#書き込み-3)
       - [ini ファイル](#ini-ファイル)
       - [ログファイル(テキストファイル・追記)](#ログファイルテキストファイル・追記)
       - [zip ファイル](#zip-ファイル)
@@ -449,6 +468,7 @@
 - [pydoc](#pydoc)
 - [ロギング](#ロギング)
   - [ファイル出力](#ファイル出力)
+- [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
   - [シンタックスハイライト](#シンタックスハイライト)
 
@@ -1172,6 +1192,69 @@ print(Decimal(str(f)).quantize(Decimal('0'), rounding=ROUND_UP))
 >
 > 1235
 
+<a id="markdown-整数の乱数を取得する" name="整数の乱数を取得する"></a>
+
+### 整数の乱数を取得する
+
+```py
+import random
+
+random.randint(1, 3) # m以上n以下の整数を返す
+```
+
+> 1
+>
+> 3
+
+```py
+import random
+
+start=10
+stop=100
+step=20
+
+# range(start, stop, step)で生成したリストの要素からランダムに抽出
+random.randrange(start, stop, step)
+```
+
+> 90
+>
+> 70
+
+<a id="markdown-乱数値を固定する" name="乱数値を固定する"></a>
+
+#### 乱数値を固定する
+
+```py
+import random
+
+# 乱数シードを設定する
+random.seed(123)
+
+random.random()
+random.random()
+random.random()
+
+# 再度同じ乱数シードを設定する
+random.seed(123)
+
+random.random()
+random.random()
+random.random()
+```
+
+> 0.052363598850944326
+>
+> 0.08718667752263232
+>
+> 0.4072417636703983
+
+> 0.052363598850944326
+>
+> 0.08718667752263232
+>
+> 0.4072417636703983
+
 <a id="markdown-float" name="float"></a>
 
 ## float
@@ -1286,6 +1369,32 @@ print(Decimal(str(f)).quantize(Decimal('0.1'), rounding=ROUND_UP))
 > \# 切り上げ
 >
 > 1235.6
+
+<a id="markdown-小数値の乱数を取得する" name="小数値の乱数を取得する"></a>
+
+### 小数値の乱数を取得する
+
+```py
+import random
+
+random.random() # 0以上1未満の小数を返す
+```
+
+> 0.9526105265369583
+>
+> 0.20576122073048697
+
+```py
+import random
+
+# m以上n以下の小数を返す
+# ( a + (b-a) * random() の丸められ方によっては「n未満」 )
+random.uniform(1, 3)
+```
+
+> 2.812125216111861
+>
+> 1.2485392016103378
 
 <a id="markdown-complex虚数" name="complex虚数"></a>
 
@@ -1714,6 +1823,33 @@ print(datetime.now().isoformat()) # ISO形式
 > 20190730121658
 >
 > 2019-07-30T12:16:58.427664
+
+<a id="markdown-ロケールを指定して月・曜日を示す文字列を取得する" name="ロケールを指定して月・曜日を示す文字列を取得する"></a>
+
+###### ロケールを指定して月・曜日を示す文字列を取得する
+
+```py
+import datetime
+import locale
+
+dt = datetime.datetime(2020, 1, 23)
+print(dt) # 2020-01-23 00:00:00
+
+print(locale.getlocale(locale.LC_TIME))
+print(dt.strftime('%A, %a, %B, %b'))
+
+locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
+print(dt.strftime('%A, %a, %B, %b'))
+
+locale.setlocale(locale.LC_TIME, 'ja_JP.UTF-8')
+print(dt.strftime('%A, %a, %B, %b'))
+```
+
+| locale          | `%A`       | `%a`  | `%B`      | `%b`  |
+| --------------- | ---------- | ----- | --------- | ----- |
+| `(None, None)`  | `Thursday` | `Thu` | `January` | `Jan` |
+| `'en_US.UTF-8'` | `Thursday` | `Thu` | `January` | `Jan` |
+| `'ja_JP.UTF-8'` | `木曜日`   | `木`  | `1月`     | `1`   |
 
 <a id="markdown-文字列型-から-datetime-型date-型" name="文字列型-から-datetime-型date-型"></a>
 
@@ -3168,6 +3304,19 @@ hi
 i
 ```
 
+<a id="markdown-文字列をランダムソートする" name="文字列をランダムソートする"></a>
+
+#### 文字列をランダムソートする
+
+```py
+import random
+
+hoge = 'abcdefghi'
+''.join(random.sample(hoge, len(hoge)))
+```
+
+> 'cigahdebf'
+
 <a id="markdown-エンコード・デコード" name="エンコード・デコード"></a>
 
 ### エンコード・デコード
@@ -4434,6 +4583,84 @@ print(sortedlist)
 
 ラムダ式を指定すると、要素ごとに関数を実行した結果を基にソートされる
 
+<a id="markdown-リストのランダム処理" name="リストのランダム処理"></a>
+
+### リストのランダム処理
+
+<a id="markdown-リストから要素を-1-個ランダムに取り出す" name="リストから要素を-1-個ランダムに取り出す"></a>
+
+#### リストから要素を 1 個ランダムに取り出す
+
+```py
+import random
+
+lst = list(range(1,7))
+
+random.choice(lst)
+```
+
+> 6
+>
+> 3
+>
+> 2
+
+<a id="markdown-リストから要素を複数個ランダムに取り出す重複あり" name="リストから要素を複数個ランダムに取り出す重複あり"></a>
+
+#### リストから要素を複数個ランダムに取り出す(重複あり)
+
+```py
+import random
+
+lst = list(range(1,7))
+n = 3
+
+[random.choice(lst) for _ in range(n)]
+
+random.choices(lst, k=n)
+```
+
+> [5, 2, 3]
+>
+> [1, 1, 5]
+
+<a id="markdown-リストから要素を複数個ランダムに取り出す重複なし" name="リストから要素を複数個ランダムに取り出す重複なし"></a>
+
+#### リストから要素を複数個ランダムに取り出す(重複なし)
+
+```py
+import random
+
+lst = list(range(1,7))
+n = 3
+
+random.sample(lst, n)
+```
+
+> [1, 6, 4]
+
+<a id="markdown-リストの要素をランダムソートシャッフルする" name="リストの要素をランダムソートシャッフルする"></a>
+
+#### リストの要素をランダムソート(シャッフル)する
+
+```py
+import random
+
+lst1 = list(range(1,7))
+
+# もとのリスト自体をソート
+random.shuffle(lst1)
+print(lst1)
+
+# シャッフルした新しいリストを返す
+lst2 = random.sample(lst1, len(lst1))
+print(lst2)
+```
+
+> [2, 4, 3, 1, 6, 5]
+>
+> [1, 6, 5, 2, 3, 4]
+
 <a id="markdown-リストの重複する要素" name="リストの重複する要素"></a>
 
 ### リストの重複する要素
@@ -5520,6 +5747,83 @@ print(x, y)
 <a id="markdown-タプルをソート" name="タプルをソート"></a>
 
 ### タプルをソート
+
+<a id="markdown-タプルのランダム処理" name="タプルのランダム処理"></a>
+
+### タプルのランダム処理
+
+<a id="markdown-タプルから要素を-1-個ランダムに取り出す" name="タプルから要素を-1-個ランダムに取り出す"></a>
+
+#### タプルから要素を 1 個ランダムに取り出す
+
+```py
+import random
+
+tpl = tuple(range(1,7))
+
+random.choice(tpl)
+```
+
+> 1
+>
+> 1
+>
+> 4
+
+<a id="markdown-タプルから要素を複数個ランダムに取り出す重複あり" name="タプルから要素を複数個ランダムに取り出す重複あり"></a>
+
+#### タプルから要素を複数個ランダムに取り出す(重複あり)
+
+```py
+import random
+
+tpl = tuple(range(1,7))
+n = 3
+
+tuple([random.choice(tpl) for _ in range(n)])
+
+tuple(random.choices(tpl, k=n))
+```
+
+> (5, 3, 3)
+>
+> (6, 1, 3)
+
+<a id="markdown-タプルから要素を複数個ランダムに取り出す重複なし" name="タプルから要素を複数個ランダムに取り出す重複なし"></a>
+
+#### タプルから要素を複数個ランダムに取り出す(重複なし)
+
+```py
+import random
+
+tpl = tuple(range(1,7))
+n = 3
+
+tuple(random.sample(tpl, n))
+```
+
+> (1, 5, 4)
+
+<a id="markdown-タプルの要素をランダムソートシャッフルする" name="タプルの要素をランダムソートシャッフルする"></a>
+
+#### タプルの要素をランダムソート(シャッフル)する
+
+```py
+import random
+
+tpl1 = tuple(range(1,7))
+
+# もとのタプル自体をソート→TypeError
+random.shuffle(tpl1)
+
+# シャッフルした新しいタプルを返す
+tpl2 = tuple(random.sample(tpl1, len(tpl1)))
+print(tpl2)
+```
+
+> TypeError: 'tuple' object does not support item assignment
+>
+> (1, 3, 4, 6, 5, 2)
 
 <a id="markdown-タプルの内包表記" name="タプルの内包表記"></a>
 
@@ -8464,6 +8768,8 @@ $ python -m json.tool inpututf8.json
 
 ##### ファイルから読み込み
 
+`json.load()` にはファイルオブジェクトを指定、 `json.loads()` 文字列またはバイト列を指定する
+
 ```py
 import json
 import os
@@ -8606,9 +8912,87 @@ with open(os.path.join('test-fileio', 'inpututf8nest.json'), encoding='utf-8') a
     print(result)
 ```
 
-<a id="markdown-書き込み-2" name="書き込み-2"></a>
+<a id="markdown-要素の追加" name="要素の追加"></a>
 
-##### 書き込み
+##### 要素の追加
+
+```py
+import json
+import os
+
+with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
+    json_dict = json.load(file)
+    json_dict['key3'] = 'added'
+    print('{}'.format(json_dict))
+```
+
+> {'key1': 'val1', 'key2': 'val2', 'key3': 'added'}
+
+<a id="markdown-要素の置き換え" name="要素の置き換え"></a>
+
+##### 要素の置き換え
+
+```py
+import json
+import os
+
+with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
+    json_dict = json.load(file)
+    json_dict['key1'] = 'replaced'
+    print('{}'.format(json_dict))
+```
+
+> {'key1': 'replaced', 'key2': 'val2'}
+
+<a id="markdown-要素の削除" name="要素の削除"></a>
+
+##### 要素の削除
+
+```py
+import json
+import os
+
+with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
+    json_dict = json.load(file)
+    json_dict.pop('key1')
+    print('{}'.format(json_dict))
+```
+
+> 'val1'
+>
+> {'key2': 'val2'}
+
+<a id="markdown-文字列として書き出し" name="文字列として書き出し"></a>
+
+##### 文字列として書き出し
+
+`json.dump()` でファイル出力、 `json.dumps()` で文字列出力する
+
+```py
+import json
+import os
+
+with open(os.path.join('test-fileio', 'inpututf8.json'), 'r', encoding='utf_8') as file:
+    json_dict = json.load(file)
+
+    jsonstr = json.dumps(json_dict)
+    # Unicodeエスケープせずに出力
+    jsonstr = json.dumps(json_dict, ensure_ascii=False)
+    # 区切り文字を変更して出力
+    jsonstr = json.dumps(json_dict, separators=(';', '='))
+    # インデント幅を変更して出力
+    jsonstr = json.dumps(json_dict, indent=8)
+    # キーでソートして出力
+    jsonstr = json.dumps(json_dict, sort_keys=True)
+
+    print(jsonstr)
+```
+
+> {"key1": "val1", "key2": "val2"}
+
+<a id="markdown-ファイルに書き込み" name="ファイルに書き込み"></a>
+
+##### ファイルに書き込み
 
 ```py
 import json
@@ -8739,7 +9123,7 @@ print(root[1].text)
 >
 > Jani
 
-<a id="markdown-書き込み-3" name="書き込み-3"></a>
+<a id="markdown-書き込み-2" name="書き込み-2"></a>
 
 ##### 書き込み
 
@@ -8778,7 +9162,7 @@ import arff
 data = arff.load(open('test.arff', 'rb'))
 ```
 
-<a id="markdown-書き込み-4" name="書き込み-4"></a>
+<a id="markdown-書き込み-3" name="書き込み-3"></a>
 
 ##### 書き込み
 
@@ -10176,6 +10560,34 @@ logging.basicConfig(filename=os.path.join(LOG_DIR, 'logger.log'), level=logging.
 logger = logging.getLogger(__name__)
 
 logger.info('message')
+```
+
+<a id="markdown-exe-化" name="exe-化"></a>
+
+# exe 化
+
+```bat
+$ pip install pyinstaller
+
+$ cd test-pyinstaller
+$ pyinstaller app.py
+```
+
+> ...
+>
+> 4935 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+
+```bat
+$ cd dist\app
+$ app.exe
+```
+
+exe ファイルのみ生成する場合は、 `--onefile` オプションを追加する
+
+```bat
+$ pyinstaller --onefile app.py
+$ cd dist
+$ app.exe
 ```
 
 <a id="markdown-エラーメッセージ" name="エラーメッセージ"></a>
