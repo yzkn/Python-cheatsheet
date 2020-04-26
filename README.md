@@ -2631,6 +2631,38 @@ print(parts)
 > ['abc', 'def', 'ghi']
 
 
+#### 正規表現で区切り文字を指定して分割
+
+```py
+import re
+
+hoge = 'abc\n  def\nghi \njkl\nmno\npqr\nstu\nvwx\nyz.'
+parts = re.split('[,. \\s]+', hoge)
+for key, value in enumerate(parts):
+    print('{0}:{1}'.format(key, value))
+```
+
+> 0:abc
+>
+> 1:def
+>
+> 2:ghi
+>
+> 3:jkl
+>
+> 4:mno
+>
+> 5:pqr
+>
+> 6:stu
+>
+> 7:vwx
+>
+> 8:yz
+>
+> 9:
+
+
 ### 部分文字列
 
 ```py
@@ -4382,6 +4414,14 @@ print(fivelist)
 >
 > [0, -1, -1, -1, -1, 5, -1, -1, -1, -1, 10, -1, -1, -1, -1, 15, -1, -1, -1, -1, 20, -1, -1, -1, -1, 25, -1, -1, -1, -1, 30, -1, -1, -1, -1, 35, -1, -1, -1, -1, 40, -1, -1, -1, -1, 45, -1, -1, -1, -1, 50, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
+```py
+l = ['Lorem', '', 'ipsum', None, 'dolor', 'sit', 'amet']
+l = [s for s in l if s]
+print(l)
+```
+
+>
+
 
 #### 多次元リスト
 
@@ -4703,6 +4743,44 @@ print({**dct2, **dct3})
 > {'4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'}
 
 
+#### 既存のキーと重複する場合に上書きせずにカンマ区切りで追加
+
+```py
+from collections import defaultdict
+
+def merge(*dicts):
+    merged = defaultdict(list)
+    # merged = defaultdict(set) # setにすると、既存のものとキーも値も重複した場合は追加されない
+    for d in dicts:
+        for k, v in d.items():
+            # if v not in merged[k]: # listを使いつつ、既存のものとキーも値も重複した場合は追加しない
+            merged[k].append(v) # list
+            # merged[k].add(v) # set
+    return merged
+
+dct1 = {'red':'1', 'green':'2'}
+dct2 = {'red':'3', 'green':'2', 'blue':'4'}
+dct = merge(dct1, dct2)
+print(dct)
+
+dct_csv = {k: ','.join(v) for k, v in dct.items()}
+print(dct_csv)
+```
+
+> \# list
+>
+> defaultdict(<class 'list'>, {'red': ['1', '3'], 'green': ['2', '2'], 'blue': ['4']})
+>
+> {'red': '3,1', 'green': '2,2', 'blue': '4'}
+
+> \# set
+>
+> defaultdict(<class 'set'>, {'red': {'3', '1'}, 'green': {'2'}, 'blue': {'4'}})
+>
+> {'red': '3,1', 'green': '2', 'blue': '4'}
+
+
+
 ### 辞書の要素を参照
 
 ```py
@@ -4896,6 +4974,52 @@ dict(sorted({letter: code.count(letter) for letter in code}.items(), key=lambda 
 > [(' ', 19), (',', 3), ('.', 1), ('L', 1), ('a', 12), ('b', 1), ('c', 5), ('d', 3), ('e', 10), ('i', 13), ('l', 5), ('m', 10), ('n', 3), ('o', 7), ('p', 3), ('q', 1), ('r', 5), ('s', 7), ('t', 7), ('u', 5), ('v', 3)]
 >
 > [(' ', 19), ('i', 13), ('a', 12), ('e', 10), ('m', 10), ('o', 7), ('s', 7), ('t', 7), ('r', 5), ('u', 5), ('l', 5), ('c', 5), ('p', 3), ('d', 3), (',', 3), ('n', 3), ('v', 3), ('L', 1), ('q', 1), ('b', 1), ('.', 1)]
+
+
+#### 頭文字と単語のリストを辞書にまとめる
+
+```py
+import re
+
+code = 'Lorem ipsum dolor sit amet, dico quidam percipitur mea no, labitur scaevola molestiae in vis, malis veniam tacimates mea cu.'
+codes = re.split('[,. \s]+', code)
+codes = [s for s in codes if len(s) > 0]
+print(codes)
+
+results = {}
+for c in codes:
+    results.setdefault(c[0], []).append(c)
+
+print(results)
+```
+
+> {
+>
+>     'L': ['Lorem'],
+>
+>     'i': ['ipsum', 'in'],
+>
+>     'd': ['dolor', 'dico'],
+>
+>     's': ['sit', 'scaevola'],
+>
+>     'a': ['amet'],
+>
+>     'q': ['quidam'],
+>
+>     'p': ['percipitur'],
+>
+>     'm': ['mea', 'molestiae', 'malis', 'mea'],
+>
+>     'n': ['no'], 'l': ['labitur'],
+>
+>     'v': ['vis', 'veniam'],
+>
+>     't': ['tacimates'],
+>
+>     'c': ['cu']
+>
+> }
 
 
 ## 順序つき辞書(OrderedDict)
