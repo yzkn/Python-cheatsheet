@@ -150,7 +150,7 @@
     - [置換](#置換)
       - [単純な置換](#単純な置換)
         - [改行文字を除去](#改行文字を除去)
-        - [前後の空白文字を除去](#前後の空白文字を除去)
+        - [前後の空白文字を除去（trim）](#前後の空白文字を除去trim)
         - [大文字化・小文字化](#大文字化・小文字化)
       - [正規表現による置換](#正規表現による置換)
         - [数字のみ抽出](#数字のみ抽出)
@@ -4024,9 +4024,9 @@ replacement.join(haystack.splitlines())
 
 > 'haystackhaystackhaystack'
 
-<a id="markdown-前後の空白文字を除去" name="前後の空白文字を除去"></a>
+<a id="markdown-前後の空白文字を除去trim" name="前後の空白文字を除去trim"></a>
 
-##### 前後の空白文字を除去
+##### 前後の空白文字を除去（trim）
 
 ```py
 s = ' \txyz\t '
@@ -12593,7 +12593,12 @@ except urllib.error.HTTPError as e:
 import requests
 url = 'http://httpbin.org'
 response = requests.get(url)
-print(response.text)
+if response.status_code == requests.codes.ok:
+    # コンテンツ
+    print(response.text)
+else:
+    # ステータスコード
+    print(response.status_code)
 ```
 
 <a id="markdown-文字コードを指定" name="文字コードを指定"></a>
@@ -12621,6 +12626,8 @@ except urllib.error.HTTPError as e:
 import requests
 url = 'http://www.soumu.go.jp/'
 response = requests.get(url)
+
+# ステータスコードを確認
 if response.status_code == 200:
     response.encoding = 'Shift_JIS'
     print(response.text)
@@ -12638,6 +12645,8 @@ if response.status_code == 200:
 import requests
 url = 'http://www.soumu.go.jp/'
 response = requests.get(url)
+
+# リターンコードを確認
 if response.status_code == 200:
     response.encoding = response.apparent_encoding
     print(response.text)
