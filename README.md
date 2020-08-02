@@ -523,6 +523,13 @@
   - [外部スクリプトの読み込み](#外部スクリプトの読み込み)
   - [一時的にモジュール検索パスを追加](#一時的にモジュール検索パスを追加)
   - [恒久的にモジュール検索パスを追加](#恒久的にモジュール検索パスを追加)
+  - [pip](#pip)
+    - [パッケージのインストール](#パッケージのインストール)
+      - [pip 自体のアップデート](#pip-自体のアップデート)
+      - [requirements.txt を基にしたインストール](#requirementstxt-を基にしたインストール)
+      - [特定のバージョンのインストール](#特定のバージョンのインストール)
+      - [requirements.txt の書き出し](#requirementstxt-の書き出し)
+    - [パッケージのアンインストール](#パッケージのアンインストール)
 - [pydoc](#pydoc)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
@@ -13503,6 +13510,54 @@ site-packages フォルダの中に、`*.pth`ファイル(ファイル名は任�
 # foo package configuration
 
 path/to/module
+```
+
+<a id="markdown-pip" name="pip"></a>
+
+## pip
+
+<a id="markdown-パッケージのインストール" name="パッケージのインストール"></a>
+
+### パッケージのインストール
+
+<a id="markdown-pip-自体のアップデート" name="pip-自体のアップデート"></a>
+
+#### pip 自体のアップデート
+
+```sh
+$ pip install -U pip
+```
+
+<a id="markdown-requirementstxt-を基にしたインストール" name="requirementstxt-を基にしたインストール"></a>
+
+#### requirements.txt を基にしたインストール
+
+```sh
+$ pip install -r requirements.txt
+```
+
+<a id="markdown-特定のバージョンのインストール" name="特定のバージョンのインストール"></a>
+
+#### 特定のバージョンのインストール
+
+```sh
+$ pip install <package>==<version>
+```
+
+<a id="markdown-requirementstxt-の書き出し" name="requirementstxt-の書き出し"></a>
+
+#### requirements.txt の書き出し
+
+```sh
+$ pip freeze > requirements.txt
+```
+
+<a id="markdown-パッケージのアンインストール" name="パッケージのアンインストール"></a>
+
+### パッケージのアンインストール
+
+```sh
+$ pip uninstall -y <package>
 ```
 
 <a id="markdown-pydoc" name="pydoc"></a>
