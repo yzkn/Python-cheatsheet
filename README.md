@@ -24,7 +24,9 @@
     - [isinstance](#isinstance)
   - [boolean](#boolean)
   - [int](#int)
-    - [整数文字列か判定](#整数文字列か判定)
+    - [数値チェック（整数）](#数値チェック整数)
+      - [0 との比較](#0-との比較)
+      - [整数文字列か判定](#整数文字列か判定)
     - [int 型と文字列型](#int-型と文字列型)
       - [int 型のフォーマット](#int-型のフォーマット)
       - [文字列型からのキャスト](#文字列型からのキャスト)
@@ -46,7 +48,9 @@
     - [整数の乱数を取得する](#整数の乱数を取得する)
       - [乱数値を固定する](#乱数値を固定する)
   - [float](#float)
-    - [整数文字列か判定](#整数文字列か判定-1)
+    - [数値チェック（小数）](#数値チェック小数)
+      - [0 との比較](#0-との比較-1)
+      - [小数文字列か判定](#小数文字列か判定)
     - [float 型と文字列型](#float-型と文字列型)
       - [float 型のフォーマット](#float-型のフォーマット)
       - [文字列型からのキャスト](#文字列型からのキャスト-1)
@@ -340,6 +344,7 @@
   - [標準入力](#標準入力)
     - [無限ループをキー入力で抜ける](#無限ループをキー入力で抜ける)
   - [標準出力](#標準出力)
+    - [追記（／改行して追記）ではなく、直前の内容を上書き更新しながら出力](#追記／改行して追記ではなく直前の内容を上書き更新しながら出力)
     - [末尾に改行文字をつけずに出力する](#末尾に改行文字をつけずに出力する)
     - [pprint()でデータ出力の整然化](#pprintでデータ出力の整然化)
     - [標準出力の内容をファイルに書き出す](#標準出力の内容をファイルに書き出す)
@@ -482,6 +487,7 @@
       - [user_agent](#user_agent)
   - [暗号](#暗号)
     - [AES による暗号化・復号化](#aes-による暗号化・復号化)
+    - [06-300-5000-多要素認証（OTP）](#06-300-5000-多要素認証otp)
   - [ネットワーク](#ネットワーク)
     - [URL 文字列の操作](#url-文字列の操作)
       - [URL エンコーディング](#url-エンコーディング)
@@ -529,6 +535,7 @@
       - [requirements.txt を基にしたインストール](#requirementstxt-を基にしたインストール)
       - [特定のバージョンのインストール](#特定のバージョンのインストール)
       - [requirements.txt の書き出し](#requirementstxt-の書き出し)
+        - [requirements.txt に書かれたパッケージのバージョンを更新](#requirementstxt-に書かれたパッケージのバージョンを更新)
     - [パッケージのアンインストール](#パッケージのアンインストール)
 - [pydoc](#pydoc)
 - [並列処理](#並列処理)
@@ -677,10 +684,13 @@ c = t if 1 == 1 else f
 x = None
 
 if x is None: # Nullチェック
-    print('True')
+    print('None')
+
+if x is not None: # Nullチェック
+    print('Not None')
 ```
 
-> True
+> None
 
 <a id="markdown-isnullorempty" name="isnullorempty"></a>
 
@@ -740,7 +750,7 @@ print(len(x) == 10) # 同値
 
 #### 複数条件
 
-複数の比較を連続して書くことが可能
+複数の比較を連続して書く（チェーン）ことが可能
 
 ```py
 a = 2
@@ -973,9 +983,39 @@ print('{:,}'.format(i)) # 3桁ごとにセミコロンを入れる
 >
 > 1,000,000,000
 
+<a id="markdown-数値チェック整数" name="数値チェック整数"></a>
+
+### 数値チェック（整数）
+
+<a id="markdown-0-との比較" name="0-との比較"></a>
+
+#### 0 との比較
+
+```py
+x = (-1, 0, 1, 2, 3, 4)
+
+# bool(0) => False
+# bool(-1), bool(1), bool(2) => True
+
+for item in x:
+    # if item != 0: のように、 0 と比較する必要はない
+    if item:
+        print(item)
+```
+
+> -1
+>
+> 1
+>
+> 2
+>
+> 3
+>
+> 4
+
 <a id="markdown-整数文字列か判定" name="整数文字列か判定"></a>
 
-### 整数文字列か判定
+#### 整数文字列か判定
 
 文字列に対して数値チェック(整数)を行う
 
@@ -1133,12 +1173,12 @@ print(
 
 ##### OR 演算
 
-| 関数                   | 結果       | 備考                                 |
-| ---------------------- | ---------- | ------------------------------------ |
-| `bin(bin(0b0 | 0b0))`  | `'0b0'`    |                                      |
-| `bin(bin(0b0 | 0b1))`  | `'0b1'`    |                                      |
-| `bin(bin(0b1 | 0b1))`  | `'0b1'`    |                                      |
-| `bin(0b1100 | 0b1010)` | `'0b1110'` | 繰り上がりせず、各桁ごとに OR される |
+| 関数         | 結果     | 備考       |
+| ------------ | -------- | ---------- |
+| `bin(bin(0b0 | 0b0))`   | `'0b0'`    |  |
+| `bin(bin(0b0 | 0b1))`   | `'0b1'`    |  |
+| `bin(bin(0b1 | 0b1))`   | `'0b1'`    |  |
+| `bin(0b1100  | 0b1010)` | `'0b1110'` | 繰り上がりせず、各桁ごとに OR される |
 
 <a id="markdown-xor-演算" name="xor-演算"></a>
 
@@ -1368,9 +1408,35 @@ random.random()
 | `1.2e3` (1.2 \* 10 \*\* 3)   | `1200.0` |
 | `1.2E-3` (1.2 \* 10 \*\* -3) | `0.0012` |
 
-<a id="markdown-整数文字列か判定-1" name="整数文字列か判定-1"></a>
+<a id="markdown-数値チェック小数" name="数値チェック小数"></a>
 
-### 整数文字列か判定
+### 数値チェック（小数）
+
+<a id="markdown-0-との比較-1" name="0-との比較-1"></a>
+
+#### 0 との比較
+
+```py
+x = (-0.1, 0, 0.1, 2.34)
+
+# bool(0) => False
+# bool(-0.1), bool(0.1) => True
+
+for item in x:
+    # if item != 0: のように、 0 と比較する必要はない
+    if item:
+        print(item)
+```
+
+> -0.1
+>
+> 0.1
+>
+> 2.34
+
+<a id="markdown-小数文字列か判定" name="小数文字列か判定"></a>
+
+#### 小数文字列か判定
 
 文字列に対して数値チェック(小数)を行う
 
@@ -2554,15 +2620,15 @@ print(mes)
 
 - 配置
 
-| 関数                      | 値        | 備考              |
-| ------------------------- | --------- | ----------------- |
-| `print('|%4s|' % 'ABC')`  | `| ABC|`  | 右寄せ            |
-| `print('|%-4s|' % 'ABC')` | `|ABC |`  | 左寄せ            |
-| `print('|%4d|' % 123)`    | `| 123|`  | 右寄せ            |
-| `print('|%-4d|' % 123)`   | `|123 |`  | 左寄せ            |
-| `print('|%+5d|' % 123)`   | `| +123|` | ± 符号付き        |
-| `print('|%5.2f|' % 1.23)` | `| 1.23|` | 桁数.小数部の桁数 |
-| `print('|%05d|' % 123)`   | `|00123|` | 0 埋め            |
+| 関数     | 値    | 備考        |
+| -------- | ----- | ----------- |
+| `print(' | %4s   | ' % 'ABC')` | ` | ABC | ` | 右寄せ |
+| `print(' | %-4s  | ' % 'ABC')` | ` | ABC | ` | 左寄せ |
+| `print(' | %4d   | ' % 123)`   | ` | 123 | ` | 右寄せ |
+| `print(' | %-4d  | ' % 123)`   | ` | 123 | ` | 左寄せ |
+| `print(' | %+5d  | ' % 123)`   | ` | +123 | ` | ± 符号付き |
+| `print(' | %5.2f | ' % 1.23)`  | ` | 1.23 | ` | 桁数.小数部の桁数 |
+| `print(' | %05d  | ' % 123)`   | ` | 00123 | ` | 0 埋め |
 
 <a id="markdown-文字種チェック" name="文字種チェック"></a>
 
@@ -3368,6 +3434,8 @@ print(hoge[1:3])    # bc
 print(hoge[:3])     # abc
 print(hoge[8:])     # i
 print(hoge[-2:])    # hi
+print(hoge[:-4])    #abcde
+print(hoge[-4:-2]) # fg
 print(hoge[0:7:2])  # acdf
 
 # index #################################
@@ -4507,6 +4575,42 @@ lst.clear()
 <a id="markdown-リストの反復処理" name="リストの反復処理"></a>
 
 ### リストの反復処理
+
+```py
+l = list(range(5, 10))
+for item in l:
+    print(item)
+```
+
+> 5
+>
+> 6
+>
+> 7
+>
+> 8
+>
+> 9
+
+```py
+l = list(range(5, 10))
+
+for item in l[::-1]:
+    print(item)
+
+for item in reversed(l):
+    print(item)
+```
+
+> 9
+>
+> 8
+>
+> 7
+>
+> 6
+>
+> 5
 
 <a id="markdown-インデックスを取得-1" name="インデックスを取得-1"></a>
 
@@ -6256,6 +6360,16 @@ t = 'foo', 'bar', 123, 456
 x, y, z, w = t
 ```
 
+一時変数を使用せずに変数を交換（スワップ）する
+
+```py
+a, b = 'x', 'y'
+a, b = b, a
+print(a, b)
+```
+
+> y x
+
 ```py
 def fibonacci(n):
     x, y = 0, 1
@@ -6491,7 +6605,7 @@ s1 = {'ef', 'ab', 'cd'}
 | `s1`      | `{'ab', 'cd'}`       |
 | `s2`      | `{'ef', 'ab', 'cd'}` |
 | `s1 - s2` | `set()`              |
-| `s1 | s2` | `{'ab', 'cd', 'ef'}` |
+| `s1       | s2`                  | `{'ab', 'cd', 'ef'}` |
 | `s1 & s2` | `{'ab', 'cd'}`       |
 | `s1 ^ s2` | `{'ef'}`             |
 
@@ -7297,6 +7411,8 @@ ccc
 
 ### 無限ループをキー入力で抜ける
 
+[python/python3md-termios.py](python/python3md-termios.py)
+
 ```py
 import fcntl
 import termios
@@ -7379,6 +7495,21 @@ print('Hello Python!', flush=True)
 import sys
 print('Hello Python!')
 sys.stdout.flush()
+```
+
+<a id="markdown-追記／改行して追記ではなく直前の内容を上書き更新しながら出力" name="追記／改行して追記ではなく直前の内容を上書き更新しながら出力"></a>
+
+### 追記（／改行して追記）ではなく、直前の内容を上書き更新しながら出力
+
+[python/python3md-stdout.py](python/python3md-stdout.py)
+
+```py
+import sys, time
+for num, i in enumerate(range(100)):
+    sys.stdout.write("\r%d" % num)
+    # print("\r%d" % num, end='') # print() を使う場合は、ただの print() だと開業されてしまい上書きされないので end='' が必要
+    sys.stdout.flush()
+    time.sleep(0.01)
 ```
 
 <a id="markdown-末尾に改行文字をつけずに出力する" name="末尾に改行文字をつけずに出力する"></a>
@@ -8250,7 +8381,7 @@ print(bname)
 
 ### カレントディレクトリ
 
-[python3md-cwd.py](python3md-cwd.py)
+[python/python3md-cwd.py](python/python3md-cwd.py)
 
 ```py
 import os
@@ -9019,6 +9150,8 @@ a+ 追記・読み書き両用。
 
 ファイルの文字エンコーディングが OS 標準のものと異なる場合はエラーとなるため、Web から入手したファイルなど文字コードが不明のファイルを読み込む際には、推測する必要がある
 
+[python/python3md-encode.py](python/python3md-encode.py)
+
 ```py
 import codecs
 import os
@@ -9026,7 +9159,7 @@ import os
 def detect_encode(filepath):
     cs = [
         'utf-8',
-        'utf_8_sig',
+        'utf_8_sig', # BOMあり
         'euc_jp',
         'cp932',
         #
@@ -12390,7 +12523,7 @@ PyCryptodome をインストールする
 $ pip install pycryptodome
 ```
 
-- `aes_cipher.py`
+- [test-aes/aes_cipher.py](test-aes/aes_cipher.py)
 
 ```py
 #!/usr/bin/env python
@@ -12420,7 +12553,7 @@ class AESCipher(object):
         return data.decode('utf-8')
 ```
 
-- `main.py`
+- [test-aes/main.py](test-aes/main.py)
 
 ```py
 import random
@@ -12440,6 +12573,75 @@ print(encrypted)
 decrypted = cipher.decrypt(encrypted)
 print(decrypted)
 print(decrypted == plain_text)
+```
+
+<a id="markdown-06-300-5000-多要素認証otp" name="06-300-5000-多要素認証otp"></a>
+
+### 06-300-5000-多要素認証（OTP）
+
+PyOTP をインストールする
+
+```sh
+$ pip install pyotp
+$ pip install Pillow qrcode
+```
+
+```py
+import pyotp
+import time
+
+# Secret Keyを生成する
+base32string = pyotp.random_base32() # 'K4F6XO3AIYXH4FVW'
+# 16進表記が必要な場合は
+# base32string = pyotp.random_hex() # '9542701255ACF6D13D1003104BFA0F19'
+
+totp = pyotp.TOTP(base32string)
+code = totp.now() # 現在時刻に対応する認証コード # '871029'
+print(code)
+
+totp.verify(code) # True
+time.sleep(30) # 30秒経過すると
+totp.verify(code) # => False
+```
+
+```py
+import pyotp
+
+# Secret Keyを生成する
+base32string = pyotp.random_base32()
+
+# クライアントアプリに送付するURIを生成
+uri = pyotp.TOTP(base32string).provisioning_uri(name="foo@example.net", issuer_name="My App")
+print(uri)
+# 'otpauth://totp/My%20App:foo%40example.net?secret=PIE6K3PKCM7WWFR3&issuer=My%20App'
+
+
+# QRコードを生成
+import qrcode
+import sys
+import time
+
+filename = 'result.png'
+
+img = qrcode.make(uri)
+img.save(filename)
+
+from PIL import Image
+Image.open(filename).show()
+
+
+# サーバー側コードを生成
+totp = pyotp.TOTP(base32string)
+
+print('-' * 30)
+for i in range(2):
+    print(totp.now()) # クライアントアプリで表示される認証コードと揃っているか確認
+    for i in range(30):
+        time.sleep(1)
+        print('.', end='')
+        sys.stdout.flush()
+    print('')
+    sys.stdout.flush()
 ```
 
 <a id="markdown-ネットワーク" name="ネットワーク"></a>
@@ -13161,11 +13363,21 @@ class MyClass:
     def __unicode__(self):
         return '__unicode__'
 
-    def getName(self):          # getter
+    # ゲッター（getter）
+    def getName(self):
         return self.__privateInstanceVariable
 
-    def setName(self, name):    # setter
+    # セッター（setter）
+    def setName(self, name):
         self.__privateInstanceVariable = name
+
+    # プロパティ（ゲッター・セッタとは異なり、プロパティ名でアクセスできる）
+    @property
+    def name(self):
+        return self.__privateInstanceVariable
+    @x.setter
+    def name(self, value):
+        self.__privateInstanceVariable = value
 
     # 通常メソッド
     def Calc(self):
@@ -13550,6 +13762,42 @@ $ pip install <package>==<version>
 
 ```sh
 $ pip freeze > requirements.txt
+```
+
+<a id="markdown-requirementstxt-に書かれたパッケージのバージョンを更新" name="requirementstxt-に書かれたパッケージのバージョンを更新"></a>
+
+##### requirements.txt に書かれたパッケージのバージョンを更新
+
+以下のように更新したいパッケージを列挙した `requirements.in` を用意する。
+
+```
+django
+opencv-python>=4.2,<5
+opencv-contrib-python>=4.2,<5
+```
+
+```sh
+$ pip install pip-tools
+$ pip-compile requirements.in
+$ pip install -r requirements.txt
+```
+
+条件を満たす最新のバージョンを反映した `requirements.txt` が生成され、標準出力にも出力される。
+
+```
+#
+# This file is autogenerated by pip-compile
+# To update, run:
+#
+#    pip-compile requirements.in
+#
+asgiref==3.2.10           # via django
+django==3.1.1             # via -r requirements.in
+numpy==1.19.1             # via opencv-contrib-python, opencv-python
+opencv-contrib-python==4.4.0.42  # via -r requirements.in
+opencv-python==4.4.0.42   # via -r requirements.in
+pytz==2020.1              # via django
+sqlparse==0.3.1           # via django
 ```
 
 <a id="markdown-パッケージのアンインストール" name="パッケージのアンインストール"></a>
