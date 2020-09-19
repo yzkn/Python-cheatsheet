@@ -17,7 +17,15 @@
       - [複数条件](#複数条件)
   - [変数](#変数)
     - [多重代入](#多重代入)
+    - [代入式（セイウチ演算子、ウォルラス演算子）](#代入式セイウチ演算子ウォルラス演算子)
     - [変数のスコープ](#変数のスコープ)
+  - [組み込み定数](#組み込み定数)
+    - [False](#false)
+    - [True](#true)
+    - [None](#none)
+    - [NotImplemented](#notimplemented)
+    - [Ellipsis](#ellipsis)
+    - [`__debug__`](#__debug__)
 - [データ型](#データ型)
   - [データ型の判定](#データ型の判定)
     - [type](#type)
@@ -56,6 +64,7 @@
       - [文字列型からのキャスト](#文字列型からのキャスト-1)
     - [数値の指定桁数での四捨五入・切り上げ・切り捨て](#数値の指定桁数での四捨五入・切り上げ・切り捨て)
     - [小数値の乱数を取得する](#小数値の乱数を取得する)
+    - [平方根](#平方根)
   - [complex(虚数)](#complex虚数)
   - [datetime](#datetime)
     - [日時の比較](#日時の比較)
@@ -178,6 +187,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
     - [リストの要素を除去](#リストの要素を除去)
     - [リストの反復処理](#リストの反復処理)
       - [インデックスを取得](#インデックスを取得-1)
@@ -200,7 +210,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -226,6 +236,7 @@
       - [filter(要素のフィルタリング)](#filter要素のフィルタリング-1)
       - [多次元リスト](#多次元リスト-1)
       - [リスト内包表記で FizzBuzz](#リスト内包表記で-fizzbuzz)
+      - [リスト内包表記の入れ子](#リスト内包表記の入れ子)
   - [辞書](#辞書)
     - [辞書が空か検査](#辞書が空か検査)
     - [辞書を生成](#辞書を生成)
@@ -655,6 +666,7 @@ https://docs.python.org/ja/3/reference/expressions.html#operator-precedence
 | or                                           | OR                                             |
 | if -- else                                   | 条件式(三項演算子)                             |
 | lambda                                       | ラムダ式                                       |
+| :=                                           | 代入式（セイウチ演算子）                       |
 
 <a id="markdown-条件式三項演算子" name="条件式三項演算子"></a>
 
@@ -812,6 +824,20 @@ x = y = z = 2
 print(x, y, z)
 ```
 
+<a id="markdown-代入式セイウチ演算子ウォルラス演算子" name="代入式セイウチ演算子ウォルラス演算子"></a>
+
+### 代入式（セイウチ演算子、ウォルラス演算子）
+
+右辺の値を左辺の変数に代入しつつ、式全体の値として返す
+
+```py
+x = "abc"
+if (n := len(x)) > 2:
+    print(n)
+```
+
+> 3
+
 <a id="markdown-変数のスコープ" name="変数のスコープ"></a>
 
 ### 変数のスコープ
@@ -829,6 +855,56 @@ print(x, y, z)
 'VAR_NAME' in globals()
 'VAR_NAME' in locals()
 ```
+
+<a id="markdown-組み込み定数" name="組み込み定数"></a>
+
+## 組み込み定数
+
+`None` 、 `False` 、 `True` 、 `__debug__` には再代入できない
+
+<a id="markdown-false" name="false"></a>
+
+### False
+
+bool 型の偽値
+
+<a id="markdown-true" name="true"></a>
+
+### True
+
+bool 型の真値
+
+<a id="markdown-none" name="none"></a>
+
+### None
+
+型 NoneType の唯一の値
+
+<a id="markdown-notimplemented" name="notimplemented"></a>
+
+### NotImplemented
+
+特殊な二項演算のメソッド（例: `__eq__()` , `__lt__()` , `__add__()` , `__rsub__()` など）が、他の型に対して演算が実装されていないことを示すために返す
+
+<a id="markdown-ellipsis" name="ellipsis"></a>
+
+### Ellipsis
+
+```py
+...
+
+Ellipsis
+```
+
+> Ellipsis
+>
+> Ellipsis
+
+<a id="markdown-__debug__" name="__debug__"></a>
+
+### `__debug__`
+
+Python が -O オプションを有効にして開始されたのでなければ真
 
 <a id="markdown-データ型" name="データ型"></a>
 
@@ -1564,6 +1640,27 @@ random.uniform(1, 3)
 > 2.812125216111861
 >
 > 1.2485392016103378
+
+<a id="markdown-平方根" name="平方根"></a>
+
+### 平方根
+
+```py
+n = 13 ** 2
+
+n ** 0.5
+
+pow(n, 0.5)
+
+import math
+math.sqrt(n)
+```
+
+> 13.0
+>
+> 13.0
+>
+> 13.0
 
 <a id="markdown-complex虚数" name="complex虚数"></a>
 
@@ -2318,12 +2415,16 @@ print(fuga)
 - `str.format()`
 - - f 文字列
 
-| 種別           | 書き方                                    | 結果       |
-| -------------- | ----------------------------------------- | ---------- |
-| `format()`     | `format(255, '06o')`                      | `'000377'` |
-| `str.format()` | `'{:06o}'.format(255)`                    | `'000377'` |
-| f 文字列       | `f'right : {255:06o}'`                    | `'000377'` |
-|                | `strval=255`<br>`f'right : {strval:06o}'` | `'000377'` |
+| 種別           | 書き方                                                          | 結果                                      |
+| -------------- | --------------------------------------------------------------- | ----------------------------------------- |
+| `format()`     | `format(255, '06o')`                                            | `'000377'`                                |
+| `str.format()` | `'{:06d}'.format(255)`                                          | `'000255'`                                |
+| f 文字列       | `f'value : {255:04}'`                                           | `'value : 0255'`                          |
+|                | `strval=255`<br>`f'value : {strval:06o}'`                       | `'value : 000377'`                        |
+|                | `strval=255`<br>`f'value : {strval=:06x}'`                      | `'value : strval=0000ff'`<br>変数名も表示 |
+|                | `strval=255`<br>`length=6`<br>`f'value : {strval=:0{length}o}'` | `'value : strval=000377'`<br>入れ子       |
+
+print('{n:0{i}}'.format(n=n, i=i))
 
 詳細は[書式指定子](#書式指定子)の項を参照
 
@@ -2551,6 +2652,23 @@ print(mes)
 ```
 
 > first: 23rd
+
+```py
+strval=255
+mes = f'value : {strval=:06d}'
+print(mes)
+
+# RAW文字列との組み合わせ
+length=32
+mes = fr'value :\t{strval=:0{length}o}'
+print(mes)
+```
+
+> value : strval=000255
+>
+> # RAW 文字列との組み合わせ
+>
+> value :\tstrval=00000000000000000000000000000377
 
 <a id="markdown-リストの値を代入-1" name="リストの値を代入-1"></a>
 
@@ -4539,6 +4657,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -5043,7 +5163,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -5473,6 +5593,33 @@ print(l)
     'Buzz'     if not n % 5  else
     str(n)
     for n in range(1, 1 + 100)
+]
+```
+
+<a id="markdown-リスト内包表記の入れ子" name="リスト内包表記の入れ子"></a>
+
+#### リスト内包表記の入れ子
+
+```py
+[
+    i*i
+    for i
+    in [
+        j*2
+        for j
+        in range(10)
+    ]
+]
+```
+
+> [0, 4, 16, 36, 64, 100, 144, 196, 256, 324]
+
+```py
+[
+    (i,j)
+    for i in [-2, -1, 0, 1, 2]
+    for j in [-2, -1, 0, 1, 2]
+    if sqrt(i**2 + j**2) < 2
 ]
 ```
 
@@ -10858,8 +11005,8 @@ with open('test-faker/color.csv', 'w+', encoding='utf-8', newline='') as f:
 
             fake.color(
                 hue=None,  # H値
-                    # 値が0?360の数値の場合、生成された色のH値
-                    # 値が0?360の2つの数値のタプル/リストである場合、色のH値はその範囲からランダムに選択
+                    # 値が0-360の数値の場合、生成された色のH値
+                    # 値が0-360の2つの数値のタプル/リストである場合、色のH値はその範囲からランダムに選択
                     # 値が文字列（'monochrome', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'）の場合、色のH値は、指定された文字列に対応するH値の範囲からランダムに選択される
                 luminosity=None,
                 color_format='hex'
