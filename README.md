@@ -53,13 +53,10 @@
         - [XOR 演算](#xor-演算)
       - [2 進数の補数](#2-進数の補数)
     - [四捨五入・数値の切り上げ・切り捨て](#四捨五入・数値の切り上げ・切り捨て)
-    - [絶対値（abs）](#絶対値abs)
     - [整数の乱数を取得する](#整数の乱数を取得する)
       - [乱数値を固定する](#乱数値を固定する)
     - [整数の計算](#整数の計算)
       - [算術演算子（整数）](#算術演算子整数)
-      - [分数](#分数)
-        - [分母の最大値を指定して近似](#分母の最大値を指定して近似)
       - [最小公倍数・最大公約数](#最小公倍数・最大公約数)
   - [float](#float)
     - [数値チェック（小数）](#数値チェック小数)
@@ -68,8 +65,19 @@
     - [float 型と文字列型](#float-型と文字列型)
       - [float 型のフォーマット](#float-型のフォーマット)
       - [文字列型からのキャスト](#文字列型からのキャスト-1)
+    - [分数](#分数)
+      - [分母の最大値を指定して近似](#分母の最大値を指定して近似)
     - [数値の指定桁数での四捨五入・切り上げ・切り捨て](#数値の指定桁数での四捨五入・切り上げ・切り捨て)
+    - [絶対値（abs）](#絶対値abs)
+    - [最大値・最小値（数値）](#最大値・最小値数値)
+    - [平均値（数値）](#平均値数値)
+      - [算術平均](#算術平均)
     - [小数値の乱数を取得する](#小数値の乱数を取得する)
+    - [三角関数](#三角関数)
+      - [円周率 π](#円周率-π)
+      - [度（degree）とラジアン（rad）の変換](#度degreeとラジアンradの変換)
+      - [sin、cos、tan](#sincostan)
+      - [asin、acos、atan](#asinacosatan)
     - [実数の計算](#実数の計算)
       - [算術演算子（実数）](#算術演算子実数)
       - [平方根](#平方根)
@@ -145,6 +153,7 @@
       - [フォーマット演算子](#フォーマット演算子)
     - [文字種チェック](#文字種チェック)
       - [数値チェック](#数値チェック)
+    - [最大値・最小値（文字列）](#最大値・最小値文字列)
     - [バイト列(byte), Unicode](#バイト列byte-unicode)
       - [Python 3](#python-3)
       - [Python 2](#python-2)
@@ -210,8 +219,8 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
+      - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
     - [リストの反復処理](#リストの反復処理)
       - [インデックスを取得](#インデックスを取得-1)
@@ -234,7 +243,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -288,6 +297,11 @@
       - [存在しないキーを指定した場合](#存在しないキーを指定した場合)
       - [辞書の要素の存在チェック](#辞書の要素の存在チェック)
       - [指定した値を持つキーを取得する](#指定した値を持つキーを取得する)
+      - [最大値・最小値（辞書）](#最大値・最小値辞書)
+        - [キーの最大値／最小値を返す](#キーの最大値／最小値を返す)
+        - [値の最大値／最小値を取得する](#値の最大値／最小値を取得する)
+        - [値が最大／最小の要素を取得する](#値が最大／最小の要素を取得する)
+        - [値が最大／最小の要素のキーを取得する](#値が最大／最小の要素のキーを取得する)
     - [辞書の要素を除去](#辞書の要素を除去)
     - [辞書の反復処理(キー・値・インデックスを取得)](#辞書の反復処理キー・値・インデックスを取得)
       - [複数の辞書を同時に繰り返す](#複数の辞書を同時に繰り返す)
@@ -582,7 +596,9 @@
   - [Python のバージョンを取得](#python-のバージョンを取得)
   - [実行時間の計測](#実行時間の計測)
 
-<!-- /TOC --><a id="markdown-おまじない" name="おまじない"></a>
+<!-- /TOC -->
+
+<a id="markdown-おまじない" name="おまじない"></a>
 
 # おまじない
 
@@ -1433,43 +1449,6 @@ print(Decimal(str(f)).quantize(Decimal('0'), rounding=ROUND_UP))
 >
 > 1235
 
-<a id="markdown-絶対値abs" name="絶対値abs"></a>
-
-### 絶対値（abs）
-
-| 関数         | 引数の型   | 結果の型 |
-| ------------ | ---------- | -------- |
-| abs(x)       | int        | int      |
-|              | float)型   | float    |
-|              | complex)型 | float    |
-| math.fabs(x) | int        | float    |
-|              | float)型   | float    |
-
-```py
-abs(-123)
-abs(-1.23)
-abs(32 + 1j)
-```
-
-> 123
->
-> 1.23
->
-> 32.01562118716424
-
-```py
-import math
-math.fabs(-123)
-math.fabs(-1.23)
-math.fabs(32 + 1j)
-```
-
-> 123.0
->
-> 1.23
->
-> TypeError: can't convert complex to float
-
 <a id="markdown-整数の乱数を取得する" name="整数の乱数を取得する"></a>
 
 ### 整数の乱数を取得する
@@ -1592,64 +1571,6 @@ print(123 ** 2)
 
 > 15129
 
-<a id="markdown-分数" name="分数"></a>
-
-#### 分数
-
-```py
-from fractions import Fraction
-print(Fraction(7, 3))
-
-print(Fraction('7/3'))
-
-print(Fraction(0.5))
-
-x = Fraction('7/3')
-print(x.numerator, type(x.numerator), x.denominator, type(x.denominator))
-```
-
-> 7/3
->
-> 7/3
->
-> 1/2
->
-> 7 \<class 'int'\> 3 \<class 'int'\>
-
-```py
-from fractions import Fraction
-result = Fraction(7, 3) + Fraction(7, 3) / Fraction(3, 7)
-
-print(result > Fraction(7, 3))
-
-float(result)
-str(result)
-```
-
-> Fraction(70, 9)
->
-> True
->
-> 7.777777777777778
->
-> '70/9'
-
-<a id="markdown-分母の最大値を指定して近似" name="分母の最大値を指定して近似"></a>
-
-##### 分母の最大値を指定して近似
-
-浮動小数点数の誤差が出てしまう場合、近似することも可能
-
-```py
-print(Fraction(0.2))
-
-print(Fraction(0.2).limit_denominator(5))
-```
-
-> Fraction(3602879701896397, 18014398509481984)
->
-> 1/5
-
 <a id="markdown-最小公倍数・最大公約数" name="最小公倍数・最大公約数"></a>
 
 #### 最小公倍数・最大公約数
@@ -1765,6 +1686,64 @@ if is_float(s):
 | `'.23'`     | `0.23`           |
 | `'1.23e-4'` | `0.000123`       |
 
+<a id="markdown-分数" name="分数"></a>
+
+### 分数
+
+```py
+from fractions import Fraction
+print(Fraction(7, 3))
+
+print(Fraction('7/3'))
+
+print(Fraction(0.5))
+
+x = Fraction('7/3')
+print(x.numerator, type(x.numerator), x.denominator, type(x.denominator))
+```
+
+> 7/3
+>
+> 7/3
+>
+> 1/2
+>
+> 7 \<class 'int'\> 3 \<class 'int'\>
+
+```py
+from fractions import Fraction
+result = Fraction(7, 3) + Fraction(7, 3) / Fraction(3, 7)
+
+print(result > Fraction(7, 3))
+
+float(result)
+str(result)
+```
+
+> Fraction(70, 9)
+>
+> True
+>
+> 7.777777777777778
+>
+> '70/9'
+
+<a id="markdown-分母の最大値を指定して近似" name="分母の最大値を指定して近似"></a>
+
+#### 分母の最大値を指定して近似
+
+浮動小数点数の誤差が出てしまう場合、近似することも可能
+
+```py
+print(Fraction(0.2))
+
+print(Fraction(0.2).limit_denominator(5))
+```
+
+> Fraction(3602879701896397, 18014398509481984)
+>
+> 1/5
+
 <a id="markdown-数値の指定桁数での四捨五入・切り上げ・切り捨て" name="数値の指定桁数での四捨五入・切り上げ・切り捨て"></a>
 
 ### 数値の指定桁数での四捨五入・切り上げ・切り捨て
@@ -1814,6 +1793,108 @@ print(Decimal(str(f)).quantize(Decimal('0.1'), rounding=ROUND_UP))
 >
 > 1235.6
 
+<a id="markdown-絶対値abs" name="絶対値abs"></a>
+
+### 絶対値（abs）
+
+| 関数         | 引数の型 | 結果の型 |
+| ------------ | -------- | -------- |
+| abs(x)       | int      | int      |
+|              | float    | float    |
+|              | complex  | float    |
+| math.fabs(x) | int      | float    |
+|              | float    | float    |
+
+```py
+abs(-123)
+abs(-1.23)
+abs(32 + 1j)
+```
+
+> 123
+>
+> 1.23
+>
+> 32.01562118716424
+
+```py
+import math
+math.fabs(-123)
+math.fabs(-1.23)
+math.fabs(32 + 1j)
+```
+
+> 123.0
+>
+> 1.23
+>
+> TypeError: can't convert complex to float
+
+<a id="markdown-最大値・最小値数値" name="最大値・最小値数値"></a>
+
+### 最大値・最小値（数値）
+
+```py
+print(max(1, 2, -3))
+print(min(1, 2, -3))
+
+print(max(1.2, 3.4, -5.6))
+print(min(1.2, 3.4, -5.6))
+```
+
+> 2
+>
+> -3
+>
+> 3.4
+>
+> -5.6
+
+<a id="markdown-平均値数値" name="平均値数値"></a>
+
+### 平均値（数値）
+
+<a id="markdown-算術平均" name="算術平均"></a>
+
+#### 算術平均
+
+```py
+import statistics as st
+
+print(st.mean(1.2, 2.3, 4.56))
+x = (1.2, 2.3, 4.56)
+print(st.mean(x))
+x = [1.2, 2.3, 4.56]
+print(st.mean(x))
+```
+
+> TypeError: mean() takes 1 positional argument but 3 were given
+>
+> 2.6866666666666665
+>
+> 2.6866666666666665
+
+```py
+from decimal import Decimal as D
+import statistics as st
+
+x = [D('1.2'), D('2.3'), D('4.56')]
+print(st.mean(x))
+```
+
+> 2.686666666666666666666666667
+
+```py
+from fractions import Fraction as F
+import statistics as st
+
+# 1/2, 1/4, 1/8
+x = [F(1, 2), F(1, 4), F(1, 8)]
+print(st.mean(x))
+```
+
+> 7/24
+
 <a id="markdown-小数値の乱数を取得する" name="小数値の乱数を取得する"></a>
 
 ### 小数値の乱数を取得する
@@ -1839,6 +1920,109 @@ random.uniform(1, 3)
 > 2.812125216111861
 >
 > 1.2485392016103378
+
+<a id="markdown-三角関数" name="三角関数"></a>
+
+### 三角関数
+
+<a id="markdown-円周率-π" name="円周率-π"></a>
+
+#### 円周率 π
+
+```py
+import math
+print(math.pi)
+```
+
+<a id="markdown-度degreeとラジアンradの変換" name="度degreeとラジアンradの変換"></a>
+
+#### 度（degree）とラジアン（rad）の変換
+
+```py
+import math
+
+print(math.degrees(2 * math.pi))
+print(math.radians(360))
+```
+
+> 360.0
+>
+> 6.283185307179586
+
+<a id="markdown-sincostan" name="sincostan"></a>
+
+#### sin、cos、tan
+
+```py
+import math
+
+math.sin(math.radians(0))
+math.cos(math.radians(0))
+math.tan(math.radians(0))
+```
+
+> 0.0
+>
+> 1.0
+>
+> 0.0
+
+```py
+import math
+
+math.sin(math.radians(45))
+math.cos(math.radians(45))
+math.tan(math.radians(45))
+
+x = math.tan(math.radians(45))
+print(round(x, 3))
+print(math.isclose(x, 1.0))
+print(math.isclose(x, 0.9))
+```
+
+> 0.7071067811865475
+>
+> 0.7071067811865476
+>
+> 0.9999999999999999
+
+> 1.0
+>
+> True
+>
+> False
+
+<a id="markdown-asinacosatan" name="asinacosatan"></a>
+
+#### asin、acos、atan
+
+```py
+import math
+
+x = math.degrees(math.asin(0.5))
+print(x)
+print(round(x, 3))
+
+x = math.degrees(math.acos(0.5))
+print(x)
+print(round(x, 3))
+
+x = math.degrees(math.atan(math.inf))
+print(x)
+print(round(x, 3))
+```
+
+> 29.999999999999996
+>
+> 30.0
+
+> 59.99999999999999
+>
+> 60.0
+
+> 90.0
+>
+> 90.0
 
 <a id="markdown-実数の計算" name="実数の計算"></a>
 
@@ -3900,6 +4084,19 @@ for number in range(0, 12000):
 
 ```
 
+<a id="markdown-最大値・最小値文字列" name="最大値・最小値文字列"></a>
+
+### 最大値・最小値（文字列）
+
+```py
+print(max('abcxyz'))
+print(min('abcxyz'))
+```
+
+> z
+>
+> a
+
 <a id="markdown-バイト列byte-unicode" name="バイト列byte-unicode"></a>
 
 ### バイト列(byte), Unicode
@@ -5232,8 +5429,6 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
-
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -5244,6 +5439,27 @@ print('bar' in lst)
 <a id="markdown-リストの要素をランダム抽出" name="リストの要素をランダム抽出"></a>
 
 #### リストの要素をランダム抽出
+
+<a id="markdown-最大値・最小値リスト" name="最大値・最小値リスト"></a>
+
+#### 最大値・最小値（リスト）
+
+```py
+print(max([1, 2, 3]))
+print(min([1, 2, 3]))
+
+tpllst = [(1, 9), (3, 7), (5, 8)]
+print(max(tpllst, key = lambda x:x[0])) # タプルの左側の要素で比較
+print(min(tpllst, key = lambda x:x[1])) # タプルの右側の要素で比較
+```
+
+> 3
+>
+> 1
+>
+> (5, 8)
+>
+> (3, 7)
 
 <a id="markdown-リストの要素を除去" name="リストの要素を除去"></a>
 
@@ -5742,7 +5958,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -6475,6 +6691,8 @@ dct1 = dict(('1f', '2s', '3t'))
 dct2 = dict(('4f', '5f', '6s'))
 dct3 = dict(('4x', '8e', '9n'))
 
+print(dct1)
+
 dct1.update(dct2)
 
 print(dct1)
@@ -6486,17 +6704,24 @@ print(dct1)
 print(dct3)
 
 print({**dct2, **dct3})
+
+# Python 3.9以降
+print(dct2 | dct3)
 ```
 
-> {'1': 'f', '2': 's', '3': 't', '4': 'f', '5': 'f', '6': 's'}
+> {'1': 'f', '2': 's', '3': 't'} \# print(dct1)
 >
-> {'4': 'f', '5': 'f', '6': 's'}
+> {'1': 'f', '2': 's', '3': 't', '4': 'f', '5': 'f', '6': 's'} \# print(dct1)
+>
+> {'4': 'f', '5': 'f', '6': 's'} \# print(dct2)
 
-> {'1': 'f', '2': 's', '3': 't', '4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'}
+> {'1': 'f', '2': 's', '3': 't', '4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'} \# print(dct1)
 >
-> {'4': 'x', '8': 'e', '9': 'n'}
+> {'4': 'x', '8': 'e', '9': 'n'} \# print(dct3)
 >
-> {'4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'}
+> {'4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'} \# print({**dct2, **dct3})
+>
+> {'4': 'x', '5': 'f', '6': 's', '8': 'e', '9': 'n'} \# print(dct2 | dct3)
 
 <a id="markdown-既存のキーと重複する場合に上書きせずにカンマ区切りで追加" name="既存のキーと重複する場合に上書きせずにカンマ区切りで追加"></a>
 
@@ -6591,6 +6816,115 @@ print(keys)
 ```
 
 > [1, 3]
+
+<a id="markdown-最大値・最小値辞書" name="最大値・最小値辞書"></a>
+
+#### 最大値・最小値（辞書）
+
+<a id="markdown-キーの最大値／最小値を返す" name="キーの最大値／最小値を返す"></a>
+
+##### キーの最大値／最小値を返す
+
+辞書型をそのまま指定すると、キーの最大値／最小値を返す
+
+```py
+dct = { 'a':987, 'b':987, 'c':65, 'd':4, 'e':-3, 'f':-21, 'g':-21}
+print(max(dct))
+print(min(dct))
+```
+
+> g
+>
+> a
+
+```py
+dct = { 'a':987, 'b':987, 'c':65, 'd':4, 'e':-3, 'f':-21, 'g':-21}
+print([k for k, v in dct.items() if k == max(dct.keys())])
+print([k for k, v in dct.items() if k == min(dct.keys())])
+```
+
+> ['g']
+>
+> ['a']
+
+<a id="markdown-値の最大値／最小値を取得する" name="値の最大値／最小値を取得する"></a>
+
+##### 値の最大値／最小値を取得する
+
+```py
+dct = { 'a':987, 'b':987, 'c':65, 'd':4, 'e':-3, 'f':-21, 'g':-21}
+print(max(dct.values()))
+print(min(dct.values()))
+```
+
+> 987
+>
+> -21
+
+```py
+dct = { 'a':987, 'b':987, 'c':65, 'd':4, 'e':-3, 'f':-21, 'g':-21}
+print(
+    len(
+        [v for k, v in dct.items() if v == max(dct.values())]
+        )
+    )
+print(
+    len(
+        [v for k, v in dct.items() if v == min(dct.values())]
+        )
+    )
+```
+
+> 2
+>
+> 2
+
+<a id="markdown-値が最大／最小の要素を取得する" name="値が最大／最小の要素を取得する"></a>
+
+##### 値が最大／最小の要素を取得する
+
+```py
+print(max(dct.items(), key=lambda x: x[1]))
+print(min(dct.items(), key=lambda x: x[1]))
+
+```
+
+> ('a', 987)
+>
+> ('f', -21)
+
+```py
+dct = { 'a':987, 'b':987, 'c':65, 'd':4, 'e':-3, 'f':-21, 'g':-21}
+print([i for i in dct.items() if i[1] == max(dct.values())])
+print([i for i in dct.items() if i[1] == min(dct.values())])
+```
+
+> [('a', 987), ('b', 987)]
+>
+> [('f', -21), ('g', -21)]
+
+<a id="markdown-値が最大／最小の要素のキーを取得する" name="値が最大／最小の要素のキーを取得する"></a>
+
+##### 値が最大／最小の要素のキーを取得する
+
+```py
+print(max(dct, key=dct.get))
+print(min(dct, key=dct.get))
+```
+
+> a
+>
+> f
+
+```py
+dct = { 'a':987, 'b':987, 'c':65, 'd':4, 'e':-3, 'f':-21, 'g':-21}
+print([k for k, v in dct.items() if v == max(dct.values())])
+print([k for k, v in dct.items() if v == min(dct.values())])
+```
+
+> ['a', 'b']
+>
+> ['f', 'g']
 
 <a id="markdown-辞書の要素を除去" name="辞書の要素を除去"></a>
 
