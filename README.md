@@ -106,7 +106,9 @@
         - [現在日時を取得し、特定の時刻に変更](#現在日時を取得し特定の時刻に変更)
           - [今年が閏年かどうか調べる](#今年が閏年かどうか調べる)
       - [日付のリスト](#日付のリスト)
+      - [ランダムな日付を生成](#ランダムな日付を生成)
     - [指定日までの残り期間を取得](#指定日までの残り期間を取得)
+    - [生年月日から年齢を取得](#生年月日から年齢を取得)
     - [タイムゾーンを考慮した datetime](#タイムゾーンを考慮した-datetime)
       - [datetime パッケージの timezone モジュールを使用する場合](#datetime-パッケージの-timezone-モジュールを使用する場合)
         - [生成](#生成)
@@ -219,6 +221,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -243,7 +246,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -392,6 +395,15 @@
   - [コマンドライン引数](#コマンドライン引数)
   - [標準入力](#標準入力)
     - [無限ループをキー入力で抜ける](#無限ループをキー入力で抜ける)
+    - [入力フォーマット別標準入力結果の抽出方法](#入力フォーマット別標準入力結果の抽出方法)
+      - [sys.stdin.readline](#sysstdinreadline)
+      - [1 行 1 列](#1-行-1-列)
+      - [1 行 2 列](#1-行-2-列)
+      - [1 行 n 列](#1-行-n-列)
+      - [n 行 1 列](#n-行-1-列)
+      - [n 行 2 列](#n-行-2-列)
+      - [n 行 m 列（列ごとのリスト）](#n-行-m-列列ごとのリスト)
+      - [n 行 m 列（2 次元配列）](#n-行-m-列2-次元配列)
   - [標準出力](#標準出力)
     - [追記（／改行して追記）ではなく、直前の内容を上書き更新しながら出力](#追記／改行して追記ではなく直前の内容を上書き更新しながら出力)
     - [末尾に改行文字をつけずに出力する](#末尾に改行文字をつけずに出力する)
@@ -2550,6 +2562,34 @@ print(l)
 
 > ['2019-08-02', '2019-08-09', '2019-08-16', '2019-08-23', '2019-08-30']
 
+<a id="markdown-ランダムな日付を生成" name="ランダムな日付を生成"></a>
+
+#### ランダムな日付を生成
+
+```py
+import random
+import time
+
+def generate_random_datetime(start, end, format = '%Y/%m/%d %H:%M:%S'):
+    start_datetime = time.mktime(time.strptime(start, format))
+    end_datetime = time.mktime(time.strptime(end, format))
+    generated = start_datetime + random.random() * (end_datetime - start_datetime)
+    return time.strftime(format, time.localtime(generated))
+
+
+print(generate_random_datetime('2020/10/01 00:00:00', '2020/10/31 23:59:59'))
+```
+
+> 2020/10/07 04:17:34
+>
+> 2020/10/31 07:40:03
+>
+> 2020/10/01 04:21:58
+>
+> 2020/10/24 21:50:26
+>
+> 2020/10/27 17:41:34
+
 <a id="markdown-指定日までの残り期間を取得" name="指定日までの残り期間を取得"></a>
 
 ### 指定日までの残り期間を取得
@@ -2563,6 +2603,30 @@ print(td)
 ```
 
 > 143 days, 15:00:00
+
+<a id="markdown-生年月日から年齢を取得" name="生年月日から年齢を取得"></a>
+
+### 生年月日から年齢を取得
+
+```sh
+$ python -m pip install python-dateutil
+```
+
+```py
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
+birthday = date(2000, 2, 29)
+today = date.today()
+
+delta = relativedelta(today, birthday)
+print(today, birthday, delta)
+print(delta.years)
+```
+
+> 2020-10-21 2000-02-29 relativedelta(years=+20, months=+7, days=+22)
+>
+> 20
 
 <a id="markdown-タイムゾーンを考慮した-datetime" name="タイムゾーンを考慮した-datetime"></a>
 
@@ -5429,6 +5493,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -5958,7 +6024,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -8399,7 +8465,9 @@ print4('foobar')
 ```py
 import sys
 
+# sys.argv[1:] とすればファイル名をスキップ（aaa以降が含まれる）
 args = sys.argv
+
 print(args)
 
 for i, arg in enumerate(args):
@@ -8539,6 +8607,197 @@ if __name__ == '__main__':
             break
         elif key:
             print(key)
+```
+
+<a id="markdown-入力フォーマット別標準入力結果の抽出方法" name="入力フォーマット別標準入力結果の抽出方法"></a>
+
+### 入力フォーマット別標準入力結果の抽出方法
+
+競技プログラミングで標準入力からデータが与えられる場合などに使う
+
+<a id="markdown-sysstdinreadline" name="sysstdinreadline"></a>
+
+#### sys.stdin.readline
+
+input の代わりに sys.stdin.readline を使って高速化する
+
+```py
+import sys
+input = sys.stdin.readline
+
+inputed = input().strip()
+```
+
+<a id="markdown-1-行-1-列" name="1-行-1-列"></a>
+
+#### 1 行 1 列
+
+```py
+inputed = input().strip()
+# 対象が数値なら必要に応じてキャスト
+# inputed = int(input().strip())
+# inputed = float(input().strip())
+
+print (type(inputed), inputed)
+```
+
+<a id="markdown-1-行-2-列" name="1-行-2-列"></a>
+
+#### 1 行 2 列
+
+```py
+k, v = input().split()
+# 対象が数値なら必要に応じてキャスト
+# k, v = (map(int,input().split()))
+# k, v = (map(float,input().split()))
+
+print (type(k), k, type(v), v)
+```
+
+```py
+inputed = tuple(input().split())
+# 対象が数値なら必要に応じてキャスト
+# inputed = (map(int,input().split()))
+# inputed = (map(float,input().split()))
+
+print (type(inputed), inputed)
+```
+
+<a id="markdown-1-行-n-列" name="1-行-n-列"></a>
+
+#### 1 行 n 列
+
+```py
+inputed = input().split()
+
+# 対象が数値なら必要に応じてキャスト
+# inputed = list(map(int,inputed))
+# inputed = list(map(float,inputed))
+
+# ソートする場合
+# inputed = sorted(input().split())
+# inputed = sorted(map(int, input().split()))
+
+print (type(inputed), inputed)
+```
+
+<a id="markdown-n-行-1-列" name="n-行-1-列"></a>
+
+#### n 行 1 列
+
+EOF（または `-1` など特定の文字列）が出現するまで読み込む場合
+
+```py
+123
+456
+789
+-1
+```
+
+```py
+for val in iter(input, '-1'):
+    print(val)
+    # 対象が数値なら必要に応じてキャスト
+    # print(int(val))
+    # print(float(val))
+```
+
+1 行目に行数が、2 行目以降にデータが記載されている場合
+
+```py
+N
+V1
+V2
+︙
+VN
+```
+
+```py
+# 1行読み込む
+N = int(input().split())
+
+# (a) for文
+inputed = []
+for _ in range(N):
+    inputed.append(int(input())
+
+# (b) 内包表記
+inputed = [int(input()) for _ in range(N)]
+
+print (type(inputed), inputed)
+```
+
+<a id="markdown-n-行-2-列" name="n-行-2-列"></a>
+
+#### n 行 2 列
+
+1 行目に行数が、2 行目以降にデータが記載されている場合
+
+```py
+N
+X1 Y1
+X2 Y2
+︙　︙
+XN YN
+```
+
+```py
+N = int(input())
+xy = [map(int, input().split()) for _ in range(N)]
+x, y = [list(i) for i in zip(*xy)]
+```
+
+<a id="markdown-n-行-m-列列ごとのリスト" name="n-行-m-列列ごとのリスト"></a>
+
+#### n 行 m 列（列ごとのリスト）
+
+1 行目に行数が、2 行目以降にデータが記載されている場合
+
+```
+N
+X1 Y1 … M1
+X2 Y2 … M2
+︙　︙　　︙
+XN YN … MN
+```
+
+```py
+N = int(input())
+X = [0] * N
+Y = [0] * N
+# ︙
+M = [0] * N
+for i in range(N):
+    X[i], Y[i], # …
+        M[i] = map(int, input().split())
+```
+
+<a id="markdown-n-行-m-列2-次元配列" name="n-行-m-列2-次元配列"></a>
+
+#### n 行 m 列（2 次元配列）
+
+1 行目に行数が、2 行目以降にデータが記載されている場合
+
+```
+N
+V11 V12 … V1M
+V21 V22 … V1M
+︙　　︙　　　︙
+VN1 VN2 … VNM
+```
+
+```py
+# 1行読み込む
+N = int(input().split())
+
+# 残りはforループ
+inputed = [input().split() for i in range(N)]
+# inputed = [list(map(int,input().split())) for i in range(N)]
+```
+
+```py
+# まとめると
+inputed = [list(map(int, input().split())) for i in range(int(input()))]
 ```
 
 <a id="markdown-標準出力" name="標準出力"></a>
