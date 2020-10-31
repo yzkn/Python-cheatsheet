@@ -229,6 +229,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -253,7 +254,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -606,6 +607,8 @@
         - [requirements.txt に書かれたパッケージのバージョンを更新](#requirementstxt-に書かれたパッケージのバージョンを更新)
     - [パッケージのアンインストール](#パッケージのアンインストール)
 - [pydoc](#pydoc)
+- [mypy による型チェック](#mypy-による型チェック)
+  - [型の宣言](#型の宣言)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
@@ -5684,6 +5687,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6213,7 +6218,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -15358,6 +15363,47 @@ $ pydoc python3md-pydoc
 # HTMLファイルを生成
 $ pydoc python3md-pydoc
 ```
+
+<a id="markdown-mypy-による型チェック" name="mypy-による型チェック"></a>
+
+# mypy による型チェック
+
+- mypy をインストール
+
+```sh
+$ pip install mypy
+```
+
+- 型をチェック
+
+何もメッセージが出力されなければ問題ないが、型が間違っているとエラーが出力される
+
+```sh
+$ mypy myscript.py
+```
+
+<a id="markdown-型の宣言" name="型の宣言"></a>
+
+## 型の宣言
+
+```py
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+boolvar: bool = True
+intvar: int = 123
+floatvar: float = 1.23
+strvar: str = 'foo'
+
+strvar = 'bar'
+boolvar = 'hoge'
+```
+
+bool 型の変数に文字型の値を代入しようとしているのでエラーが出力される
+
+> python/python3md-mypy.py:10: error: Incompatible types in assignment (expression has type "str", variable has type "bool")
+>
+> Found 1 error in 1 file (checked 1 source file)
 
 <a id="markdown-並列処理" name="並列処理"></a>
 
