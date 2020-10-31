@@ -229,7 +229,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -254,7 +253,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -609,6 +608,11 @@
 - [pydoc](#pydoc)
 - [mypy による型チェック](#mypy-による型チェック)
   - [型の宣言](#型の宣言)
+  - [イミュータブルな型](#イミュータブルな型)
+  - [ミュータブルな型](#ミュータブルな型)
+  - [複数の型](#複数の型)
+  - [def](#def)
+  - [None を許容する](#none-を許容する)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
@@ -5687,8 +5691,6 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
-
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6218,7 +6220,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -15376,7 +15378,7 @@ $ pip install mypy
 
 - 型をチェック
 
-何もメッセージが出力されなければ問題ないが、型が間違っているとエラーが出力される
+問題なければ `Success: no issues found` と出力され、型が間違っているとエラーが出力される
 
 ```sh
 $ mypy myscript.py
@@ -15385,6 +15387,10 @@ $ mypy myscript.py
 <a id="markdown-型の宣言" name="型の宣言"></a>
 
 ## 型の宣言
+
+<a id="markdown-イミュータブルな型" name="イミュータブルな型"></a>
+
+## イミュータブルな型
 
 ```py
 #!/usr/bin/python3
@@ -15404,6 +15410,67 @@ bool 型の変数に文字型の値を代入しようとしているのでエラ
 > python/python3md-mypy.py:10: error: Incompatible types in assignment (expression has type "str", variable has type "bool")
 >
 > Found 1 error in 1 file (checked 1 source file)
+
+<a id="markdown-ミュータブルな型" name="ミュータブルな型"></a>
+
+## ミュータブルな型
+
+```py
+listvar: list = [1, 2, 3]
+dictvar: dict = {1: 'foo', 2: 'bar'}
+
+# 要素の型も定義したい場合はtypingを利用する
+from typing import List, Dict
+listvar: List[int] = [1, 2, 3]
+dictvar: Dict[int, str] = {1: 'foo', 2: 'bar'}
+```
+
+<a id="markdown-複数の型" name="複数の型"></a>
+
+## 複数の型
+
+```py
+from typing import Union
+
+intstrvar: Union[int, str] = 123
+intstrvar = 'foo'
+intstrvar = 1.23
+```
+
+> error: Incompatible types in assignment (expression has type "float", variable has type "Union[int, str]")
+
+<a id="markdown-def" name="def"></a>
+
+## def
+
+```py
+def add_int(x: int, y: int) -> int:
+    return x + y
+
+
+def add_str(x: str, y: str) -> str:
+    return x + y
+
+
+# 戻り値がない場合
+def show_values(x: int, y: int) -> None:
+    print('{}, {}'.format(x, y))
+```
+
+<a id="markdown-none-を許容する" name="none-を許容する"></a>
+
+## None を許容する
+
+C#の null 許容値型に相当
+
+```py
+from typing import Optional
+
+dictvar: Dict[int, str] = {1: 'foo'}
+strnonevar: Optional[str] = dictvar.get(2)
+```
+
+> None
 
 <a id="markdown-並列処理" name="並列処理"></a>
 
