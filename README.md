@@ -27,7 +27,8 @@
     - [Ellipsis](#ellipsis)
     - [`__debug__`](#__debug__)
 - [データ型](#データ型)
-  - [データ型の判定](#データ型の判定)
+  - [データ型](#データ型-1)
+    - [データ型の判定](#データ型の判定)
     - [type](#type)
     - [isinstance](#isinstance)
   - [boolean](#boolean)
@@ -611,8 +612,10 @@
   - [イミュータブルな型](#イミュータブルな型)
   - [ミュータブルな型](#ミュータブルな型)
   - [複数の型](#複数の型)
-  - [def](#def)
   - [None を許容する](#none-を許容する)
+  - [再代入しない変数（final）](#再代入しない変数final)
+  - [def](#def)
+  - [Class](#class)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
@@ -974,9 +977,55 @@ Python が -O オプションを有効にして開始されたのでなければ
 
 # データ型
 
+<a id="markdown-データ型-1" name="データ型-1"></a>
+
+## データ型
+
+| 組み込み型       | 変更不可    | 変更可    | 反復可     | シーケンス | マッピング |
+| ---------------- | ----------- | --------- | ---------- | ---------- | ---------- |
+| (built-in types) | (immutable) | (mutable) | (iterable) | (sequence) | (mapping)  |
+|                  |             |           |            |            |            |
+| bool             | ○           |           |            |            |            |
+| int              | ○           |           |            |            |            |
+| float            | ○           |           |            |            |            |
+| complex          | ○           |           |            |            |            |
+| str              | ○           |           | ○          | ○          |            |
+| list             |             | ○         | ○          | ○          |            |
+| tuple            | ○           |           | ○          | ○          |            |
+| range            | ○           |           | ○          | ○          |            |
+| dict             |             | ○         | ○          |            | ○          |
+| set              |             | ○         | ○          |            |            |
+| bytes            | ○           |           | ○          | ○          |            |
+| bytearray        |             | ○         | ○          | ○          |            |
+| file object      | ○           |           | ○          |            |            |
+
+```
+組み込み型
+(built-in types)	変更不可
+(immutable)	変更可
+(mutable)	反復可
+(iterable)	シーケンス
+(sequence)	マッピング
+(mapping)	データ
+(data)
+bool	◎					True,False
+int	◎					整数
+float	◎					浮動小数点数
+complex	◎					複素数
+str	◎		◎	◎		文字列
+list		◎	◎	◎
+tuple	◎		◎	◎
+range	◎		◎	◎
+dict		◎	◎		◎
+set		◎	◎
+bytes	◎		◎	◎		バイナリ
+bytearray		◎	◎	◎
+file object	◎		◎
+```
+
 <a id="markdown-データ型の判定" name="データ型の判定"></a>
 
-## データ型の判定
+### データ型の判定
 
 type()と isinstance()がある。継承を考慮する必要があるかで使い分ける。
 以下の例では、bool は int のサブクラスなので、isinstance で判定すると継承元の型にも True を返す
@@ -15418,11 +15467,26 @@ bool 型の変数に文字型の値を代入しようとしているのでエラ
 ```py
 listvar: list = [1, 2, 3]
 dictvar: dict = {1: 'foo', 2: 'bar'}
+tplvar: tuple[str, str] = ('foo', 'bar')
 
 # 要素の型も定義したい場合はtypingを利用する
-from typing import List, Dict
+from typing import List, Dict, Tuple
 listvar: List[int] = [1, 2, 3]
 dictvar: Dict[int, str] = {1: 'foo', 2: 'bar'}
+tplvar: Tuple[int, str] = (1, 'foo')
+```
+
+```py
+# 辞書型でキーと値の型を定義
+from typing import TypedDict
+User = TypedDict('User', {'name': str, 'age': int})
+
+usr: User = {'name': 'Foo Bar', 'age': 17}
+```
+
+```py
+# 可変長のタプルを定義
+tplvar: Tuple[str, ...] = ('foo', 'bar', 'hoge', 'piyo')
 ```
 
 <a id="markdown-複数の型" name="複数の型"></a>
@@ -15438,6 +15502,30 @@ intstrvar = 1.23
 ```
 
 > error: Incompatible types in assignment (expression has type "float", variable has type "Union[int, str]")
+
+<a id="markdown-none-を許容する" name="none-を許容する"></a>
+
+## None を許容する
+
+C#の null 許容値型に相当
+
+```py
+from typing import Optional
+
+dictvar: Dict[int, str] = {1: 'foo'}
+strnonevar: Optional[str] = dictvar.get(2)
+```
+
+> None
+
+<a id="markdown-再代入しない変数final" name="再代入しない変数final"></a>
+
+## 再代入しない変数（final）
+
+```py
+from typing import Final
+strvar: Final[str] = 'foo'
+```
 
 <a id="markdown-def" name="def"></a>
 
@@ -15457,20 +15545,24 @@ def show_values(x: int, y: int) -> None:
     print('{}, {}'.format(x, y))
 ```
 
-<a id="markdown-none-を許容する" name="none-を許容する"></a>
+<a id="markdown-class" name="class"></a>
 
-## None を許容する
-
-C#の null 許容値型に相当
+## Class
 
 ```py
-from typing import Optional
+from dataclasses import dataclass
 
-dictvar: Dict[int, str] = {1: 'foo'}
-strnonevar: Optional[str] = dictvar.get(2)
+@dataclass
+class User:
+    name: str
+    age: int
+    def show_details(self) -> None:
+        print('Name: {}, Age: {}'.format(self.name, self.age))
+
+
+usr = User('Foo Bar', 17)
+usr.show_details()
 ```
-
-> None
 
 <a id="markdown-並列処理" name="並列処理"></a>
 
