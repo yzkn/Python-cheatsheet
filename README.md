@@ -230,6 +230,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -254,7 +255,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -616,6 +617,12 @@
   - [再代入しない変数（final）](#再代入しない変数final)
   - [def](#def)
   - [Class](#class)
+- [画像処理](#画像処理)
+  - [Pillow（PIL）](#pillowpil)
+    - [Pillow のインストール](#pillow-のインストール)
+    - [画像の生成](#画像の生成)
+    - [画像の読み込み](#画像の読み込み)
+    - [画像の書き出し](#画像の書き出し)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
@@ -5740,6 +5747,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6269,7 +6278,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -15562,6 +15571,67 @@ class User:
 
 usr = User('Foo Bar', 17)
 usr.show_details()
+```
+
+<a id="markdown-画像処理" name="画像処理"></a>
+
+# 画像処理
+
+<a id="markdown-pillowpil" name="pillowpil"></a>
+
+## Pillow（PIL）
+
+<a id="markdown-pillow-のインストール" name="pillow-のインストール"></a>
+
+### Pillow のインストール
+
+```sh
+$ pip install Pillow
+```
+
+<a id="markdown-画像の生成" name="画像の生成"></a>
+
+### 画像の生成
+
+```py
+from PIL import Image
+
+im = Image.new(
+    "RGB", # カラーモード
+    (256, 256), # 大きさ
+    (255, 128, 0) # 塗りつぶし色
+)
+
+im.show()
+```
+
+<a id="markdown-画像の読み込み" name="画像の読み込み"></a>
+
+### 画像の読み込み
+
+```py
+from PIL import Image
+
+im = Image.open('/path/to/image.png')
+print(im.format, im.size, im.mode) # 画像の種類、大きさ、カラーモード
+print(im.getextrema()) # 画像の各バンドの最小ピクセル値と最大ピクセル値を取得
+print(im.getpixel((64, 64))) # 指定した座標の画素値を取得
+
+im.show()
+```
+
+<a id="markdown-画像の書き出し" name="画像の書き出し"></a>
+
+### 画像の書き出し
+
+```py
+from PIL import Image
+
+im = Image.open('/path/to/image.png')
+im.show()
+
+# im.save('/path/to/image2.jpg', quality=95)
+im.save('/path/to/image2.png')
 ```
 
 <a id="markdown-並列処理" name="並列処理"></a>
