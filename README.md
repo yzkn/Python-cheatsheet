@@ -230,7 +230,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -255,7 +254,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -623,6 +622,8 @@
     - [画像の生成](#画像の生成)
     - [画像の読み込み](#画像の読み込み)
     - [画像の書き出し](#画像の書き出し)
+    - [画像のリサイズ](#画像のリサイズ)
+      - [複数画像の一括リサイズ](#複数画像の一括リサイズ)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
@@ -5747,8 +5748,6 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
-
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6278,7 +6277,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -15603,6 +15602,7 @@ im = Image.new(
 )
 
 im.show()
+im.save('./test-pillow/image.png')
 ```
 
 <a id="markdown-画像の読み込み" name="画像の読み込み"></a>
@@ -15612,7 +15612,7 @@ im.show()
 ```py
 from PIL import Image
 
-im = Image.open('/path/to/image.png')
+im = Image.open('./test-pillow/image.png')
 print(im.format, im.size, im.mode) # 画像の種類、大きさ、カラーモード
 print(im.getextrema()) # 画像の各バンドの最小ピクセル値と最大ピクセル値を取得
 print(im.getpixel((64, 64))) # 指定した座標の画素値を取得
@@ -15627,11 +15627,68 @@ im.show()
 ```py
 from PIL import Image
 
-im = Image.open('/path/to/image.png')
+im = Image.open('./test-pillow/image.png')
 im.show()
 
-# im.save('/path/to/image2.jpg', quality=95)
-im.save('/path/to/image2.png')
+# im.save('/path/to/image.jpg', quality=95) # JPEGの場合は品質も指定
+im.save('./test-pillow/saved.png')
+```
+
+<a id="markdown-画像のリサイズ" name="画像のリサイズ"></a>
+
+### 画像のリサイズ
+
+```py
+im = Image.open('./test-pillow/image.png')
+
+
+im = im.resize((64, 64)) # NEAREST
+
+# リサンプリングフィルター( https://pillow.readthedocs.io/en/4.0.x/handbook/concepts.html#filters )を指定
+# im = img.resize((64, 64), Image.NEAREST) # 既定
+# im = img.resize((64, 64), Image.BOX)
+# im = img.resize((64, 64), Image.BILINEAR)
+# im = img.resize((64, 64), Image.HAMMING)
+# im = img.resize((64, 64), Image.BICUBIC)
+# im = img.resize((64, 64), Image.LANCZOS)
+
+# 縦横の長さを、もとの50%に縮小
+im = im.resize((int(0.5 * im.width), int(0.5 * im.height)))
+
+# 縦横比を保って指定された幅にリサイズ
+new_width = 256
+im = im.resize((new_width, int(new_width * im.size[1] / im.size[0])))
+
+# アスペクト比を保って指定された高さにリサイズ
+new_height = 128
+im = im.resize((int(new_height * im.size[0] / im.size[1]), new_height))
+
+# 変換後のファイルを保存
+im.save('./test-pillow/resized.png')
+```
+
+<a id="markdown-複数画像の一括リサイズ" name="複数画像の一括リサイズ"></a>
+
+#### 複数画像の一括リサイズ
+
+```py
+import os
+import glob
+import re
+from PIL import Image
+
+
+FILENAME_SUFFIX = '_resized'
+
+
+# for f in glob.glob('./test-pillow/*.png'): # 同一階層の複数のファイル
+# for f in glob.glob('test-pillow/**/*.png', recursive=True): # 再帰的にサブディレクトリ内のファイルも取得
+# for f in [p for p in glob.glob('test-pillow/**/*', recursive=True) if os.path.splitext(p)[1] in ['.jpg', '.png']]: # 複数の拡張子
+for f in [p for p in glob.glob('./test-pillow/**/*', recursive=True) if re.search('/[a-z]{5}\.(png|gif)', p)]:
+    im = Image.open(f)
+    im = im.resize((int(0.5 * im.width), int(0.5 * im.height)))
+    root, ext = os.path.splitext(f)
+    im.save(root + FILENAME_SUFFIX + ext)
 ```
 
 <a id="markdown-並列処理" name="並列処理"></a>
