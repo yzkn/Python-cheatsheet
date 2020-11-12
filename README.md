@@ -230,7 +230,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -255,7 +254,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -623,6 +622,13 @@
     - [画像の生成](#画像の生成)
     - [画像の読み込み](#画像の読み込み)
     - [画像の書き出し](#画像の書き出し)
+    - [画素ごとの操作](#画素ごとの操作)
+      - [画素値の取得](#画素値の取得)
+      - [画素ごとにコピー](#画素ごとにコピー)
+      - [グレースケール](#グレースケール)
+        - [単純平均](#単純平均)
+        - [NTSC 加重平均法](#ntsc-加重平均法)
+        - [中間値法](#中間値法)
     - [画像のリサイズ](#画像のリサイズ)
       - [複数画像の一括リサイズ](#複数画像の一括リサイズ)
       - [余白を付けてリサイズ](#余白を付けてリサイズ)
@@ -632,6 +638,7 @@
     - [画像のトリミング](#画像のトリミング)
     - [画像の反転](#画像の反転)
     - [画像の回転](#画像の回転)
+    - [画素値の置換](#画素値の置換)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
@@ -5756,8 +5763,6 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
-
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6287,7 +6292,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -15644,6 +15649,154 @@ im.show()
 im.save('./test-pillow/saved.png')
 ```
 
+<a id="markdown-画素ごとの操作" name="画素ごとの操作"></a>
+
+### 画素ごとの操作
+
+<a id="markdown-画素値の取得" name="画素値の取得"></a>
+
+#### 画素値の取得
+
+```py
+from PIL import Image
+import itertools
+
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('RGB')
+size = im.size
+
+# for x in range(size[0]):
+#     for y in range(size[1]):
+#         r, g, b = rgb_im.getpixel((x, y))
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    print(x, y, r, g, b)
+```
+
+> 0 0 255 128 0
+>
+> 0 1 255 128 0
+>
+> 0 2 255 128 0
+>
+> 0 3 255 128 0
+>
+> 0 4 255 128 0
+>
+> ...
+>
+> 255 251 255 128 0
+>
+> 255 252 255 128 0
+>
+> 255 253 255 128 0
+>
+> 255 254 255 128 0
+>
+> 255 255 255 128 0
+
+<a id="markdown-画素ごとにコピー" name="画素ごとにコピー"></a>
+
+#### 画素ごとにコピー
+
+```py
+from PIL import Image
+import itertools
+
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGB',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    im2.putpixel((x, y),(r, g, b, 0))
+
+im2.show()
+im2.save('./test-pillow/copied.png')
+```
+
+<a id="markdown-グレースケール" name="グレースケール"></a>
+
+#### グレースケール
+
+<a id="markdown-単純平均" name="単純平均"></a>
+
+##### 単純平均
+
+```py
+from PIL import Image
+import itertools
+import statistics
+
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGB',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    p = int(statistics.mean((r, g, b)))
+    im2.putpixel((x, y),(p, p, p))
+
+im2.show()
+im2.save('./test-pillow/gray_mean.png')
+```
+
+<a id="markdown-ntsc-加重平均法" name="ntsc-加重平均法"></a>
+
+##### NTSC 加重平均法
+
+```py
+from PIL import Image
+import itertools
+
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGB',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    # http://koturn.hatenablog.com/entry/2016/02/05/010000 の式(3)
+    p = int((77 * r + 150 * g + 29 * b) / 256)
+    im2.putpixel((x, y),(p, p, p))
+
+im2.show()
+im2.save('./test-pillow/gray_ntsc.png')
+```
+
+<a id="markdown-中間値法" name="中間値法"></a>
+
+##### 中間値法
+
+```py
+from PIL import Image
+import itertools
+
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGB',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    p = int((max(r, g, b) + min(r, g, b)) / 2)
+    im2.putpixel((x, y),(p, p, p))
+
+im2.show()
+im2.save('./test-pillow/gray_mid.png')
+```
+
 <a id="markdown-画像のリサイズ" name="画像のリサイズ"></a>
 
 ### 画像のリサイズ
@@ -15874,6 +16027,33 @@ im0t = im.rotate(0, translate=(100, 50), expand=True)
 im0t.show()
 im30t = im.rotate(30, translate=(100, 50), expand=True)
 im30t.show()
+```
+
+<a id="markdown-画素値の置換" name="画素値の置換"></a>
+
+### 画素値の置換
+
+```py
+from PIL import Image, ImageChops
+
+
+src_color = (31, 124, 193)
+dst_color = (255, 0, 0)
+
+
+im = Image.open('./test-pillow/other-blue.jpg')
+
+r, g, b = im.split()
+_r = r.point(lambda _: 1 if _ == src_color[0] else 0, mode="1")
+_g = g.point(lambda _: 1 if _ == src_color[1] else 0, mode="1")
+_b = b.point(lambda _: 1 if _ == src_color[2] else 0, mode="1")
+mask = ImageChops.logical_and(
+    ImageChops.logical_and(_r, _g),
+    _b
+)
+im.paste(Image.new("RGB", im.size, dst_color), mask=mask)
+
+im.show()
 ```
 
 <a id="markdown-並列処理" name="並列処理"></a>
