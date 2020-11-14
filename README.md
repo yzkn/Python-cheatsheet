@@ -626,15 +626,15 @@
     - [画素ごとの操作](#画素ごとの操作)
       - [画素値の取得](#画素値の取得)
       - [画素ごとにコピー](#画素ごとにコピー)
-      - [グレースケール](#グレースケール)
-        - [単純平均](#単純平均)
-        - [NTSC 加重平均法](#ntsc-加重平均法)
-        - [中間値法](#中間値法)
+      - [グレースケール（画素ごと）](#グレースケール画素ごと)
+        - [単純平均（画素ごと）](#単純平均画素ごと)
+        - [NTSC 加重平均法（画素ごと）](#ntsc-加重平均法画素ごと)
+        - [中間値法（画素ごと）](#中間値法画素ごと)
       - [画素ごとにネガポジ反転](#画素ごとにネガポジ反転)
-      - [ぼかし処理](#ぼかし処理)
-        - [平均化フィルター](#平均化フィルター)
-        - [ガウシアンフィルター](#ガウシアンフィルター)
-      - [色を透明度にする](#色を透明度にする)
+      - [ぼかし処理（画素ごと）](#ぼかし処理画素ごと)
+        - [平均化フィルター（画素ごと）](#平均化フィルター画素ごと)
+        - [ガウシアンフィルター（画素ごと）](#ガウシアンフィルター画素ごと)
+      - [色を透明度にする（画素ごと）](#色を透明度にする画素ごと)
     - [画像のリサイズ](#画像のリサイズ)
       - [サムネイル画像の生成](#サムネイル画像の生成)
       - [複数画像の一括リサイズ](#複数画像の一括リサイズ)
@@ -645,7 +645,10 @@
     - [画像のトリミング](#画像のトリミング)
     - [画像の反転](#画像の反転)
     - [画像の回転](#画像の回転)
+    - [色の変換](#色の変換)
+      - [グレースケール](#グレースケール)
     - [画素値の置換](#画素値の置換)
+      - [フィルター処理](#フィルター処理)
     - [画像の合成](#画像の合成)
       - [画像に文字を合成](#画像に文字を合成)
         - [利用できるフォントの一覧を取得](#利用できるフォントの一覧を取得)
@@ -15731,13 +15734,13 @@ im2.show()
 im2.save('./test-pillow/copied.png')
 ```
 
-<a id="markdown-グレースケール" name="グレースケール"></a>
+<a id="markdown-グレースケール画素ごと" name="グレースケール画素ごと"></a>
 
-#### グレースケール
+#### グレースケール（画素ごと）
 
-<a id="markdown-単純平均" name="単純平均"></a>
+<a id="markdown-単純平均画素ごと" name="単純平均画素ごと"></a>
 
-##### 単純平均
+##### 単純平均（画素ごと）
 
 ```py
 from PIL import Image
@@ -15760,9 +15763,9 @@ im2.show()
 im2.save('./test-pillow/gray_mean.png')
 ```
 
-<a id="markdown-ntsc-加重平均法" name="ntsc-加重平均法"></a>
+<a id="markdown-ntsc-加重平均法画素ごと" name="ntsc-加重平均法画素ごと"></a>
 
-##### NTSC 加重平均法
+##### NTSC 加重平均法（画素ごと）
 
 ```py
 from PIL import Image
@@ -15785,9 +15788,9 @@ im2.show()
 im2.save('./test-pillow/gray_ntsc.png')
 ```
 
-<a id="markdown-中間値法" name="中間値法"></a>
+<a id="markdown-中間値法画素ごと" name="中間値法画素ごと"></a>
 
-##### 中間値法
+##### 中間値法（画素ごと）
 
 ```py
 from PIL import Image
@@ -15833,13 +15836,13 @@ im2.show()
 im2.save('./test-pillow/nega-pixel.png')
 ```
 
-<a id="markdown-ぼかし処理" name="ぼかし処理"></a>
+<a id="markdown-ぼかし処理画素ごと" name="ぼかし処理画素ごと"></a>
 
-#### ぼかし処理
+#### ぼかし処理（画素ごと）
 
-<a id="markdown-平均化フィルター" name="平均化フィルター"></a>
+<a id="markdown-平均化フィルター画素ごと" name="平均化フィルター画素ごと"></a>
 
-##### 平均化フィルター
+##### 平均化フィルター（画素ごと）
 
 ```py
 from PIL import Image
@@ -15891,9 +15894,9 @@ im2.show()
 im2.save('./test-pillow/filter-aver.png')
 ```
 
-<a id="markdown-ガウシアンフィルター" name="ガウシアンフィルター"></a>
+<a id="markdown-ガウシアンフィルター画素ごと" name="ガウシアンフィルター画素ごと"></a>
 
-##### ガウシアンフィルター
+##### ガウシアンフィルター（画素ごと）
 
 |     |     |     |     |
 | --- | --- | --- | --- |
@@ -15951,9 +15954,9 @@ im2.show()
 im2.save('./test-pillow/filter-gaus.png')
 ```
 
-<a id="markdown-色を透明度にする" name="色を透明度にする"></a>
+<a id="markdown-色を透明度にする画素ごと" name="色を透明度にする画素ごと"></a>
 
-#### 色を透明度にする
+#### 色を透明度にする（画素ごと）
 
 ```py
 from PIL import Image
@@ -16243,6 +16246,24 @@ im30t = im.rotate(30, translate=(100, 50), expand=True)
 im30t.show()
 ```
 
+<a id="markdown-色の変換" name="色の変換"></a>
+
+### 色の変換
+
+<a id="markdown-グレースケール" name="グレースケール"></a>
+
+#### グレースケール
+
+```py
+from PIL import Image
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('L')
+
+im.show()
+im.save('./test-pillow/convert_l.png')
+```
+
 <a id="markdown-画素値の置換" name="画素値の置換"></a>
 
 ### 画素値の置換
@@ -16268,6 +16289,59 @@ mask = ImageChops.logical_and(
 im.paste(Image.new("RGB", im.size, dst_color), mask=mask)
 
 im.show()
+```
+
+<a id="markdown-フィルター処理" name="フィルター処理"></a>
+
+#### フィルター処理
+
+```py
+from PIL import Image
+
+im = Image.open('./test-pillow/image.png')
+
+
+im = im.filter(ImageFilter.BLUR)
+im = im.filter(ImageFilter.CONTOUR)
+im = im.filter(ImageFilter.DETAIL)
+im = im.filter(ImageFilter.EDGE_ENHANCE)
+im = im.filter(ImageFilter.EDGE_ENHANCE_MORE)
+im = im.filter(ImageFilter.EMBOSS)
+im = im.filter(ImageFilter.FIND_EDGES)
+im = im.filter(ImageFilter.SHARPEN)
+im = im.filter(ImageFilter.SMOOTH)
+im = im.filter(ImageFilter.SMOOTH_MORE)
+
+im = im.filter(ImageFilter.BoxBlur(radius=1))
+
+im = im.filter(ImageFilter.GaussianBlur()) # 既定はradius=2
+im = im.filter(ImageFilter.GaussianBlur(radius=5))
+
+im = im.filter(ImageFilter.UnsharpMask()) # 既定はradius=2, percent=150, threshold=3
+im = im.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+
+kernel_list =  [1,   0, -1, # エッジ検出の例
+          1,   0, -1,
+          1,   0, -1]
+im = im.filter(ImageFilter.Kernel(size=(3, 3), kernel=kernel_list, scale=1, offset=0))
+
+im = im.filter(ImageFilter.RankFilter(size=5, rank=24)) # rankに0を指定するとmin filter, size * size / 2を指定するとmedian filter, size * size - 1を指定するとmax filter
+
+im = im.filter(ImageFilter.MedianFilter()) # 既定はsize=3
+im = im.filter(ImageFilter.MedianFilter(size=3))
+
+im = im.filter(ImageFilter.MinFilter()) # 既定はsize=3
+im = im.filter(ImageFilter.MinFilter(size=3))
+
+im = im.filter(ImageFilter.MaxFilter()) # 既定はsize=3
+im = im.filter(ImageFilter.MaxFilter(size=3))
+
+im = im.filter(ImageFilter.ModeFilter()) # 既定はsize=3
+im = im.filter(ImageFilter.ModeFilter(size=3))
+
+
+im.show()
+im.save('./test-pillow/convert_filter.png')
 ```
 
 <a id="markdown-画像の合成" name="画像の合成"></a>
