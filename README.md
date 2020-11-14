@@ -230,6 +230,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -254,7 +255,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -629,6 +630,11 @@
         - [単純平均](#単純平均)
         - [NTSC 加重平均法](#ntsc-加重平均法)
         - [中間値法](#中間値法)
+      - [画素ごとにネガポジ反転](#画素ごとにネガポジ反転)
+      - [ぼかし処理](#ぼかし処理)
+        - [平均化フィルター](#平均化フィルター)
+        - [ガウシアンフィルター](#ガウシアンフィルター)
+      - [色を透明度にする](#色を透明度にする)
     - [画像のリサイズ](#画像のリサイズ)
       - [サムネイル画像の生成](#サムネイル画像の生成)
       - [複数画像の一括リサイズ](#複数画像の一括リサイズ)
@@ -5767,6 +5773,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6296,7 +6304,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -15799,6 +15807,174 @@ for x, y in itertools.product(range(size[0]), range(size[1])):
 
 im2.show()
 im2.save('./test-pillow/gray_mid.png')
+```
+
+<a id="markdown-画素ごとにネガポジ反転" name="画素ごとにネガポジ反転"></a>
+
+#### 画素ごとにネガポジ反転
+
+```py
+from PIL import Image
+import itertools
+import statistics
+
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGBA',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    im2.putpixel((x, y),(255 - r, 255 - g, 255 - b))
+
+im2.show()
+im2.save('./test-pillow/nega-pixel.png')
+```
+
+<a id="markdown-ぼかし処理" name="ぼかし処理"></a>
+
+#### ぼかし処理
+
+<a id="markdown-平均化フィルター" name="平均化フィルター"></a>
+
+##### 平均化フィルター
+
+```py
+from PIL import Image
+import itertools
+
+
+im = Image.open('./test-pillow/other-blue.jpg')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGBA',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    r1 = r2 = r3 = r4 = r5 = r6 = r7 = r8 = r
+    g1 = g2 = g3 = g4 = g5 = g6 = g7 = g8 = g
+    b1 = b2 = b3 = b4 = b5 = b6 = b7 = b8 = b
+
+    if x - 1 > 0 and y + 1 < size[1]:
+        r1, g1, b1 = im.getpixel((x-1,y+1))
+
+    if y + 1 < size[1]:
+        r2, g2, b2 = im.getpixel((x,y+1))
+
+    if x + 1 < size[0] and y + 1 < size[1]:
+        r3, g3, b3 = im.getpixel((x+1,y+1))
+
+    if x - 1 > 0:
+        r4, g4, b4 = im.getpixel((x-1,y))
+
+    if x + 1 < size[0]:
+        r5, g5, b5 = im.getpixel((x+1,y))
+
+    if x - 1 > 0 and y - 1 > 0:
+        r6, g6, b6 = im.getpixel((x-1,y-1))
+
+    if y - 1 > 0:
+        r7, g7, b7 = im.getpixel((x,y-1))
+
+    if x + 1 < size[0] and y - 1 > 0:
+        r8, g8, b8 = im.getpixel((x+1,y-1))
+
+    r = int((r + r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8) / 9)
+    g = int((g + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8) / 9)
+    b = int((b + b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8) / 9)
+    im2.putpixel((x, y), (r, g, b))
+
+im2.show()
+im2.save('./test-pillow/filter-aver.png')
+```
+
+<a id="markdown-ガウシアンフィルター" name="ガウシアンフィルター"></a>
+
+##### ガウシアンフィルター
+
+|     |     |     |     |
+| --- | --- | --- | --- |
+|     | 1   | 2   | 3   |
+|     | 4   |     | 5   |
+|     | 6   | 7   | 8   |
+
+```py
+from PIL import Image
+import itertools
+
+
+im = Image.open('./test-pillow/other-blue.jpg')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGBA',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    r1 = r2 = r3 = r4 = r5 = r6 = r7 = r8 = r
+    g1 = g2 = g3 = g4 = g5 = g6 = g7 = g8 = g
+    b1 = b2 = b3 = b4 = b5 = b6 = b7 = b8 = b
+
+    if x - 1 > 0 and y + 1 < size[1]:
+        r1, g1, b1 = im.getpixel((x-1,y+1))
+
+    if y + 1 < size[1]:
+        r2, g2, b2 = im.getpixel((x,y+1))
+
+    if x + 1 < size[0] and y + 1 < size[1]:
+        r3, g3, b3 = im.getpixel((x+1,y+1))
+
+    if x - 1 > 0:
+        r4, g4, b4 = im.getpixel((x-1,y))
+
+    if x + 1 < size[0]:
+        r5, g5, b5 = im.getpixel((x+1,y))
+
+    if x - 1 > 0 and y - 1 > 0:
+        r6, g6, b6 = im.getpixel((x-1,y-1))
+
+    if y - 1 > 0:
+        r7, g7, b7 = im.getpixel((x,y-1))
+
+    if x + 1 < size[0] and y - 1 > 0:
+        r8, g8, b8 = im.getpixel((x+1,y-1))
+
+    r = int((4 * r + r1 + 2 * r2 + r3 + 2 * r4 + 2 * r5 + r6 + 2 * r7 + r8) / 18)
+    g = int((4 * g + g1 + 2 * g2 + g3 + 2 * g4 + 2 * g5 + g6 + 2 * g7 + g8) / 18)
+    b = int((4 * b + b1 + 2 * b2 + b3 + 2 * b4 + 2 * b5 + b6 + 2 * b7 + b8) / 18)
+    im2.putpixel((x, y), (r, g, b))
+
+im2.show()
+im2.save('./test-pillow/filter-gaus.png')
+```
+
+<a id="markdown-色を透明度にする" name="色を透明度にする"></a>
+
+#### 色を透明度にする
+
+```py
+from PIL import Image
+import itertools
+
+
+target_color = (31, 124, 193)
+
+
+im = Image.open('./test-pillow/other-blue.jpg')
+im = im.convert('RGB')
+im2 = Image.new('RGBA', im.size, (0, 0, 0, 0))
+
+for x, y in itertools.product(range(im.size[0]), range(im.size[1])):
+    r, g, b = im.getpixel((x, y))
+    if r== target_color[0] and g == target_color[1] and b == target_color[2]:
+        continue
+    im2.putpixel((x, y),(r, g, b))
+
+im2.show()
+im2.save('./test-pillow/other-blue-alpha.png')
 ```
 
 <a id="markdown-画像のリサイズ" name="画像のリサイズ"></a>
