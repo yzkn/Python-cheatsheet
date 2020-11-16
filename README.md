@@ -230,7 +230,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -255,7 +254,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -634,6 +633,8 @@
       - [ぼかし処理（画素ごと）](#ぼかし処理画素ごと)
         - [平均化フィルター（画素ごと）](#平均化フィルター画素ごと)
         - [ガウシアンフィルター（画素ごと）](#ガウシアンフィルター画素ごと)
+      - [ノイズ付加](#ノイズ付加)
+        - [ごま塩ノイズ](#ごま塩ノイズ)
       - [色を透明度にする（画素ごと）](#色を透明度にする画素ごと)
     - [画像のリサイズ](#画像のリサイズ)
       - [サムネイル画像の生成](#サムネイル画像の生成)
@@ -646,7 +647,9 @@
     - [画像の反転](#画像の反転)
     - [画像の回転](#画像の回転)
     - [色の変換](#色の変換)
-      - [グレースケール](#グレースケール)
+      - [色空間の変換](#色空間の変換)
+        - [グレースケール](#グレースケール)
+        - [HSV 色空間](#hsv-色空間)
     - [画素値の置換](#画素値の置換)
       - [フィルター処理](#フィルター処理)
     - [画像の合成](#画像の合成)
@@ -5776,8 +5779,6 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
-
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6307,7 +6308,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -15728,7 +15729,7 @@ im2 = Image.new('RGB',size)
 
 for x, y in itertools.product(range(size[0]), range(size[1])):
     r, g, b = im.getpixel((x, y))
-    im2.putpixel((x, y),(r, g, b, 0))
+    im2.putpixel((x, y),(r, g, b))
 
 im2.show()
 im2.save('./test-pillow/copied.png')
@@ -15952,6 +15953,44 @@ for x, y in itertools.product(range(size[0]), range(size[1])):
 
 im2.show()
 im2.save('./test-pillow/filter-gaus.png')
+```
+
+<a id="markdown-ノイズ付加" name="ノイズ付加"></a>
+
+#### ノイズ付加
+
+<a id="markdown-ごま塩ノイズ" name="ごま塩ノイズ"></a>
+
+##### ごま塩ノイズ
+
+```py
+from PIL import Image
+from random import random
+import itertools
+
+
+salt=0.01
+pepp=0.01
+
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('RGB')
+size = im.size
+
+im2 = Image.new('RGB',size)
+
+for x, y in itertools.product(range(size[0]), range(size[1])):
+    r, g, b = im.getpixel((x, y))
+    rand = random()
+    if rand < salt:
+        im2.putpixel((x, y),(255, 255, 255))
+    elif rand > 1 - pepp:
+        im2.putpixel((x, y),(0, 0, 0))
+    else:
+        im2.putpixel((x, y),(r, g, b))
+
+im2.show()
+im2.save('./test-pillow/salt-pepper.png')
 ```
 
 <a id="markdown-色を透明度にする画素ごと" name="色を透明度にする画素ごと"></a>
@@ -16250,18 +16289,48 @@ im30t.show()
 
 ### 色の変換
 
+<a id="markdown-色空間の変換" name="色空間の変換"></a>
+
+#### 色空間の変換
+
 <a id="markdown-グレースケール" name="グレースケール"></a>
 
-#### グレースケール
+##### グレースケール
 
 ```py
 from PIL import Image
 
 im = Image.open('./test-pillow/image.png')
 im = im.convert('L')
+# im = im.convert('LA') # アルファチャネルがある場合
 
 im.show()
 im.save('./test-pillow/convert_l.png')
+```
+
+<a id="markdown-hsv-色空間" name="hsv-色空間"></a>
+
+##### HSV 色空間
+
+```py
+from PIL import Image, ImageMath
+
+im = Image.open('./test-pillow/image.png')
+im = im.convert('HSV')
+
+# 色相（Hue）
+# 彩度（Saturation）
+# 明度（Value）
+h, s, v = im.convert('HSV').split()
+
+# 色の変更
+_h = ImageMath.eval('(h + 128) % 255', h=h).convert('L')
+_s = ImageMath.eval('(s +  64) % 255', s=s).convert('L')
+_v = ImageMath.eval('(v -  32) % 255', v=v).convert('L')
+im2 = Image.merge('HSV', (_h, _s, v)).convert('RGB')
+
+im2.show()
+im2.save('./test-pillow/convert_hsv.png')
 ```
 
 <a id="markdown-画素値の置換" name="画素値の置換"></a>
