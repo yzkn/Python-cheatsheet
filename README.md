@@ -650,6 +650,7 @@
       - [色空間の変換](#色空間の変換)
         - [グレースケール](#グレースケール)
         - [HSV 色空間](#hsv-色空間)
+        - [CIELAB 色空間](#cielab-色空間)
     - [画素値の置換](#画素値の置換)
       - [フィルター処理](#フィルター処理)
     - [画像の合成](#画像の合成)
@@ -4622,12 +4623,15 @@ for key, value in enumerate(parts):
 ```py
 hoge = 'abcdefghi'
 print(hoge[1:3])    # bc
-print(hoge[:3])     # abc
+print(hoge[:3])     # abc # 先頭から3文字
 print(hoge[8:])     # i
-print(hoge[-2:])    # hi
+print(hoge[-2:])    # hi # 末尾から2文字
 print(hoge[:-4])    #abcde
 print(hoge[-4:-2]) # fg
 print(hoge[0:7:2])  # acdf
+
+# 文字列を逆順にする
+print(hoge[::-1]) # ihgfedcba
 
 # index #################################
 # 0   1   2   3   4   5   6   7   8   9 #
@@ -5816,22 +5820,54 @@ print(min(tpllst, key = lambda x:x[1])) # タプルの右側の要素で比較
 ### リストの要素を除去
 
 ```py
-lst = ['foo', 'bar', 'hoge']
+lst = ['foo', 'bar', 'hoge', 'piyo']
+print(lst)
+
 lst.pop() # 末尾から除去
+print(lst)
+
 lst.pop(0) # 先頭から除去
-lst.remove('bar') # 指定された値を持つ要素のうち、最初のものを除去
+print(lst)
+
+# 指定された値を持つ要素のうち、最初のものを除去（戻り値なし）
+# 指定された値を持つ要素が存在しない場合は、 ValueError: list.remove(x): x not in list
+lst.remove('bar')
+print(lst)
+
+del lst[0] # 指定された位置の要素を除去（戻り値なし）
+print(lst)
+
+
+lst = ['foo', 'bar', 'hoge', 'piyo']
+
+# 指定された複数の位置の要素を除去（すべて削除する場合は del lst[:] ）
+del lst[0:2]
+print(lst)
 
 # 初期化(すべての要素を削除)
 lst.clear()
+print(lst)
+
+# 初期化
+lst = []
+print(lst)
 ```
 
-> 'hoge'
+> ['foo', 'bar', 'hoge', 'piyo'] # print(lst) の戻り値
 >
-> ['foo', 'bar']
+> 'piyo' # lst.pop() の戻り値
 >
-> 'foo'
+> ['foo', 'bar', 'hoge'] # print(lst) の戻り値
 >
-> ['bar']
+> 'foo' # lst.pop(0) の戻り値
+>
+> ['bar', 'hoge'] # print(lst) の戻り値
+>
+> ['hoge'] # lst.remove('bar') の直後の print(lst) の戻り値
+>
+> []
+>
+> ['hoge', 'piyo'] # del lst[0:2]の直後の print(lst) の戻り値
 >
 > []
 >
@@ -6071,7 +6107,7 @@ print(len(perm))
 
 ##### 直積
 
-2 つのリストの全要素の組み合わせを求める
+2 つのリストの全要素の組み合わせを求める。
 
 ```py
 import itertools
@@ -6082,6 +6118,7 @@ for i in items:
 
 print('')
 
+# 同じリストを複数回使いたいときは repeat 引数に回数を指定
 # perm = list(itertools.product(items, items))
 perm = list(itertools.product(items, repeat=2))
 print(perm)
@@ -6093,6 +6130,60 @@ print(len(perm))
 > [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (4, 1), (4, 2), (4, 3), (4, 4), (4, 5), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5)]
 >
 > 25
+
+多重 for ループでネストが深くなるのを防ぐためにも使える
+
+```py
+import itertools
+
+# 2重forループ
+# for tpl in itertools.product(range(2), range(3)):
+#   print("%d, %d" % tpl)
+for i, j in itertools.product(range(2), range(3)):
+  print("%d, %d" % (i, j))
+
+# 3重forループ
+for i, j, k in itertools.product(range(2), range(3), range(4)):
+  print("%d, %d, %d" % (i, j, k))
+```
+
+> 0, 0
+>
+> 0, 1
+>
+> 0, 2
+>
+> 1, 0
+>
+> 1, 1
+>
+> 1, 2
+
+> 0, 0, 0
+>
+> 0, 0, 1
+>
+> 0, 0, 2
+>
+> 0, 0, 3
+>
+> 0, 1, 0
+>
+> 0, 1, 1
+>
+> 0, 1, 2
+>
+> 0, 1, 3
+>
+> ...
+>
+> 1, 2, 0
+>
+> 1, 2, 1
+>
+> 1, 2, 2
+>
+> 1, 2, 3
 
 <a id="markdown-多次元リスト" name="多次元リスト"></a>
 
@@ -16331,6 +16422,30 @@ im2 = Image.merge('HSV', (_h, _s, v)).convert('RGB')
 
 im2.show()
 im2.save('./test-pillow/convert_hsv.png')
+```
+
+<a id="markdown-cielab-色空間" name="cielab-色空間"></a>
+
+##### CIELAB 色空間
+
+```py
+from PIL import Image, ImageCms
+
+im = Image.open('./test-pillow/image.png')
+if im.mode != 'RGB':
+  im = im.convert('RGB')
+
+tr = ImageCms.buildTransformFromOpenProfiles(
+  ImageCms.createProfile('sRGB'),
+  ImageCms.createProfile('LAB'),
+  'RGB',
+  'LAB'
+)
+
+L, a, b = ImageCms.applyTransform(im, tr).split()
+L.save('L.png')
+a.save('a.png')
+b.save('b.png')
 ```
 
 <a id="markdown-画素値の置換" name="画素値の置換"></a>
