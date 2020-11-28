@@ -588,6 +588,17 @@
       - [セッション](#セッション)
       - [Cookie](#cookie)
       - [例外処理とレスポンスコード](#例外処理とレスポンスコード)
+    - [Selenium](#selenium)
+      - [Selenium の準備](#selenium-の準備)
+        - [パスを指定](#パスを指定)
+        - [Webdriver Manager for Python](#webdriver-manager-for-python)
+          - [Chrome](#chrome)
+          - [Chromium](#chromium)
+          - [Firefox](#firefox)
+        - [webdrivermanager](#webdrivermanager)
+          - [Chrome](#chrome-1)
+          - [Firefox](#firefox-1)
+      - [Web ページにアクセス](#web-ページにアクセス)
 - [クラス](#クラス)
   - [オブジェクトの文字列表現](#オブジェクトの文字列表現)
   - [オブジェクトの属性の参照と存在チェック](#オブジェクトの属性の参照と存在チェック)
@@ -15038,6 +15049,283 @@ try:
     r = requests.get(url)
 except requests.exceptions.RequestException as e:
     print('Error: {}'.format(e))
+```
+
+<a id="markdown-selenium" name="selenium"></a>
+
+### Selenium
+
+<a id="markdown-selenium-の準備" name="selenium-の準備"></a>
+
+#### Selenium の準備
+
+```sh
+$ pip install selenium
+```
+
+```py
+from selenium import webdriver
+
+
+driver = webdriver.Chrome()
+driver = webdriver.Firefox()
+```
+
+<a id="markdown-パスを指定" name="パスを指定"></a>
+
+##### パスを指定
+
+```py
+from selenium import webdriver
+
+
+# (A) ドライバーのパスを指定
+#  (A-a) Chrome
+#    # driver = webdriver.Chrome(executable_path='/path/to/chromedriver')
+#  (A-b) Firefox
+#    # driver = webdriver.Firefox(executable_path='/path/to/geckodriver')
+
+# (B) ブラウザのパスを指定
+#  (B-a) Chrome
+#    # from selenium.webdriver.chrome.options import Options
+#
+#    # options = Options()
+#    # options.binary_location = '/path/to/chrome'
+#    # # options.add_argument('--headless')
+#
+#    # driver = webdriver.Chrome(
+#    #     chrome_options=options,
+#    #     executable_path='/path/to/chromedriver'
+#    # )
+
+#  (B-b) Firefox
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+
+profile = webdriver.FirefoxProfile()
+profile.set_preference('browser.download.dir', os.getcwd())
+profile.update_preferences()
+
+opts = Options()
+opts.log.level = 'trace'
+# opts.headless = True
+
+fox_mac_path = '/Applications/Firefox.app/Contents/MacOS/firefox'
+gecko_mac_path = '/Users/yu/webdriver/gecko/v0.28.0/geckodriver-v0.28.0-macos/geckodriver'
+driver = webdriver.Firefox(
+    firefox_binary=FirefoxBinary(fox_mac_path),
+    firefox_profile=profile,
+    executable_path=gecko_mac_path,
+    options=opts
+)
+
+
+driver.get('https://www.google.co.jp/')
+```
+
+<a id="markdown-webdriver-manager-for-python" name="webdriver-manager-for-python"></a>
+
+##### Webdriver Manager for Python
+
+[Webdriver Manager for Python](https://github.com/SergeyPirogov/webdriver_manager)
+
+```sh
+$ pip install webdriver-manager
+```
+
+<a id="markdown-chrome" name="chrome"></a>
+
+###### Chrome
+
+```py
+import requests
+from selenium import webdriver
+from webdriver_manager.utils import chrome_version
+from webdriver_manager.chrome import ChromeDriverManager
+
+
+version = chrome_version()
+url = 'http://chromedriver.storage.googleapis.com/LATEST_RELEASE_' + version
+response = requests.get(url)
+driver = webdriver.Chrome(
+    executable_path=ChromeDriverManager(response.text).install()
+)
+```
+
+<a id="markdown-chromium" name="chromium"></a>
+
+###### Chromium
+
+```py
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.utils import ChromeType
+
+
+version = chrome_version(ChromeType.CHROMIUM)
+url = 'http://chromedriver.storage.googleapis.com/LATEST_RELEASE_' + version
+response = requests.get(url)
+driver = webdriver.Chrome(
+    executable_path=ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+)
+```
+
+<a id="markdown-firefox" name="firefox"></a>
+
+###### Firefox
+
+```py
+from selenium import webdriver
+from webdriver_manager.firefox import GeckoDriverManager
+
+
+driver = webdriver.Firefox(
+    executable_path=GeckoDriverManager().install()
+)
+```
+
+<a id="markdown-webdrivermanager" name="webdrivermanager"></a>
+
+##### webdrivermanager
+
+```sh
+$ pip install webdrivermanager
+```
+
+<a id="markdown-chrome-1" name="chrome-1"></a>
+
+###### Chrome
+
+```py
+from webdriverdownloader import  ChromeDriverDownloader
+
+
+gdd =  ChromeDriverDownloader()
+gdd.download_and_install('87.0.4280.20')
+```
+
+<a id="markdown-firefox-1" name="firefox-1"></a>
+
+###### Firefox
+
+```py
+from webdriverdownloader import GeckoDriverDownloader
+
+
+gdd = GeckoDriverDownloader()
+gdd.download_and_install('v0.28.0')
+```
+
+<a id="markdown-web-ページにアクセス" name="web-ページにアクセス"></a>
+
+#### Web ページにアクセス
+
+```py
+import datetime
+import os
+
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+
+def get_filepath():
+    now = datetime.datetime.now()
+    filename = 'screen_{0:%Y%m%d%H%M%S}.png'.format(now)
+    filepath = os.path.join(
+        '.', # os.path.dirname(os.path.abspath(__file__)),
+        filename
+    )
+    return filepath
+
+
+def submit(driver, name):
+    WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.NAME, name))).click()
+
+
+def clearAndSendKeys(driver, name, text):
+    driver.find_element_by_name(name).clear()
+    driver.find_element_by_name(name).send_keys(text)
+
+
+# (A) PATHの設定などを済ませている場合
+#  (A-a) Chrome
+#    # driver = webdriver.Chrome()
+# (A-b) Firefox
+#    # driver = webdriver.Firefox()
+
+# (B) webdriver-managerを使用する場合
+#  (B-a) Chrome
+#    # import requests
+#    # from webdriver_manager.utils import chrome_version
+#    # from webdriver_manager.chrome import ChromeDriverManager
+#    # version = chrome_version()
+#    # url = 'http://chromedriver.storage.googleapis.com/LATEST_RELEASE_' + version
+#    # response = requests.get(url)
+#    # driver = webdriver.Chrome(executable_path=ChromeDriverManager(response.text).install())
+# (B-b) Firefox
+from webdriver_manager.firefox import GeckoDriverManager
+driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+#
+
+
+driver = webdriver.Firefox()
+driver.set_window_size(1280, 720)
+
+driver.get('https://www.google.co.jp/')
+# ウィンドウサイズをページのサイズに合わせる
+# w = driver.execute_script('return document.body.scrollWidth')
+# h = driver.execute_script('return document.body.scrollHeight')
+# driver.set_window_size(int(w), int(h))
+
+WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.NAME, 'q')))
+driver.save_screenshot(get_filepath())
+
+clearAndSendKeys(driver, 'q', 'Selenium')
+submit(driver, 'btnK')
+driver.save_screenshot(get_filepath())
+
+
+# 要素を取得
+from selenium.webdriver.common.by import By
+
+
+# find_element
+driver.find_element(By.XPATH, '//*[contains(., "Google")]').text
+
+for elem in driver.find_elements(By.XPATH, '//input'):
+    elem.get_attribute('type')
+
+#
+for elem in driver.find_elements(By.XPATH, '//input[@type="submit"]'):
+    elem.get_attribute('type')
+
+# 要素の指定方法
+# By.ID
+driver.find_element_by_id('loginForm')
+
+# NAME
+driver.find_element_by_name('username')
+
+# XPATH
+driver.find_element_by_xpath("/html/body/form[1]")
+
+# LINK_TEXT
+driver.find_element_by_link_text('Continue')
+
+# PARTIAL_LINK_TEXT
+find_element_by_partial_link_text('Conti')
+
+# TAG_NAME
+driver.find_element_by_tag_name('h1')
+
+# CLASS_NAME
+driver.find_element_by_class_name('content')
+
+# CSS_SELECTOR
+driver.find_element_by_css_selector('p.content')
 ```
 
 <a id="markdown-クラス" name="クラス"></a>
