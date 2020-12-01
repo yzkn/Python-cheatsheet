@@ -139,10 +139,15 @@
         - [タイムゾーンを考慮した ISO 形式の 文字列型 から datetime 型](#タイムゾーンを考慮した-iso-形式の-文字列型-から-datetime-型)
         - [日付時刻の format 文字列に埋め込むディレクティブ](#日付時刻の-format-文字列に埋め込むディレクティブ)
     - [祝日判定](#祝日判定)
+    - [実行時間を計測](#実行時間を計測)
+      - [小数点以下がミリ秒](#小数点以下がミリ秒)
+      - [ナノ秒単位](#ナノ秒単位)
+      - [timeit](#timeit)
   - [str(文字列)](#str文字列)
     - [エスケープシーケンス](#エスケープシーケンス)
     - [RAW 文字列](#raw-文字列)
     - [ヒアドキュメント](#ヒアドキュメント)
+      - [文字列の連結](#文字列の連結)
     - [文字列のフォーマット](#文字列のフォーマット)
       - [ゼロ埋め](#ゼロ埋め)
       - [書式指定子](#書式指定子)
@@ -3401,6 +3406,70 @@ https://docs.python.org/ja/3/library/time.html#time.strftime
 
 [emasaka/jpholidayp](https://github.com/emasaka/jpholidayp)
 
+<a id="markdown-実行時間を計測" name="実行時間を計測"></a>
+
+### 実行時間を計測
+
+<a id="markdown-小数点以下がミリ秒" name="小数点以下がミリ秒"></a>
+
+#### 小数点以下がミリ秒
+
+```py
+import time # 計測
+import random, string # ランダム文字列生成
+
+
+started = time.perf_counter()
+
+print(
+    [random.choice(string.ascii_letters + string.digits) for i in range(10000)]
+)
+
+print(time.perf_counter() - started)
+```
+
+<a id="markdown-ナノ秒単位" name="ナノ秒単位"></a>
+
+#### ナノ秒単位
+
+```
+import time # 計測
+import random, string # ランダム文字列生成
+
+
+started = time.perf_counter_ns()
+
+print(
+    [random.choice(string.ascii_letters + string.digits) for i in range(10000)]
+)
+
+print(time.perf_counter_ns() - started)
+```
+
+<a id="markdown-timeit" name="timeit"></a>
+
+#### timeit
+
+```py
+import time # 計測
+import timeit # 計測
+import random, string # ランダム文字列生成
+
+
+def long_long_proc(n=10000):
+    print(
+        [random.choice(string.ascii_letters + string.digits) for i in range(n)]
+    )
+
+
+result = timeit.timeit(long_long_proc, number=1)
+print(result)
+
+
+result = timeit.repeat('long_long_proc(1000)', globals=globals(), number=10, repeat=3)
+print(result)
+```
+
 <a id="markdown-str文字列" name="str文字列"></a>
 
 ## str(文字列)
@@ -3427,8 +3496,6 @@ print('cq' 'cq' 'cq') # 文字列を演算子なしでつなげる
 > cqcqcq
 >
 > cqcqcq
-
----
 
 <a id="markdown-エスケープシーケンス" name="エスケープシーケンス"></a>
 
@@ -3499,6 +3566,30 @@ print(fuga)
 > abc def
 >
 > abcdefghi
+
+<a id="markdown-文字列の連結" name="文字列の連結"></a>
+
+#### 文字列の連結
+
+```py
+import random, string
+
+
+# 低速
+s = [random.choice(string.ascii_letters + string.digits) for i in range(10000)]
+result = ''
+for c in s:
+    result += c
+print(result)
+
+
+# 高速
+s = [random.choice(string.ascii_letters + string.digits) for i in range(10000)]
+result = []
+for c in s:
+    result.append(c)
+print(''.join(result))
+```
 
 <a id="markdown-文字列のフォーマット" name="文字列のフォーマット"></a>
 
