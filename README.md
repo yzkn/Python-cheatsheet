@@ -187,7 +187,11 @@
         - [前方一致](#前方一致)
         - [後方一致](#後方一致)
       - [正規表現による検索](#正規表現による検索)
+        - [メタ文字](#メタ文字)
+        - [フラグを利用](#フラグを利用)
         - [パターンのコンパイル](#パターンのコンパイル)
+          - [コンパイルしない場合](#コンパイルしない場合)
+          - [コンパイルする場合](#コンパイルする場合)
           - [パターンを文字列型変数からコンパイル](#パターンを文字列型変数からコンパイル)
         - [文字列の先頭でマッチ](#文字列の先頭でマッチ)
         - [文字列の途中でマッチ](#文字列の途中でマッチ)
@@ -197,12 +201,15 @@
         - [グループ化](#グループ化)
           - [グループ番号](#グループ番号)
           - [シンボリックグループ名](#シンボリックグループ名)
-        - [フラグを利用](#フラグを利用)
+        - [先読み・後読み](#先読み・後読み)
+          - [先読み](#先読み)
+          - [否定の先読み](#否定の先読み)
+          - [後読み](#後読み)
+          - [否定の後読み](#否定の後読み)
       - [文字種のフィルタリング](#文字種のフィルタリング)
         - [文字列全体が半角英数だけ含まれているか検査](#文字列全体が半角英数だけ含まれているか検査)
         - [半角カナなどが含まれていないか検査](#半角カナなどが含まれていないか検査)
         - [文字種別のパターン](#文字種別のパターン)
-      - [文字種のフィルタリング](#文字種のフィルタリング-1)
     - [置換](#置換)
       - [単純な置換](#単純な置換)
         - [改行文字を除去](#改行文字を除去)
@@ -231,7 +238,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -256,7 +262,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -676,7 +682,9 @@
         - [マスク画像を使用して貼り付け](#マスク画像を使用して貼り付け)
       - [画像に文字を合成](#画像に文字を合成)
         - [利用できるフォントの一覧を取得](#利用できるフォントの一覧を取得)
+        - [画像いっぱいに文字を描画](#画像いっぱいに文字を描画)
       - [画像に図形を描画](#画像に図形を描画)
+      - [アニメーション GIF の作成](#アニメーション-gif-の作成)
 - [並列処理](#並列処理)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
@@ -4916,9 +4924,141 @@ haystack.endswith('xyz')
 
 #### 正規表現による検索
 
+<a id="markdown-メタ文字" name="メタ文字"></a>
+
+##### メタ文字
+
+| 文字 | 内容（ `re.ASCII` を指定した場合） | 内容（Unicode (str) パターン）                                 |
+| ---- | ---------------------------------- | -------------------------------------------------------------- |
+| `\b` | 文字列の境界                       | 単語は `\w` からなる（英数字以外も含む）                       |
+| `\B` | `\b` 以外                          |                                                                |
+| `\d` | `[0-9]`                            | `[0-9]` とその他多数の数字                                     |
+| `\D` | `\d`                               |                                                                |
+| `\s` | `[ \t\n\r\f\v]`                    | Unicode 空白文字                                               |
+| `\S` | `\s` 以外                          |                                                                |
+| `\w` | `[a-zA-Z0-9_]`                     | 単語の一部になりうるほとんどの文字、数字、およびアンダースコア |
+| `\W` | `\w` 以外                          |                                                                |
+
+| 文字 | 内容             |
+| ---- | ---------------- |
+| `\0` | NULL 文字        |
+| `\A` | 文字列の先頭     |
+| `\f` | FF               |
+| `\l` | `[a-z]`          |
+| `\L` | `\l` 以外        |
+| `\n` | LF               |
+| `\r` | CR               |
+| `\t` | TAB              |
+| `\u` | `[A-Z]`          |
+| `\U` | `\u` 以外        |
+| `\v` | VTAB（垂直タブ） |
+| `\Z` | 文字列の末尾     |
+
+| 文字         | 内容                 |
+| ------------ | -------------------- |
+| `\N{name}`   | Unicode 文字（名前） |
+| `\uxxxx`     | （16bit）            |
+| `\Uxxxxxxxx` | （32bit）            |
+
+<a id="markdown-フラグを利用" name="フラグを利用"></a>
+
+##### フラグを利用
+
+[モジュールコンテンツ](https://docs.python.org/ja/3/library/re.html#contents-of-module-re)
+
+| フラグ                | 効果                                                                               |
+| --------------------- | ---------------------------------------------------------------------------------- |
+| re.ASCII<br>re.A      | `\w \W \b \B \d \D \s \S` に、 ASCII 限定マッチングを行わせる                      |
+| re.DOTALL<br>re.S     | '.' 特殊文字を、改行を含むあらゆる文字にマッチさせる                               |
+| re.IGNORECASE<br>re.I | 大文字・小文字を区別しない                                                         |
+| re.MULTILINE<br>re.M  | `^` を文字列の先頭と各改行の直後で、`$` を文字列の末尾と各改行の直前でマッチさせる |
+| re.VERBOSE<br>re.X    | 正規表現を見た目よく読みやすく書けるようにします                                   |
+
+```py
+haystack = 'a12345.67890b'
+patternA = re.compile(r'''\d +  # the integral part
+                   \.    # the decimal point
+                   \d *  # some fractional digits''', re.X)
+patternB = re.compile(r'\d+\.\d*')
+allfoundA = patternA.findall(haystack)
+allfoundB = patternB.findall(haystack)
+
+# 結果を取得
+if allfoundA:
+    print(allfoundA)
+
+if allfoundB:
+    print(allfoundB)
+```
+
+| 関数               | 値                |
+| ------------------ | ----------------- |
+| `print(allfoundA)` | `['12345.67890']` |
+| `print(allfoundB)` | `['12345.67890']` |
+
 <a id="markdown-パターンのコンパイル" name="パターンのコンパイル"></a>
 
 ##### パターンのコンパイル
+
+<a id="markdown-コンパイルしない場合" name="コンパイルしない場合"></a>
+
+###### コンパイルしない場合
+
+```py
+import re
+
+content = 'abc123def'
+
+pattern_match = r'\w+'
+pattern_search = r'\d+'
+pattern_findall = r'\w'
+
+# 文字列の先頭でマッチ
+result_match = re.match(pattern_match, content)
+if result_match:
+  print(result_match, result_match.span(), result_match.group())
+
+# 文字列の途中でマッチ
+result_search = re.search(pattern_search, content)
+if result_search:
+  print(result_search, result_search.span(), result_search.group())
+
+# 文字列の途中でマッチした全ての箇所のリスト
+result_findall = re.findall(pattern_findall, content)
+if result_findall:
+  for item in result_findall:
+    print(item)
+```
+
+> \# result_match
+>
+> <re.Match object; span=(0, 9), match='abc123def'>
+>
+> (0, 9)
+>
+> abc123def
+
+> \# result_search
+>
+> <re.Match object; span=(3, 6), match='123'>
+>
+> (3, 6)
+>
+> 123
+
+> \# result_findall
+>
+> a
+>
+> b
+>
+> ...
+>
+> f
+
+<a id="markdown-コンパイルする場合" name="コンパイルする場合"></a>
+
+###### コンパイルする場合
 
 ```py
 import re
@@ -5193,41 +5333,78 @@ print(matched.groupdict())
 |                                    |                                                |
 | `print(matched.groupdict())`       | `{'ONE': 'h', 'two': 'aysta', 'three3': 'ck'}` |
 
-<a id="markdown-フラグを利用" name="フラグを利用"></a>
+<a id="markdown-先読み・後読み" name="先読み・後読み"></a>
 
-##### フラグを利用
+##### 先読み・後読み
 
-[モジュールコンテンツ](https://docs.python.org/ja/3/library/re.html#contents-of-module-re)
+<a id="markdown-先読み" name="先読み"></a>
 
-| フラグ                | 効果                                                                                                                                                                            |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| re.ASCII<br>re.A      | \w 、\W 、\b 、\B 、\d 、\D 、\s 、および \S に、完全な Unicode マッチングではなく ASCII 限定マッチングを行わせます                                                             |
-| re.DOTALL<br>re.S     | '.' 特殊文字を、改行を含むあらゆる文字にマッチさせます                                                                                                                          |
-| re.IGNORECASE<br>re.I | 大文字・小文字を区別しないマッチングを行います                                                                                                                                  |
-| re.MULTILINE<br>re.M  | パターン文字 '^' は文字列の先頭で、および各行の先頭 (各改行の直後) で、マッチします。そしてパターン文字 '\$' は文字列の末尾で、および各行の末尾 (各改行の直前) で、マッチします |
-| re.VERBOSE<br>re.X    | 正規表現を、パターンの論理的な節を視覚的に分割し、コメントを加えることで、見た目よく読みやすく書けるようにします                                                                |
+###### 先読み
+
+`AAA(?=BB)` : AAA に BB が続く場合、 AAA にマッチ
 
 ```py
-haystack = 'a12345.67890b'
-patternA = re.compile(r'''\d +  # the integral part
-                   \.    # the decimal point
-                   \d *  # some fractional digits''', re.X)
-patternB = re.compile(r'\d+\.\d*')
-allfoundA = patternA.findall(haystack)
-allfoundB = patternB.findall(haystack)
+import re
 
-# 結果を取得
-if allfoundA:
-    print(allfoundA)
-
-if allfoundB:
-    print(allfoundB)
+# パターンに正規表現を使える
+m = re.search(r'Windows(?=\s?10)', 'Windows 10')
+m.group(0)
 ```
 
-| 関数               | 値                |
-| ------------------ | ----------------- |
-| `print(allfoundA)` | `['12345.67890']` |
-| `print(allfoundB)` | `['12345.67890']` |
+> 'Windows'
+
+<a id="markdown-否定の先読み" name="否定の先読み"></a>
+
+###### 否定の先読み
+
+`AAA(?!BB)` : AAA に BB が続かない場合、 AAA にマッチ
+
+```py
+import re
+
+# パターンに正規表現を使える
+m = re.search(r'Windows(?!\s?10)', 'Windows XP')
+m.group(0)
+```
+
+> 'Windows'
+
+<a id="markdown-後読み" name="後読み"></a>
+
+###### 後読み
+
+`(?<=AA)BBB` : AA に BBB が続く場合、 BBB にマッチ
+
+```py
+import re
+
+# パターンに正規表現を使えない
+# m = re.search('(?<=Windows\s?)10', 'Windows 10')
+# m.group(0)
+m = re.search('(?<=Windows )10', 'Windows 10')
+m.group(0)
+```
+
+> 10
+
+<a id="markdown-否定の後読み" name="否定の後読み"></a>
+
+###### 否定の後読み
+
+`(?<!AA)BBB` : AA に BBB が続かない場合、 BBB にマッチ
+
+```py
+import re
+
+# パターンに正規表現を使えない
+# m = re.search('(?<!Windows\s?)10', 'Linux Mint 10')
+# m.group(0)
+m = re.search('(?<!Windows )10', 'Linux Mint 10')
+m.group(0)
+
+```
+
+> 10
 
 <a id="markdown-文字種のフィルタリング" name="文字種のフィルタリング"></a>
 
@@ -5297,10 +5474,6 @@ validate('abcdefgｱｲｳ')
 | 半角カタカナ        | `'[\uFF66-\uFF9F]+'`                                        |                |
 | 漢字 (CJK 統合漢字) | `'[\u4E00-\u9FFF]+'`                                        |
 | ハングル            | `'[가-힣]+'`                                                |                |
-
-<a id="markdown-文字種のフィルタリング-1" name="文字種のフィルタリング-1"></a>
-
-#### 文字種のフィルタリング
 
 <a id="markdown-置換" name="置換"></a>
 
@@ -5574,12 +5747,13 @@ if lst == []:
 
 #### 空のリストを生成
 
-| 関数                | 値                                                             |
-| ------------------- | -------------------------------------------------------------- |
-| `lst = []`          | `[]`                                                           |
-| `lst = [None] * 10` | `[None, None, None, None, None, None, None, None, None, None]` |
-| `lst = [0] * 10`    | `[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]`                               |
-| `lst.clear()`       | `[] # 初期化(すべての要素を削除)`                              |
+| 関数                               | 値                                                             |
+| ---------------------------------- | -------------------------------------------------------------- |
+| `lst = []`                         | `[]`                                                           |
+| `lst = [None] * 10`                | `[None, None, None, None, None, None, None, None, None, None]` |
+| `lst = [0] * 10`                   | `[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]`                               |
+| `lst.clear()`                      | `[] # 初期化(すべての要素を削除)`                              |
+| `lst = [[0] * 3 for _ in [0] * 4]` | `[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]`                 |
 
 <a id="markdown-初期値を指定して生成" name="初期値を指定して生成"></a>
 
@@ -5823,8 +5997,6 @@ print(lst[len(lst) - 1])
 > foo
 >
 > hoge
-
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
 
 ```py
 lst = ['foo', 'bar', 'hoge']
@@ -6442,7 +6614,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -6830,6 +7002,15 @@ print(l)
 <a id="markdown-多次元リスト-1" name="多次元リスト-1"></a>
 
 #### 多次元リスト
+
+```py
+# 多次元リストの初期化
+m = 3
+n = 4
+[[0] * m for _ in [0] * n]
+```
+
+> [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
 ```py
 [[i, j, i * j] for i in range(10) for j in range(10)]
@@ -9209,8 +9390,10 @@ VN1 VN2 … VNM
 N = int(input().split())
 
 # 残りはforループ
-inputed = [input().split() for i in range(N)]
-# inputed = [list(map(int,input().split())) for i in range(N)]
+inputed = [input().split() for i in [0] * N]
+# inputed = [stdin.readline()[:-1] for _ in [0] * N] # 改行文字を除去
+
+# inputed = [list(map(int,input().split())) for i in [0] * N]
 ```
 
 ```py
@@ -16038,7 +16221,7 @@ $ pip install Pillow
 from PIL import Image
 
 im = Image.new(
-    "RGB", # カラーモード
+    'RGB', # カラーモード
     (256, 256), # 大きさ
     (255, 128, 0) # 塗りつぶし色
 )
@@ -16877,7 +17060,7 @@ mask = ImageChops.logical_and(
     ImageChops.logical_and(_r, _g),
     _b
 )
-im.paste(Image.new("RGB", im.size, dst_color), mask=mask)
+im.paste(Image.new('RGB', im.size, dst_color), mask=mask)
 
 im.show()
 ```
@@ -17055,6 +17238,42 @@ matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext='ttc')
 
 > ['/System/Library/Fonts/Apple Braille Pinpoint 8 Dot.ttf', '/System/Library/Fonts/Supplemental/NotoSansCypriot-Regular.ttf', '/System/Library/Fonts/Thonburi.ttc', '/System/Library/Fonts/Supplemental/Telugu Sangam MN.ttc', '/System/Library/Fonts/Supplemental/Brush Script.ttf', '/System/Library/Fonts/Supplemental/NotoSansLycian-Regular.ttf', '/System/Library/Fonts/Supplemental/SuperClarendon.ttc', '/System/Library/Fonts/Supplemental/Seravek.ttc', '/System/Library/Fonts/Supplemental/Damascus.ttc', '/Library/Fonts/Arial Unicode.ttf', '/System/Library/Fonts/Supplemental/Charter.ttc', '/usr/X11/lib/X11/fonts/TTF/VeraBI.ttf', '/System/Library/Fonts/Supplemental/SignPainter.ttc', '/usr/X11/lib/X11/fonts/TTF/luximri.ttf', '/System/Library/Fonts/Supplemental/NotoSansSyriac-Regular.ttf', '/System/Library/Fonts/Supplemental/STIXSizThreeSymReg.otf', '/System/Library/Fonts/Supplemental/Times New Roman.ttf', '/System/Library/Fonts/Supplemental/Phosphate.ttc', '/System/Library/Fonts/SFCompactRounded.ttf', '/System/Library/Fonts/Supplemental/EuphemiaCAS.ttc', '/Users/yu/Library/Fonts/SourceHanCodeJP-ExtraLight.otf', '/System/Library/Fonts/SFNSTextCondensed-Semibold.otf', '/System/Library/Fonts/Supplemental/NotoSansShavian-Regular.ttf', '/System/Library/Fonts/KohinoorBangla.ttc', '/System/Library/Fonts/Supplemental/NotoSansOlChiki-Regular.ttf', '/System/Library/Fonts/Supplemental/NISC18030.ttf', '/System/Library/Fonts/SFNS.ttf', '/System/Library/Fonts/SFNSTextCondensed-Regular.otf', '/usr/X11/lib/X11/fonts/TTF/luxisri.ttf', '/System/Library/Fonts/Times.ttc', '/System/Library/Fonts/Supplemental/Bodoni 72 OS.ttc', '/Users/yu/Library/Fonts/SourceHanCodeJP-Bold.otf', '/usr/X11/lib/X11/fonts/TTF/luxisbi.ttf', '/System/Library/Fonts/Supplemental/Savoye LET.ttc', '/usr/X11R6/lib/X11/fonts/TTF/VeraMoBd.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMUrhoy.otf', '/System/Library/Fonts/Supplemental/Didot.ttc', '/System/Library/Fonts/Supplemental/DIN Alternate Bold.ttf', '/System/Library/Fonts/Supplemental/DecoTypeNaskh.ttc', '/System/Library/Fonts/Supplemental/Myanmar MN.ttc', '/usr/X11/lib/X11/fonts/TTF/VeraMoBI.ttf', '/System/Library/Fonts/Supplemental/STIXSizTwoSymBol.otf', '/usr/X11R6/lib/X11/fonts/TTF/VeraBI.ttf', '/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf', '/usr/X11/lib/X11/fonts/TTF/luxirb.ttf', '/System/Library/Fonts/Avenir.ttc', '/usr/X11/lib/X11/fonts/TTF/luxisb.ttf', '/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc', '/System/Library/Fonts/Supplemental/Verdana Bold.ttf', '/Users/yu/Library/Fonts/SourceHanCodeJP-Normal.otf', '/System/Library/Fonts/Supplemental/Khmer Sangam MN.ttf', '/System/Library/Fonts/NotoNastaliq.ttc', '/System/Library/Fonts/Supplemental/STIXSizThreeSymBol.otf', '/System/Library/Fonts/Supplemental/NotoSansRejang-Regular.ttf', '/System/Library/Fonts/Supplemental/Courier New Italic.ttf', '/System/Library/Fonts/Supplemental/NotoSansNewTaiLue-Regular.ttf', '/System/Library/Fonts/Symbol.ttf', '/System/Library/Fonts/ZapfDingbats.ttf', '/Users/yu/Library/Fonts/SourceHanCodeJP-HeavyIt.otf', '/System/Library/Fonts/Supplemental/DevanagariMT.ttc', '/System/Library/Fonts/STHeiti Light.ttc', '/System/Library/Fonts/Supplemental/AmericanTypewriter.ttc', '/System/Library/Fonts/Supplemental/STIXVarBol.otf', '/System/Library/Fonts/Supplemental/Krungthep.ttf', '/System/Library/Fonts/Supplemental/NotoSansOldSouthArabian-Regular.ttf', '/System/Library/Fonts/Supplemental/Trebuchet MS.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMNisibinOutline.otf', '/Users/yu/Library/Fonts/SourceHanCodeJP-RegularIt.otf', '/System/Library/Fonts/Supplemental/Baghdad.ttc', '/System/Library/Fonts/Supplemental/Tahoma.ttf', '/System/Library/Fonts/NotoSansKannada.ttc', '/usr/X11/lib/X11/fonts/OTF/SyrCOMTalada.otf', '/System/Library/Fonts/Supplemental/NotoSansChakma-Regular.ttf', '/usr/X11R6/lib/X11/fonts/TTF/VeraSeBd.ttf', '/usr/X11R6/lib/X11/fonts/TTF/luxirr.ttf', '/System/Library/Fonts/Supplemental/SukhumvitSet.ttc', '/System/Library/Fonts/Supplemental/Shree714.ttc', '/System/Library/Fonts/Supplemental/Microsoft Sans Serif.ttf', '/usr/X11/lib/X11/fonts/TTF/VeraMono.ttf', '/System/Library/Fonts/Supplemental/Comic Sans MS Bold.ttf', '/System/Library/Fonts/ヒラギノ角ゴシック W1.ttc', '/System/Library/Fonts/Apple Braille Pinpoint 6 Dot.ttf', '/System/Library/Fonts/Supplemental/DIN Condensed Bold.ttf', '/System/Library/Fonts/Supplemental/Trebuchet MS Bold.ttf', '/System/Library/Fonts/ヒラギノ角ゴシック W8.ttc', '/System/Library/Fonts/ヒラギノ角ゴシック W0.ttc', '/System/Library/Fonts/SFNSDisplayCondensed-Bold.otf', '/usr/X11/lib/X11/fonts/TTF/Vera.ttf', '/System/Library/Fonts/Supplemental/Webdings.ttf', '/System/Library/Fonts/Supplemental/NotoSerifBalinese-Regular.ttf', '/usr/X11/lib/X11/fonts/TTF/VeraSe.ttf', '/System/Library/Fonts/Supplemental/NotoSansBuginese-Regular.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMMardinBold.otf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMMalankara.otf', '/System/Library/Fonts/Supplemental/NotoSansBrahmi-Regular.ttf', '/System/Library/Fonts/Supplemental/Verdana Bold Italic.ttf', '/System/Library/Fonts/Supplemental/Arial Bold Italic.ttf', '/System/Library/Fonts/Supplemental/NotoSansLepcha-Regular.ttf', '/System/Library/Fonts/SFNSTextCondensed-Heavy.otf', '/System/Library/Fonts/NewYorkItalic.ttf', '/System/Library/Fonts/Supplemental/Papyrus.ttc', '/System/Library/Fonts/Supplemental/Zapfino.ttf', '/System/Library/Fonts/Supplemental/Gurmukhi.ttf', '/System/Library/Fonts/Supplemental/NotoSansGlagolitic-Regular.ttf', '/System/Library/Fonts/Supplemental/Georgia Bold Italic.ttf', '/System/Library/Fonts/Supplemental/Verdana Italic.ttf', '/System/Library/Fonts/Supplemental/STIXSizFourSymBol.otf', '/System/Library/Fonts/Supplemental/STIXSizOneSymBol.otf', '/System/Library/Fonts/Supplemental/Nadeem.ttc', '/System/Library/Fonts/Supplemental/Arial Bold.ttf', '/System/Library/Fonts/Supplemental/Georgia Bold.ttf', '/Users/yu/Library/Fonts/SourceHanCodeJP-Regular.otf', '/System/Library/Fonts/Supplemental/NotoSansOldPersian-Regular.ttf', '/System/Library/Fonts/Supplemental/Trebuchet MS Bold Italic.ttf', '/System/Library/Fonts/Supplemental/NotoSansInscriptionalParthian-Regular.ttf', '/System/Library/Fonts/Supplemental/Telugu MN.ttc', '/System/Library/Fonts/Supplemental/STIXIntUpReg.otf', '/System/Library/Fonts/Supplemental/PlantagenetCherokee.ttf', '/Users/yu/Library/Fonts/SourceHanCodeJP-MediumIt.otf', '/System/Library/Fonts/Supplemental/STIXIntSmReg.otf', '/System/Library/Fonts/Supplemental/KufiStandardGK.ttc', '/System/Library/Fonts/Supplemental/Verdana.ttf', '/System/Library/Fonts/Keyboard.ttf', '/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc', '/System/Library/Fonts/Supplemental/Arial.ttf', '/System/Library/Fonts/SFNSMonoItalic.ttf', '/System/Library/Fonts/Supplemental/STIXSizFiveSymReg.otf', '/System/Library/Fonts/Apple Color Emoji.ttc', '/System/Library/Fonts/Supplemental/Lao MN.ttc', '/System/Library/Fonts/Supplemental/NotoSansCham-Regular.ttf', '/System/Library/Fonts/Supplemental/NotoSansOgham-Regular.ttf', '/System/Library/Fonts/ヒラギノ角ゴシック W2.ttc', '/System/Library/Fonts/Supplemental/NotoSansCuneiform-Regular.ttf', '/System/Library/Fonts/Supplemental/NotoSansPhagsPa-Regular.ttf', '/System/Library/Fonts/Supplemental/Beirut.ttc', '/Users/yu/Library/Fonts/SourceHanCodeJP-Heavy.otf', '/System/Library/Fonts/Supplemental/STIXNonUniBolIta.otf', '/System/Library/Fonts/Supplemental/Gurmukhi Sangam MN.ttc', '/System/Library/Fonts/Supplemental/NotoSansVai-Regular.ttf', '/System/Library/Fonts/Supplemental/Copperplate.ttc', '/usr/X11/lib/X11/fonts/TTF/luximb.ttf', '/System/Library/Fonts/Supplemental/Oriya Sangam MN.ttc', '/System/Library/Fonts/SFNSDisplayCondensed-Ultralight.otf', '/System/Library/Fonts/Supplemental/NotoSansSamaritan-Regular.ttf', '/System/Library/Fonts/Supplemental/NotoSansTaiViet-Regular.ttf', '/System/Library/Fonts/SFNSTextCondensed-Medium.otf', '/System/Library/Fonts/Supplemental/Bangla MN.ttc', '/System/Library/Fonts/Supplemental/ChalkboardSE.ttc', '/usr/X11/lib/X11/fonts/OTF/GohaTibebZemen.otf', '/System/Library/Fonts/NotoSansMyanmar.ttc', '/System/Library/Fonts/MarkerFelt.ttc', '/System/Library/Fonts/Supplemental/STIXGeneralBolIta.otf', '/System/Library/Fonts/ヒラギノ角ゴシック W5.ttc', '/usr/X11R6/lib/X11/fonts/TTF/luximb.ttf', '/usr/X11R6/lib/X11/fonts/TTF/luximri.ttf', '/System/Library/Fonts/Supplemental/NotoSansNKo-Regular.ttf', '/Users/yu/Library/Fonts/SourceHanCodeJP-Light.otf', '/usr/X11/lib/X11/fonts/TTF/VeraIt.ttf', '/System/Library/Fonts/Supplemental/Luminari.ttf', '/System/Library/Fonts/HelveticaNeueDeskInterface.ttc', '/System/Library/Fonts/Supplemental/NotoSansOsmanya-Regular.ttf', '/System/Library/Fonts/Noteworthy.ttc', '/Users/yu/Library/Fonts/MyricaM.TTC', '/System/Library/Fonts/Supplemental/Wingdings 3.ttf', '/System/Library/Fonts/Supplemental/AppleMyungjo.ttf', '/System/Library/Fonts/Avenir Next.ttc', '/usr/X11/lib/X11/fonts/OTF/SyrCOMNisibin.otf', '/System/Library/Fonts/Supplemental/Chalkduster.ttf', '/usr/X11R6/lib/X11/fonts/TTF/VeraIt.ttf', '/System/Library/Fonts/Supplemental/Kokonor.ttf', '/System/Library/Fonts/Supplemental/NotoSansRunic-Regular.ttf', '/System/Library/Fonts/Helvetica.ttc', '/System/Library/Fonts/Supplemental/NotoSansOldTurkic-Regular.ttf', '/System/Library/Fonts/Supplemental/Galvji.ttc', '/System/Library/Fonts/Supplemental/Hoefler Text.ttc', '/System/Library/Fonts/Supplemental/Trattatello.ttf', '/System/Library/Fonts/Supplemental/NotoSansTifinagh-Regular.ttf', '/System/Library/Fonts/Supplemental/Kefa.ttc', '/System/Library/Fonts/Supplemental/Mishafi.ttf', '/System/Library/Fonts/Supplemental/Sinhala MN.ttc', '/System/Library/Fonts/Supplemental/NotoSansJavanese-Regular.otf', '/usr/X11R6/lib/X11/fonts/TTF/luximr.ttf', '/System/Library/Fonts/ヒラギノ角ゴシック W9.ttc', '/System/Library/Fonts/Supplemental/Tahoma Bold.ttf', '/System/Library/Fonts/Supplemental/STIXGeneralItalic.otf', '/System/Library/Fonts/SFNSMono.ttf', '/System/Library/Fonts/Apple Braille Outline 6 Dot.ttf', '/System/Library/Fonts/Supplemental/Courier New.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMJerusalemItalic.otf', '/System/Library/Fonts/Supplemental/NotoSansInscriptionalPahlavi-Regular.ttf', '/System/Library/Fonts/Supplemental/Courier New Bold.ttf', '/System/Library/Fonts/NewYork.ttf', '/System/Library/Fonts/Supplemental/NewPeninimMT.ttc', '/Users/yu/Library/Fonts/SourceHanCodeJP-Medium.otf', '/System/Library/Fonts/Supplemental/Arial Italic.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMJerusalemOutline.otf', '/System/Library/Fonts/Supplemental/Skia.ttf', '/System/Library/Fonts/Supplemental/Al Tarikh.ttc', '/System/Library/Fonts/Supplemental/NotoSansTaiTham-Regular.ttf', '/System/Library/Fonts/SFCompactTextItalic.ttf', '/System/Library/Fonts/Supplemental/Hoefler Text Ornaments.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMUrhoyBold.otf', '/System/Library/Fonts/Supplemental/Waseem.ttc', '/System/Library/Fonts/Supplemental/Oriya MN.ttc', '/System/Library/Fonts/Supplemental/Diwan Thuluth.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMTurAbdin.otf', '/System/Library/Fonts/Supplemental/SnellRoundhand.ttc', '/System/Library/Fonts/Supplemental/Kailasa.ttc', '/System/Library/Fonts/Supplemental/Khmer MN.ttc', '/System/Library/Fonts/Supplemental/NotoSansTagalog-Regular.ttf', '/System/Library/Fonts/Supplemental/NotoSansCoptic-Regular.ttf', '/usr/X11R6/lib/X11/fonts/TTF/Vera.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMCtesiphon.otf', '/System/Library/Fonts/Avenir Next Condensed.ttc', '/System/Library/Fonts/ArabicUIText.ttc', '/System/Library/Fonts/Supplemental/NotoSansGothic-Regular.ttf', '/System/Library/Fonts/Supplemental/STIXGeneral.otf', '/System/Library/Fonts/KohinoorGujarati.ttc', '/System/Library/Fonts/Supplemental/Apple Chancery.ttf', '/System/Library/Fonts/Supplemental/Georgia.ttf', '/System/Library/Fonts/Supplemental/Tamil Sangam MN.ttc', '/System/Library/Fonts/Supplemental/Malayalam MN.ttc', '/usr/X11/lib/X11/fonts/OTF/SyrCOMMidyat.otf', '/System/Library/Fonts/Hiragino Sans GB.ttc', '/System/Library/Fonts/Supplemental/NotoSansKaithi-Regular.ttf', '/System/Library/Fonts/Supplemental/Arial Narrow Italic.ttf', '/System/Library/Fonts/Apple Braille Outline 8 Dot.ttf', '/System/Library/Fonts/Supplemental/Arial Rounded Bold.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMQenNeshrin.otf', '/usr/X11R6/lib/X11/fonts/TTF/luxisbi.ttf', '/System/Library/Fonts/Supplemental/Marion.ttc', '/System/Library/Fonts/Supplemental/Georgia Italic.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMMardin.otf', '/System/Library/Fonts/ヒラギノ角ゴシック W4.ttc', '/System/Library/Fonts/ArialHB.ttc', '/System/Library/Fonts/Supplemental/Sana.ttc', '/System/Library/Fonts/Supplemental/Baskerville.ttc', '/System/Library/Fonts/Supplemental/Al Nile.ttc', '/System/Library/Fonts/Supplemental/Rockwell.ttc', '/System/Library/Fonts/Supplemental/STIXIntUpSmBol.otf', '/System/Library/Fonts/Supplemental/GujaratiMT.ttc', '/System/Library/Fonts/Supplemental/Trebuchet MS Italic.ttf', '/System/Library/Fonts/Supplemental/NotoSansCarian-Regular.ttf', '/System/Library/Fonts/AquaKana.ttc', '/System/Library/Fonts/Supplemental/Gurmukhi MN.ttc', '/System/Library/Fonts/Supplemental/Arial Narrow Bold Italic.ttf', '/System/Library/Fonts/Supplemental/Gujarati Sangam MN.ttc', '/System/Library/Fonts/Supplemental/STIXIntSmBol.otf', '/System/Library/Fonts/Supplemental/NotoSansMeeteiMayek-Regular.ttf', '/usr/X11R6/lib/X11/fonts/TTF/VeraSe.ttf', '/System/Library/Fonts/Supplemental/Herculanum.ttf', '/System/Library/Fonts/Supplemental/NotoSansMandaic-Regular.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMJerusalemBold.otf', '/System/Library/Fonts/SFNSTextCondensed-Bold.otf', '/System/Library/Fonts/Supplemental/Silom.ttf', '/System/Library/Fonts/Apple Braille.ttf', '/System/Library/Fonts/SFNSDisplayCondensed-Regular.otf', '/System/Library/Fonts/Supplemental/Raanana.ttc', '/System/Library/Fonts/ヒラギノ角ゴシック W7.ttc', '/System/Library/Fonts/SFNSDisplayCondensed-Semibold.otf', '/System/Library/Fonts/Supplemental/NotoSansLimbu-Regular.ttf', '/System/Library/Fonts/Supplemental/PTSerifCaption.ttc', '/System/Library/Fonts/Supplemental/STIXIntUpSmReg.otf', '/System/Library/Fonts/Supplemental/STIXIntDBol.otf', '/System/Library/Fonts/Supplemental/Myanmar Sangam MN.ttc', '/Users/yu/Library/Fonts/SourceHanCodeJP-NormalIt.otf', '/System/Library/Fonts/Supplemental/Courier New Bold Italic.ttf', '/System/Library/Fonts/LucidaGrande.ttc', '/System/Library/Fonts/Supplemental/Lao Sangam MN.ttf', '/System/Library/Fonts/Supplemental/Sathu.ttf', '/usr/X11R6/lib/X11/fonts/TTF/luxirbi.ttf', '/System/Library/Fonts/NotoSansArmenian.ttc', '/System/Library/Fonts/Supplemental/Corsiva.ttc', '/System/Library/Fonts/Supplemental/NotoSansKayahLi-Regular.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMBatnanBold.otf', '/System/Library/Fonts/Supplemental/Kannada Sangam MN.ttc', '/usr/X11/lib/X11/fonts/OTF/SyrCOMAdiabene.otf', '/System/Library/Fonts/HelveticaNeue.ttc', '/usr/X11R6/lib/X11/fonts/TTF/VeraMoIt.ttf', '/usr/X11R6/lib/X11/fonts/TTF/luxisb.ttf', '/System/Library/Fonts/Supplemental/AppleGothic.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMAntioch.otf', '/System/Library/Fonts/Supplemental/STIXGeneralBol.otf', '/System/Library/Fonts/Supplemental/Ayuthaya.ttf', '/usr/X11/lib/X11/fonts/TTF/GohaTibebZemen.ttf', '/usr/X11/lib/X11/fonts/TTF/VeraMoBd.ttf', '/usr/X11R6/lib/X11/fonts/TTF/luxirb.ttf', '/System/Library/Fonts/SFNSDisplayCondensed-Medium.otf', '/System/Library/Fonts/Supplemental/Bodoni 72 Smallcaps Book.ttf', '/System/Library/Fonts/Supplemental/NotoSansLinearB-Regular.ttf', '/System/Library/Fonts/Supplemental/STIXIntUpDBol.otf', '/usr/X11R6/lib/X11/fonts/TTF/VeraMono.ttf', '/System/Library/Fonts/Supplemental/Arial Unicode.ttf', '/usr/X11/lib/X11/fonts/TTF/VeraBd.ttf', '/System/Library/Fonts/Supplemental/PTMono.ttc', '/System/Library/Fonts/Supplemental/STIXVar.otf', '/System/Library/Fonts/Supplemental/Devanagari Sangam MN.ttc', '/System/Library/Fonts/Supplemental/STIXIntDReg.otf', '/Users/yu/Library/Fonts/SourceHanCodeJP-BoldIt.otf', '/System/Library/Fonts/Supplemental/NotoSansAvestan-Regular.ttf', '/System/Library/Fonts/SFNSDisplayCondensed-Thin.otf', '/System/Library/Fonts/Supplemental/Sinhala Sangam MN.ttc', '/System/Library/Fonts/Supplemental/NotoSansYi-Regular.ttf', '/System/Library/Fonts/Supplemental/Impact.ttf', '/System/Library/Fonts/Supplemental/Futura.ttc', '/System/Library/Fonts/Supplemental/NotoSansBatak-Regular.ttf', '/System/Library/Fonts/Supplemental/STIXNonUni.otf', '/System/Library/Fonts/Supplemental/Arial Black.ttf', '/System/Library/Fonts/Supplemental/Mishafi Gold.ttf', '/System/Library/Fonts/Supplemental/Andale Mono.ttf', '/usr/X11/lib/X11/fonts/TTF/luxirri.ttf', '/System/Library/Fonts/Supplemental/PTSans.ttc', '/System/Library/Fonts/Supplemental/STIXNonUniIta.otf', '/System/Library/Fonts/Supplemental/Comic Sans MS.ttf', '/System/Library/Fonts/Menlo.ttc', '/usr/X11/lib/X11/fonts/TTF/luxirr.ttf', '/System/Library/Fonts/Supplemental/STIXSizOneSymReg.otf', '/System/Library/Fonts/Supplemental/NotoSansHanunoo-Regular.ttf', '/System/Library/Fonts/Supplemental/Bradley Hand Bold.ttf', '/System/Library/Fonts/SFNSDisplayCondensed-Light.otf', '/usr/X11/lib/X11/fonts/TTF/VeraMoIt.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMKharput.otf', '/System/Library/Fonts/SFCompactText.ttf', '/System/Library/Fonts/Supplemental/Farah.ttc', '/System/Library/Fonts/Supplemental/Kannada MN.ttc', '/System/Library/Fonts/Supplemental/NotoSansSaurashtra-Regular.ttf', '/usr/X11R6/lib/X11/fonts/TTF/VeraMoBI.ttf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMJerusalem.otf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMEdessa.otf', '/System/Library/Fonts/Supplemental/Bangla Sangam MN.ttc', '/Users/yu/Library/Fonts/Myrica.TTC', '/System/Library/Fonts/Supplemental/NotoSansSundanese-Regular.ttf', '/System/Library/Fonts/Supplemental/NotoSansMongolian-Regular.ttf', '/System/Library/Fonts/Supplemental/STIXSizFourSymReg.otf', '/usr/X11/lib/X11/fonts/OTF/SyrCOMBatnan.otf', '/System/Library/Fonts/Supplemental/NotoSansPhoenician-Regular.ttf', '/System/Library/Fonts/Supplemental/NotoSansOldItalic-Regular.ttf', '/System/Library/Fonts/Supplemental/Mshtakan.ttc', '/System/Library/Fonts/Supplemental/Cochin.ttc', '/System/Library/Fonts/Supplemental/Farisi.ttf', '/System/Library/Fonts/Supplemental/NotoSansLisu-Regular.ttf', '/System/Library/Fonts/SFNSDisplayCondensed-Black.otf', '/System/Library/Fonts/AppleSDGothicNeo.ttc', '/System/Library/Fonts/Kohinoor.ttc', '/usr/X11/lib/X11/fonts/TTF/luximr.ttf', '/Users/yu/Library/Fonts/SourceHanCodeJP-ExtraLightIt.otf', '/usr/X11R6/lib/X11/fonts/TTF/GohaTibebZemen.ttf', '/System/Library/Fonts/Supplemental/Bodoni Ornaments.ttf', '/System/Library/Fonts/SFNSDisplayCondensed-Heavy.otf', '/usr/X11R6/lib/X11/fonts/TTF/luxisr.ttf', '/usr/X11/lib/X11/fonts/TTF/luximbi.ttf', '/System/Library/Fonts/Supplemental/NotoSansLydian-Regular.ttf', '/System/Library/Fonts/Supplemental/Tamil MN.ttc', '/System/Library/Fonts/Supplemental/NotoSansBuhid-Regular.ttf', '/System/Library/Fonts/Supplemental/ITFDevanagari.ttc', '/System/Library/Fonts/Optima.ttc', '/System/Library/Fonts/Supplemental/GillSans.ttc', '/System/Library/Fonts/STHeiti Medium.ttc', '/System/Library/Fonts/Supplemental/Chalkboard.ttc', '/System/Library/Fonts/Supplemental/Bodoni 72.ttc', '/usr/X11/lib/X11/fonts/TTF/luxisr.ttf', '/System/Library/Fonts/Supplemental/PTSerif.ttc', '/System/Library/Fonts/Palatino.ttc', '/System/Library/Fonts/Supplemental/STIXIntUpBol.otf', '/usr/X11R6/lib/X11/fonts/TTF/luximbi.ttf', '/System/Library/Fonts/SFNSItalic.ttf', '/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf', '/System/Library/Fonts/Supplemental/NotoSansTagbanwa-Regular.ttf', '/System/Library/Fonts/Supplemental/Wingdings.ttf', '/System/Library/Fonts/ヒラギノ明朝 ProN.ttc', '/System/Library/Fonts/SFCompactDisplay.ttf', '/System/Library/Fonts/GeezaPro.ttc', '/System/Library/Fonts/Supplemental/InaiMathi-MN.ttc', '/System/Library/Fonts/Apple Symbols.ttf', '/usr/X11R6/lib/X11/fonts/TTF/luxisri.ttf', '/System/Library/Fonts/SFNSTextCondensed-Light.otf', '/usr/X11/lib/X11/fonts/TTF/VeraSeBd.ttf', '/System/Library/Fonts/PingFang.ttc', '/System/Library/Fonts/Supplemental/NotoSansTaiLe-Regular.ttf', '/usr/X11R6/lib/X11/fonts/TTF/luxirri.ttf', '/System/Library/Fonts/KohinoorTelugu.ttc', '/System/Library/Fonts/Supplemental/STIXIntUpDReg.otf', '/System/Library/Fonts/ArabicUIDisplay.ttc', '/System/Library/Fonts/NotoSansOriya.ttc', '/System/Library/Fonts/Supplemental/Wingdings 2.ttf', '/System/Library/Fonts/Supplemental/STIXNonUniBol.otf', '/System/Library/Fonts/NotoSerifMyanmar.ttc', '/System/Library/Fonts/Supplemental/NotoSansImperialAramaic-Regular.ttf', '/System/Library/Fonts/Supplemental/Arial Narrow.ttf', '/System/Library/Fonts/Supplemental/NotoSansKharoshthi-Regular.ttf', '/System/Library/Fonts/Supplemental/Malayalam Sangam MN.ttc', '/System/Library/Fonts/ヒラギノ丸ゴ ProN W4.ttc', '/System/Library/Fonts/Supplemental/Muna.ttc', '/System/Library/Fonts/MuktaMahee.ttc', '/System/Library/Fonts/Supplemental/Arial Narrow Bold.ttf', '/System/Library/Fonts/Supplemental/STIXSizTwoSymReg.otf', '/System/Library/Fonts/Supplemental/NotoSansSylotiNagri-Regular.ttf', '/System/Library/Fonts/LastResort.otf', '/System/Library/Fonts/Supplemental/NotoSansBamum-Regular.ttf', '/Users/yu/Library/Fonts/SourceHanCodeJP-LightIt.otf', '/System/Library/Fonts/Supplemental/Iowan Old Style.ttc', '/System/Library/Fonts/Supplemental/BigCaslon.ttf', '/usr/X11/lib/X11/fonts/TTF/luxirbi.ttf', '/System/Library/Fonts/Supplemental/Songti.ttc', '/System/Library/Fonts/Supplemental/NotoSansUgaritic-Regular.ttf', '/System/Library/Fonts/Supplemental/Diwan Kufi.ttc', '/System/Library/Fonts/Supplemental/NotoSansThaana-Regular.ttf', '/System/Library/Fonts/SFNSRounded.ttf', '/System/Library/Fonts/Supplemental/Athelas.ttc', '/usr/X11R6/lib/X11/fonts/TTF/VeraBd.ttf', '/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf', '/System/Library/Fonts/Supplemental/AlBayan.ttc', '/System/Library/Fonts/Supplemental/NotoSansEgyptianHieroglyphs-Regular.ttf']
 
+<a id="markdown-画像いっぱいに文字を描画" name="画像いっぱいに文字を描画"></a>
+
+##### 画像いっぱいに文字を描画
+
+```py
+from PIL import Image, ImageDraw, ImageFont
+
+
+def write_message(width, height, message):
+    # 設定項目
+    font_size = 150
+    fontfile_name = '/System/Library/Fonts/ヒラギノ角ゴシック W0.ttc'
+
+    # 背景画像を生成
+    img = Image.new('RGB', (width, height), '#FFF')
+    draw = ImageDraw.Draw(img)
+
+    # フォントサイズを決定
+    out_text_size = (width + 1, height + 1)
+    while width < out_text_size[0] or height < out_text_size[1]:
+        font = ImageFont.truetype(fontfile_name, font_size)
+        out_text_size = draw.textsize(message, font=font)
+        font_size -= 1
+
+    # 文字列を描画
+    draw.text(
+        (int((width - out_text_size[0])/2), int((height - out_text_size[1]) / 2)),
+        message,
+        fill='#000',
+        font=font
+    )
+    img.save('./test-pillow/message_full.png')
+
+write_message(300, 100, 'HELLO.')
+```
+
 <a id="markdown-画像に図形を描画" name="画像に図形を描画"></a>
 
 #### 画像に図形を描画
@@ -17096,6 +17315,42 @@ draw.pieslice((180, 120, 240, 180), start=90, end=180, fill=None, outline=(0, 25
 
 im.show()
 im.save('./test-pillow/imagedraw.png')
+```
+
+<a id="markdown-アニメーション-gif-の作成" name="アニメーション-gif-の作成"></a>
+
+#### アニメーション GIF の作成
+
+```py
+
+from PIL import Image
+
+# 一括生成
+images = [
+    Image.new(
+        'RGB',
+        (256, 256),
+        (i, i, i)
+    ) for i in range(256)
+]
+
+# 1 フレームごとに追加する場合は append()
+im = Image.new(
+        'RGB',
+        (256, 256),
+        (255, 0, 0)
+    )
+images.append(im)
+
+# アニメーションGIFとして保存
+images[0].save(
+    './test-pillow/anime.gif',
+    save_all=True,
+    append_images=images[1:],
+    optimize=False,
+    duration=50, # ミリ秒
+    loop=0 # 回数
+)
 ```
 
 <a id="markdown-並列処理" name="並列処理"></a>
