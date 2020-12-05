@@ -243,6 +243,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -267,7 +268,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -542,6 +543,10 @@
           - [shutil を使ってフォルダごと圧縮](#shutil-を使ってフォルダごと圧縮)
           - [個別にファイルを追加して圧縮ファイルを作成](#個別にファイルを追加して圧縮ファイルを作成)
         - [zip ファイル解凍](#zip-ファイル解凍)
+        - [MS Office ファイル](#ms-office-ファイル)
+        - [Excel ファイル](#excel-ファイル)
+          - [書き出し](#書き出し)
+          - [読み込み](#読み込み-4)
   - [テストデータ生成](#テストデータ生成)
     - [Faker](#faker)
       - [基本](#基本)
@@ -6089,6 +6094,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6705,7 +6712,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -12500,6 +12507,86 @@ with zipfile.ZipFile(archive_path) as zip_contents:
 with zipfile.ZipFile(archive_path) as zip_contents:
     result_path = zip_contents.extract('test-archive/dir1/file1.txt', extract_path, pwd=pw)
     print(result_path)
+```
+
+<a id="markdown-ms-office-ファイル" name="ms-office-ファイル"></a>
+
+##### MS Office ファイル
+
+<a id="markdown-excel-ファイル" name="excel-ファイル"></a>
+
+##### Excel ファイル
+
+[openpyxl](https://openpyxl.readthedocs.io/en/stable/) を利用する
+
+```sh
+$ pip install openpyxl
+
+# 画像を含める場合
+$ pip install pillow
+```
+
+<a id="markdown-書き出し" name="書き出し"></a>
+
+###### 書き出し
+
+```py
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
+
+# Workbook を生成
+wb = Workbook()
+
+# Workbook は少なくとも 1 つの Worksheet を含むので、 Workbook.active で取得できる
+ws1 = wb.active
+ws1.title = "range names" # シートタイトル
+
+for row in range(1, 10):
+    ws1.append(range(26))
+
+# Worksheet を追加
+ws2 = wb.create_sheet(title="Pi")
+
+ws2['A2'] = 3.14
+
+cell = ws2.cell(row=2, column=1)
+print(cell.value)
+# 3.14
+
+from datetime import datetime
+ws2['C4'] = datetime(2020, 12, 5)
+ws2['C4'].value
+# datetime.datetime(2020, 12, 5, 0, 0)
+ws2['C4'].number_format
+# 'yyyy-mm-dd h:mm:ss'
+
+ws2['E6'] = '=SUM(1, 1)'
+ws2['E6'].value
+# =SUM(1, 1)
+
+# Worksheet を追加
+ws3 = wb.create_sheet(title="Data")
+for row in range(10, 20):
+    for col in range(27, 54):
+        _ = ws3.cell(column=col, row=row, value="{0}".format(get_column_letter(col)))
+
+print(ws3['AA10'].value)
+# AA
+
+wb.save(filename = './test-openpyxl/write.xlsx')
+```
+
+<a id="markdown-読み込み-4" name="読み込み-4"></a>
+
+###### 読み込み
+
+```py
+from openpyxl import load_workbook
+
+wb = load_workbook(filename = './test-openpyxl/write.xlsx')
+sheet_ranges = wb['range names']
+print(sheet_ranges['C2'].value)
+# 2
 ```
 
 <a id="markdown-テストデータ生成" name="テストデータ生成"></a>
