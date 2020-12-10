@@ -243,7 +243,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -268,7 +267,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -6094,8 +6093,6 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
-
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6712,7 +6709,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -12539,20 +12536,24 @@ wb = Workbook()
 
 # Workbook は少なくとも 1 つの Worksheet を含むので、 Workbook.active で取得できる
 ws1 = wb.active
-ws1.title = "range names" # シートタイトル
+ws1.title = 'range names' # シートタイトル
 
+# 1 行目から 9 行目に「 0, 1, ... , 25 」を追加
 for row in range(1, 10):
     ws1.append(range(26))
 
 # Worksheet を追加
-ws2 = wb.create_sheet(title="Pi")
+ws2 = wb.create_sheet(title='Pi')
 
+# セルの値を指定
 ws2['A2'] = 3.14
 
+# セルの値を取得
 cell = ws2.cell(row=2, column=1)
 print(cell.value)
 # 3.14
 
+# セルの書式設定を取得
 from datetime import datetime
 ws2['C4'] = datetime(2020, 12, 5)
 ws2['C4'].value
@@ -12560,19 +12561,51 @@ ws2['C4'].value
 ws2['C4'].number_format
 # 'yyyy-mm-dd h:mm:ss'
 
+# セルに数式を指定
 ws2['E6'] = '=SUM(1, 1)'
 ws2['E6'].value
 # =SUM(1, 1)
 
+# 数式の計算はできないが、関数として妥当かは判定できる
+from openpyxl.utils import FORMULAE
+'SUM' in FORMULAE
+# True
+
 # Worksheet を追加
-ws3 = wb.create_sheet(title="Data")
+ws3 = wb.create_sheet(title='Data')
 for row in range(10, 20):
     for col in range(27, 54):
-        _ = ws3.cell(column=col, row=row, value="{0}".format(get_column_letter(col)))
+        # セルの値を指定
+        _ = ws3.cell(column=col, row=row, value='{0}'.format(get_column_letter(col)))
 
 print(ws3['AA10'].value)
 # AA
 
+# セルの結合
+ws3.merge_cells('AA10:AD10')
+# ws3.merge_cells(start_row=10, start_column=27, end_row=10, end_column=30) # と同じ
+
+# セルの結合解除
+ws3.unmerge_cells('AA10:AD10')
+# ws3.unmerge_cells(start_row=10, start_column=27, end_row=10, end_column=30) # と同じ
+# 結合して解除したので左上のセルの値だけ残る（ 10 行目の AB, AC, AD が空文字に変わる）
+
+# Worksheet を追加
+ws4 = wb.create_sheet(title='Image')
+
+# セルの値を指定
+ws4['A1'] = '画像の説明'
+
+# 画像の挿入（ A2 セルの左上に画像の左上が合う）
+from openpyxl.drawing.image import Image
+img = Image('./test-pillow/image.png')
+ws4.add_image(img, 'A2')
+
+# アウトライン（折り畳まれて、ワークシートの左上が E11 になる）
+ws4.column_dimensions.group('A','D', hidden=True)
+ws4.row_dimensions.group(1,10, hidden=True)
+
+# ファイルに書き込む
 wb.save(filename = './test-openpyxl/write.xlsx')
 ```
 
