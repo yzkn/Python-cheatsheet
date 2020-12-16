@@ -243,6 +243,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -267,7 +268,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -546,6 +547,7 @@
         - [Excel ファイル](#excel-ファイル)
           - [書き出し](#書き出し)
           - [読み込み](#読み込み-4)
+      - [PDF ファイル](#pdf-ファイル) - [読み込み](#読み込み-5)
   - [テストデータ生成](#テストデータ生成)
     - [Faker](#faker)
       - [基本](#基本)
@@ -6093,6 +6095,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6709,7 +6713,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -12519,7 +12523,7 @@ with zipfile.ZipFile(archive_path) as zip_contents:
 ```sh
 $ pip install openpyxl
 
-# 画像を含める場合
+# 画像を含める場合はPillowもインストールする
 $ pip install pillow
 ```
 
@@ -12620,6 +12624,109 @@ wb = load_workbook(filename = './test-openpyxl/write.xlsx')
 sheet_ranges = wb['range names']
 print(sheet_ranges['C2'].value)
 # 2
+```
+
+<a id="markdown-pdf-ファイル" name="pdf-ファイル"></a>
+
+#### PDF ファイル
+
+[pdfminer.six](https://pdfminersix.readthedocs.io/en/latest/)を利用する
+
+```sh
+$ pip install pdfminer.six
+```
+
+```py
+import pdfminer
+print(pdfminer.__version__)
+```
+
+<a id="markdown-読み込み-5" name="読み込み-5"></a>
+
+###### 読み込み
+
+```py
+from pdfminer.high_level import extract_text
+
+text = extract_text('./test-pdfminersix/sample.pdf')
+print(repr(text))
+print(text)
+```
+
+```
+'宮沢賢治 やまなし\n\nhttps://www.aozora.gr.jp/cards/000081/ﬁles/46605_311...\n\nやまなし\n\n宮沢賢治\n\n+目次\n\n一、五月\n\n(cid:12690)(cid:12755)(cid:12712)(cid:12676)\n\u3000小さな谷川の底を写した二枚の青い幻燈\n\nです。\n\n(cid:12722)(cid:12684)\n\u3000二疋\n\n(cid:12681)(cid:12715)\nの蟹\n\nの子供らが青じろい水の底で話していました。\n\n『クラムボンはわらったよ。』\n\n『クラムボンはかぷかぷわらったよ。』\n\n(cid:12719)\n『クラムボンは跳\n\nねてわらったよ。』\n\n『クラムボンはかぷかぷわらったよ。』\n\n
+（略）
+'
+```
+
+```
+宮沢賢治 やまなし
+
+https://www.aozora.gr.jp/cards/000081/ﬁles/46605_311...
+
+やまなし
+
+宮沢賢治
+
++目次
+
+一、五月
+
+(cid:12690)(cid:12755)(cid:12712)(cid:12676)
+　小さな谷川の底を写した二枚の青い幻燈
+
+です。
+
+(cid:12722)(cid:12684)
+　二疋
+
+(cid:12681)(cid:12715)
+の蟹
+
+の子供らが青じろい水の底で話していました。
+
+『クラムボンはわらったよ。』
+
+『クラムボンはかぷかぷわらったよ。』
+
+(cid:12719)
+『クラムボンは跳
+
+ねてわらったよ。』
+
+『クラムボンはかぷかぷわらったよ。』
+（略）
+```
+
+```py
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer, LTChar
+
+for page_layout in extract_pages('./test-pdfminersix/sample.pdf'):
+    for element in page_layout:
+        print(element)
+        if isinstance(element, LTTextContainer):
+            for text_line in element:
+                for ch in text_line:
+                    if isinstance(ch, LTChar):
+                        print(
+                            '\t{}, {}, {}, x0={:.2f}, x1={:.2f}, y0={:.2f}, y1={:.2f}, w={:.2f}, h={:.2f}'.format(
+                            ch.get_text(), ch.fontname, ch.size, ch.x0, ch.x1, ch.y0, ch.y1, ch.width, ch.height)
+                        )
+```
+
+```
+<LTTextBoxHorizontal(0) 8.650,822.150,91.975,832.150 '宮沢賢治 やまなし\n'>
+        宮, AAAAAE+HiraMinProN-W3, 10.0, x0=8.65, x1=18.65, y0=822.15, y1=832.15, w=10.00, h=10.00
+        沢, AAAAAE+HiraMinProN-W3, 10.0, x0=18.65, x1=28.65, y0=822.15, y1=832.15, w=10.00, h=10.00
+        賢, AAAAAE+HiraMinProN-W3, 10.0, x0=28.65, x1=38.65, y0=822.15, y1=832.15, w=10.00, h=10.00
+        治, AAAAAE+HiraMinProN-W3, 10.0, x0=38.65, x1=48.65, y0=822.15, y1=832.15, w=10.00, h=10.00
+         , AAAAAE+HiraMinProN-W3, 10.0, x0=48.65, x1=51.98, y0=822.15, y1=832.15, w=3.33, h=10.00
+        や, AAAAAE+HiraMinProN-W3, 10.0, x0=51.98, x1=61.98, y0=822.15, y1=832.15, w=10.00, h=10.00
+        ま, AAAAAE+HiraMinProN-W3, 10.0, x0=61.98, x1=71.97, y0=822.15, y1=832.15, w=10.00, h=10.00
+        な, AAAAAE+HiraMinProN-W3, 10.0, x0=71.98, x1=81.98, y0=822.15, y1=832.15, w=10.00, h=10.00
+        し, AAAAAE+HiraMinProN-W3, 10.0, x0=81.98, x1=91.98, y0=822.15, y1=832.15, w=10.00, h=10.00
+（略）
 ```
 
 <a id="markdown-テストデータ生成" name="テストデータ生成"></a>
