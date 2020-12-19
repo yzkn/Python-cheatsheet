@@ -226,6 +226,9 @@
       - [1 文字ごとの置換](#1-文字ごとの置換)
     - [絵文字](#絵文字)
     - [ランダムな文字列の生成](#ランダムな文字列の生成)
+    - [形態素解析](#形態素解析)
+      - [janome による解析](#janome-による解析)
+        - [NEologd 辞書を使用](#neologd-辞書を使用)
   - [リスト](#リスト)
     - [リストが空か検査](#リストが空か検査)
     - [リストを生成](#リストを生成)
@@ -5803,6 +5806,103 @@ print(generated)
 ```
 
 > XGIuCq68EQ
+
+<a id="markdown-形態素解析" name="形態素解析"></a>
+
+### 形態素解析
+
+<a id="markdown-janome-による解析" name="janome-による解析"></a>
+
+#### janome による解析
+
+```sh
+$ pip install janome
+```
+
+```py
+from janome.tokenizer import Tokenizer
+
+
+sentence = 'すもももももももものうち'
+
+t = Tokenizer()
+
+
+for token in t.tokenize(sentence):
+    print(token)
+    # print(
+    #     token.surface,
+    #     token.part_of_speech,
+    #     token.infl_type,
+    #     token.infl_form,
+    #     token.base_form,
+    #     token.reading,
+    #     token.phonetic,
+    #     token.node_type
+    # )
+
+for token in t.tokenize(sentence, wakati=True):
+    print(token)
+```
+
+> すもも 名詞,一般,_,_,_,_,すもも,スモモ,スモモ
+>
+> も 助詞,係助詞,_,_,_,_,も,モ,モ
+>
+> もも 名詞,一般,_,_,_,_,もも,モモ,モモ
+>
+> も 助詞,係助詞,_,_,_,_,も,モ,モ
+>
+> もも 名詞,一般,_,_,_,_,もも,モモ,モモ
+>
+> の 助詞,連体化,_,_,_,_,の,ノ,ノ
+>
+> うち 名詞,非自立,副詞可能,_,_,\*,うち,ウチ,ウチ
+
+> すもも
+>
+> も
+>
+> もも
+>
+> も
+>
+> もも
+>
+> の
+>
+> うち
+
+<a id="markdown-neologd-辞書を使用" name="neologd-辞書を使用"></a>
+
+##### NEologd 辞書を使用
+
+```sh
+$ git clone https://github.com/neologd/mecab-ipadic-neologd.git
+$ xz -dkv mecab-ipadic-neologd/seed/*.csv.xz
+$ cat mecab-ipadic-neologd/seed/*.csv > neologd-dic-seed.csv
+```
+
+```py
+from janome import sysdic
+from janome.dic import UserDictionary
+from janome.tokenizer import Tokenizer
+
+
+# ユーザー辞書の生成
+user_dict = UserDictionary('neologd-dic-seed.csv', 'utf8', 'ipadic', sysdic.connections)
+user_dict.save('neologd-dic-dir')
+
+
+# 解析
+sentence = 'すもももももももものうち'
+
+t = Tokenizer('neologd-dic-dir')
+
+
+for token in t.tokenize(sentence):
+   print(token)
+```
 
 <a id="markdown-リスト" name="リスト"></a>
 
