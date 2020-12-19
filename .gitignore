@@ -1,6 +1,10 @@
 bak/
 test-pillow/other*.*
 
+mecab-ipadic-neologd/
+neologd-dic-seed.csv
+neologd-dic-dir/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
