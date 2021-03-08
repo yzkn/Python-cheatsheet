@@ -246,7 +246,6 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
-      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -271,7 +270,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3次元リスト)
+          - [3 次元リスト](#3-次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -534,6 +533,7 @@
         - [ファイルから逐次的に読み込み](#ファイルから逐次的に読み込み)
         - [文字列から読み込み](#文字列から読み込み-1)
         - [書き込み](#書き込み-2)
+        - [XML 文字列を JSON 文字列に変換](#xml-文字列を-json-文字列に変換)
       - [ARFF ファイル](#arff-ファイル)
         - [読み込み](#読み込み-3)
         - [書き込み](#書き込み-3)
@@ -6195,8 +6195,6 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
-<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
-
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6813,7 +6811,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3次元リスト" name="3次元リスト"></a>
+<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -12284,6 +12282,57 @@ for child in root:
 
 # ファイルに書き込み
 tree.write(outputfilepath, encoding='UTF-8')
+```
+
+<a id="markdown-xml-文字列を-json-文字列に変換" name="xml-文字列を-json-文字列に変換"></a>
+
+##### XML 文字列を JSON 文字列に変換
+
+```sh
+$ pip install xmljson
+```
+
+| convention |                                                                                                    |
+| ---------- | -------------------------------------------------------------------------------------------------- |
+| Abdera     | Use "attributes" for attributes, "children" for nodes                                              |
+| BadgerFish | Use "$" for text content, @ to prefix attributes                                                   |
+| Cobra      | Use "attributes" for sorted attributes (even when empty), "children" for nodes, values are strings |
+| GData      | Use "$t" for text content, attributes added as-is                                                  |
+| Parker     | Use tail nodes for text content, ignore attributes                                                 |
+| Yahoo      | Use "content" for text content, attributes added as-is                                             |
+
+```py
+from collections import OrderedDict
+from json import dumps
+from xml.etree.ElementTree import fromstring
+from xmljson import Yahoo
+
+
+yahoo = Yahoo(dict_type=OrderedDict)
+
+xml_str = '''<?xml version="1.0" encoding="UTF-8"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>
+'''
+
+print(
+  dumps(yahoo.data(fromstring(xml_str)), indent=2)
+)
+```
+
+```json
+{
+  "note": {
+    "to": "Tove",
+    "from": "Jani",
+    "heading": "Reminder",
+    "body": "Don't forget me this weekend!"
+  }
+}
 ```
 
 <a id="markdown-arff-ファイル" name="arff-ファイル"></a>
