@@ -246,6 +246,7 @@
       - [別のリスト(別のイテラブルオブジェクト)の要素を末尾に追加(連結／結合)する](#別のリスト別のイテラブルオブジェクトの要素を末尾に追加連結／結合する)
       - [リストの要素を繰り返す](#リストの要素を繰り返す)
     - [リストの要素を参照](#リストの要素を参照)
+      - [リストの要素の存在チェック](#リストの要素の存在チェック)
       - [リストの要素をランダム抽出](#リストの要素をランダム抽出)
       - [最大値・最小値（リスト）](#最大値・最小値リスト)
     - [リストの要素を除去](#リストの要素を除去)
@@ -270,7 +271,7 @@
         - [リストのリスト](#リストのリスト)
           - [リスト同士の比較方法(既定)](#リスト同士の比較方法既定)
           - [任意の要素を比較してソート](#任意の要素を比較してソート)
-          - [3 次元リスト](#3-次元リスト)
+          - [3 次元リスト](#3次元リスト)
         - [辞書のリスト](#辞書のリスト)
         - [タプルのリスト](#タプルのリスト)
         - [セットのリスト](#セットのリスト)
@@ -6195,6 +6196,8 @@ print(lst[len(lst) - 1])
 >
 > hoge
 
+<a id="markdown-リストの要素の存在チェック" name="リストの要素の存在チェック"></a> ####リストの要素の存在チェック
+
 ```py
 lst = ['foo', 'bar', 'hoge']
 print('bar' in lst)
@@ -6811,7 +6814,7 @@ print(lst)
 >
 > ]
 
-<a id="markdown-3-次元リスト" name="3-次元リスト"></a>
+<a id="markdown-3次元リスト" name="3次元リスト"></a>
 
 ###### 3 次元リスト
 
@@ -16128,11 +16131,9 @@ print("myClass1: " + str(myClass1))
 ## オブジェクトの属性の参照と存在チェック
 
 ```py
-
 class MyClass:
     publicClassVariable = 10
     __privateClassVariable = 20
-
     def __init__(self):
         self.val1 = 10
         self.val2 = 20
@@ -16142,8 +16143,12 @@ myClass = MyClass()
 # 属性のリスト
 print(dir(myClass))
 
-# dict属性
+# dict属性（オブジェクトを辞書と見なしたもの。デバッグ表示に使える）
 print(vars(myClass))
+print(myClass.__dict__)
+
+for key, value in myClass.__dict__.items():
+    print(key, ':', value)
 
 # 属性値の参照
 print(myClass.publicClassVariable)
@@ -16153,11 +16158,27 @@ hasattr(myClass, 'publicClassVariable')
 hasattr(myClass, '__privateClassVariable')
 ```
 
+> # 属性のリスト
+>
 > ['_MyClass__privateClassVariable', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'publicClassVariable', 'val1', 'val2']
+
+> # dict 属性
 >
 > {'val1': 10, 'val2': 20}
 >
+> {'val1': 10, 'val2': 20}
+>
+> ---
+>
+> val1 : 10
+>
+> val2 : 20
+
+> # 属性値の参照
+>
 > 10
+
+> # 属性の存在チェック
 >
 > True
 >
