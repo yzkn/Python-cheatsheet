@@ -612,7 +612,10 @@
       - [例外処理とレスポンスコード](#例外処理とレスポンスコード)
     - [Selenium](#selenium)
       - [Selenium の準備](#selenium-の準備)
+        - [ChromeDriver を pip で準備する場合](#chromedriver-を-pip-で準備する場合)
+        - [別途ドライバーをインストールする場合](#別途ドライバーをインストールする場合)
         - [パスを指定](#パスを指定)
+        - [Pyderman](#pyderman)
         - [Webdriver Manager for Python](#webdriver-manager-for-python)
           - [Chrome](#chrome)
           - [Chromium](#chromium)
@@ -621,6 +624,9 @@
           - [Chrome](#chrome-1)
           - [Firefox](#firefox-1)
       - [Web ページにアクセス](#web-ページにアクセス)
+      - [スクリーンショットを取得](#スクリーンショットを取得)
+        - [ページ全体のスクリーンショットを取得](#ページ全体のスクリーンショットを取得)
+        - [特定の要素のスクリーンショットを取得](#特定の要素のスクリーンショットを取得)
 - [クラス](#クラス)
   - [オブジェクトの文字列表現](#オブジェクトの文字列表現)
   - [オブジェクトの属性の参照と存在チェック](#オブジェクトの属性の参照と存在チェック)
@@ -15725,6 +15731,30 @@ except requests.exceptions.RequestException as e:
 
 #### Selenium の準備
 
+<a id="markdown-chromedriver-を-pip-で準備する場合" name="chromedriver-を-pip-で準備する場合"></a>
+
+##### ChromeDriver を pip で準備する場合
+
+```sh
+$ pip install selenium chromedriver-binary
+```
+
+```py
+import chromedriver_binary
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+
+
+driver.get('https://google.com')
+
+driver.close()
+```
+
+<a id="markdown-別途ドライバーをインストールする場合" name="別途ドライバーをインストールする場合"></a>
+
+##### 別途ドライバーをインストールする場合
+
 ```sh
 $ pip install selenium
 ```
@@ -15735,6 +15765,11 @@ from selenium import webdriver
 
 driver = webdriver.Chrome()
 driver = webdriver.Firefox()
+
+
+driver.get('https://google.com')
+
+driver.close()
 ```
 
 <a id="markdown-パスを指定" name="パスを指定"></a>
@@ -15787,6 +15822,55 @@ driver = webdriver.Firefox(
 
 
 driver.get('https://www.google.co.jp/')
+```
+
+<a id="markdown-pyderman" name="pyderman"></a>
+
+##### Pyderman
+
+[Pyderman](https://pypi.org/project/pyderman/)
+
+```sh
+$ pip install pyderman
+```
+
+```py
+import pyderman
+
+info = pyderman.install(browser=pyderman.chrome, chmod=True, overwrite=True, return_info=True)
+#         Downloading from:  https://chromedriver.storage.googleapis.com/92.0.4515.107/chromedriver_win64.zip
+#         To:  C:\Users\y\Documents\GitHub\Python-cheatsheet\lib\chromedriver_92.0.4515.107.zip
+# Download for 64 version failed; Trying alternates.
+#         Downloading from:  https://chromedriver.storage.googleapis.com/92.0.4515.107/chromedriver_win32.zip
+#         To:  C:\Users\y\Documents\GitHub\Python-cheatsheet\lib\chromedriver_92.0.4515.107.zip
+
+info = pyderman.install(browser=pyderman.firefox, chmod=True, overwrite=True, return_info=True)
+#         Downloading from:  https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-win64.zip
+#         To:  C:\Users\y\Documents\GitHub\Python-cheatsheet\lib\geckodriver_0.29.1.zip
+
+if isinstance(info, dict):
+    # 新規ドライバーを追加する場合
+    # {'path': 'C:\\Users\\y\\Documents\\GitHub\\Python-cheatsheet\\lib\\geckodriver_0.29.1.exe', 'version': '0.29.1', 'driver': 'geckodriver'}
+    driver_name = info['driver']
+    driver_path = info['path']
+elif isinstance(info, str):
+    # 既存ドライバーがある場合
+    # 'C:\\Users\\y\\Documents\\GitHub\\Python-cheatsheet\\lib\\geckodriver_0.29.1.exe'
+    driver_name = (os.path.basename(info)).split('_')[0]
+    driver_path = info
+
+
+from selenium import webdriver
+
+if driver_name == 'chromedriver':
+    driver = webdriver.Chrome(driver_path)
+elif driver_name == 'geckodriver':
+    driver = webdriver.Firefox(executable_path=driver_path)
+
+
+driver.get('https://google.com')
+
+driver.close()
 ```
 
 <a id="markdown-webdriver-manager-for-python" name="webdriver-manager-for-python"></a>
@@ -15992,6 +16076,82 @@ driver.find_element_by_class_name('content')
 
 # CSS_SELECTOR
 driver.find_element_by_css_selector('p.content')
+```
+
+<a id="markdown-スクリーンショットを取得" name="スクリーンショットを取得"></a>
+
+#### スクリーンショットを取得
+
+<a id="markdown-ページ全体のスクリーンショットを取得" name="ページ全体のスクリーンショットを取得"></a>
+
+##### ページ全体のスクリーンショットを取得
+
+ヘッドレスモードでブラウザを起動しないと画像サイズが制限される
+
+```sh
+$ pip install selenium chromedriver-binary
+```
+
+```py
+import chromedriver_binary
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+
+options = Options()
+options.add_argument('--hide-scrollbars')
+options.add_argument('--incognito')
+options.add_argument('--headless')
+driver = webdriver.Chrome(options=options)
+
+
+driver.get('https://google.com')
+
+w = driver.execute_script('return document.body.scrollWidth')
+h = driver.execute_script('return document.body.scrollHeight')
+driver.set_window_size(w, h)
+driver.save_screenshot('./test-network/screenshot_fullpage.png')
+
+
+driver.close()
+```
+
+<a id="markdown-特定の要素のスクリーンショットを取得" name="特定の要素のスクリーンショットを取得"></a>
+
+##### 特定の要素のスクリーンショットを取得
+
+```sh
+$ pip install selenium chromedriver-binary
+```
+
+```py
+from PIL import Image
+from io import BytesIO
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import chromedriver_binary
+
+
+options = Options()
+options.add_argument('--hide-scrollbars')
+options.add_argument('--incognito')
+options.add_argument('--headless')
+driver = webdriver.Chrome(options=options)
+
+
+driver.get('https://google.com')
+
+png_image = driver.find_element_by_id('toc').screenshot_as_png
+im = Image.open(BytesIO(png_image))
+w, h = im.size
+for y in range(h):
+    for x in range(w):
+        rgba = im.getpixel((x, y))
+        print(x, y, rgba)
+
+im.save('./test-network/screenshot_class.png')
+
+driver.close()
 ```
 
 <a id="markdown-クラス" name="クラス"></a>
