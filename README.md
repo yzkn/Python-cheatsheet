@@ -658,6 +658,7 @@
     - [画像の読み込み](#画像の読み込み)
       - [ヒストグラムの取得](#ヒストグラムの取得)
     - [画像の書き出し](#画像の書き出し)
+      - [Base64 にエンコードして書き出す](#base64-にエンコードして書き出す)
     - [画素ごとの操作](#画素ごとの操作)
       - [画素値の取得](#画素値の取得)
       - [画素ごとにコピー](#画素ごとにコピー)
@@ -16792,6 +16793,24 @@ im.show()
 im.save('./test-pillow/saved.png')
 ```
 
+<a id="markdown-base64-にエンコードして書き出す" name="base64-にエンコードして書き出す"></a>
+
+#### Base64 にエンコードして書き出す
+
+```py
+from PIL import Image
+from io import BytesIO
+import base64
+
+im = Image.open('./test-pillow/image.png')
+
+buffer = BytesIO()
+im.save(buffer, format='png')
+print(
+    '<img src="data:image/jpeg;base64,' + base64.b64encode(buffer.getvalue()).decode('ascii') + '">'
+)
+```
+
 <a id="markdown-画素ごとの操作" name="画素ごとの操作"></a>
 
 ### 画素ごとの操作
@@ -18052,4 +18071,4 @@ target_function()
 
 <hr>
 
-Copyright (c) 2020 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
+Copyright (c) 2021 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
