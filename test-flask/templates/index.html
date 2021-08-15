@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block main %}
+<!-- begin contents -->
+
+{# コメント #}
+
+{{ html_contents | safe}}
+{{ text_contents }}
+
+{% if title == '12345' %}
+<div>if</div>
+{% elif title == '23456' %}
+<div>elif</div>
+{% else %}
+<div>else</div>
+{% endif %}
+
+<ul>
+    {% for k, v in dict_items.items() %}
+    <li>{{ k }}: {{ v }}</li>
+    {% endfor %}
+</ul>
+
+<!-- end contents -->
+{% endblock %}
