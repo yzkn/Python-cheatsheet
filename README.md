@@ -707,7 +707,10 @@
         - [画像いっぱいに文字を描画](#画像いっぱいに文字を描画)
       - [画像に図形を描画](#画像に図形を描画)
       - [アニメーション GIF の作成](#アニメーション-gif-の作成)
+  - [PyOCR](#pyocr)
 - [並列処理](#並列処理)
+- [Web フレームワーク](#web-フレームワーク)
+  - [Flask](#flask)
 - [exe 化](#exe-化)
 - [エラーメッセージ](#エラーメッセージ)
   - [シンタックスハイライト](#シンタックスハイライト)
@@ -7176,6 +7179,16 @@ print(strlist)
 ```
 
 > ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95', '96', '97', '98', '99']
+
+```py
+l = list(range(100))
+
+# インデックス番号を取得しながら要素全てに処理を行う
+strlist = [(i, str(v)) for i, v in enumerate(l)]
+print(strlist)
+```
+
+> [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'), (6, '6'), (7, '7'), (8, '8'), (9, '9'), (10, '10'), (11, '11'), (12, '12'), (13, '13'), (14, '14'), (15, '15'), (16, '16'), (17, '17'), (18, '18'), (19, '19'), (20, '20'), (21, '21'), (22, '22'), (23, '23'), (24, '24'), (25, '25'), (26, '26'), (27, '27'), (28, '28'), (29, '29'), (30, '30'), (31, '31'), (32, '32'), (33, '33'), (34, '34'), (35, '35'), (36, '36'), (37, '37'), (38, '38'), (39, '39'), (40, '40'), (41, '41'), (42, '42'), (43, '43'), (44, '44'), (45, '45'), (46, '46'), (47, '47'), (48, '48'), (49, '49'), (50, '50'), (51, '51'), (52, '52'), (53, '53'), (54, '54'), (55, '55'), (56, '56'), (57, '57'), (58, '58'), (59, '59'), (60, '60'), (61, '61'), (62, '62'), (63, '63'), (64, '64'), (65, '65'), (66, '66'), (67, '67'), (68, '68'), (69, '69'), (70, '70'), (71, '71'), (72, '72'), (73, '73'), (74, '74'), (75, '75'), (76, '76'), (77, '77'), (78, '78'), (79, '79'), (80, '80'), (81, '81'), (82, '82'), (83, '83'), (84, '84'), (85, '85'), (86, '86'), (87, '87'), (88, '88'), (89, '89'), (90, '90'), (91, '91'), (92, '92'), (93, '93'), (94, '94'), (95, '95'), (96, '96'), (97, '97'), (98, '98'), (99, '99')]
 
 <a id="markdown-filter要素のフィルタリング-1" name="filter要素のフィルタリング-1"></a>
 
@@ -18020,6 +18033,10 @@ images[0].save(
 )
 ```
 
+<a id="markdown-pyocr" name="pyocr"></a>
+
+## PyOCR
+
 <a id="markdown-並列処理" name="並列処理"></a>
 
 # 並列処理
@@ -18122,6 +18139,174 @@ def main():
 if __name__ == '__main__':
     main()
 
+```
+
+<a id="markdown-web-フレームワーク" name="web-フレームワーク"></a>
+
+# Web フレームワーク
+
+<a id="markdown-flask" name="flask"></a>
+
+## Flask
+
+```sh
+$ python -m venv venv
+
+$ source .venv/bin/activate
+# Windows: .venv\Scripts\activate.ps1
+
+$ python -m pip install Flask
+$ python -m pip freeze > requirements.txt
+```
+
+- app.py
+
+```py
+from flask import *
+
+
+# from flask import Flask
+app = Flask(__name__)
+
+
+# from flask import Flask
+@app.route('/')
+def index():
+    return '/'
+
+
+# from flask import Flask
+@app.route('/path')
+def path():
+    return '/path'
+
+
+# from flask import Flask
+@app.route('/url/<int:id>')
+# float / int / path / string / uuid
+def url(id=None):
+    return '/url/{}'.format(id)
+
+
+# from flask import Flask, request
+@app.route('/query')
+def query():
+    name = request.args.get('name')
+    return '/query?name={}'.format(name)
+
+
+# from flask import Flask, request
+@app.route('/post', methods=['POST'])
+def post():
+    if request.method == 'POST':
+        name = request.form['name']
+    return '/post {{ "name": "{}" }}'.format(name)
+
+
+# from flask import Flask, render_template
+@app.route('/post', methods=['GET'])
+def post_form():
+    return render_template('post.html')
+
+# from flask import Flask, render_template
+# ./templates/***.html を作成
+@app.route('/template')
+def template():
+    return render_template(
+        'index.html',
+        title='12345',
+        html_contents='<h1>HTML Contents</h1>',
+        text_contents='<h1>TEXT Contents</h1>',
+        dict_items={'key1': 'val1', 'key2': 'val2', 'key3': 'val3'}
+    )
+
+
+# from flask import Flask, jsonify
+app.config['JSON_AS_ASCII'] = False
+app.config["JSON_SORT_KEYS"] = False
+@app.route("/json")
+def json():
+    return jsonify({"name": "foo"}), 200
+
+
+# from flask import Flask, redirect
+@app.route('/redirect/302')
+def redirect302():
+    return redirect('https://www.google.com')
+
+@app.route('/redirect/200')
+def redirect200():
+    return redirect('https://www.google.com', code=200)
+
+
+# from flask import redirect, url_for
+@app.route('/redirect/for')
+def redirect_func():
+    return redirect(url_for('url', id='789'))
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+```
+
+- templates/base.html
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    {% block main %} {% endblock %}
+  </body>
+</html>
+```
+
+- templates/index.html
+
+```html
+{% extends "base.html" %} {% block main %}
+<!-- begin contents -->
+
+{# コメント #} {{ html_contents | safe}} {{ text_contents }} {% if title ==
+'12345' %}
+<div>if</div>
+{% elif title == '23456' %}
+<div>elif</div>
+{% else %}
+<div>else</div>
+{% endif %}
+
+<ul>
+  {% for k, v in dict_items.items() %}
+  <li>{{ k }}: {{ v }}</li>
+  {% endfor %}
+</ul>
+
+<!-- end contents -->
+{% endblock %}
+```
+
+- templates/post.html
+
+```html
+{% extends "base.html" %} {% block main %}
+<!-- begin contents -->
+
+<form action="/post" method="POST">
+  <input type="text" name="name" placeholder="Name" />
+  <input type="submit" value="Send" />
+</form>
+
+<!-- end contents -->
+{% endblock %}
 ```
 
 <a id="markdown-exe-化" name="exe-化"></a>
