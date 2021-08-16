@@ -610,6 +610,7 @@
       - [セッション](#セッション)
       - [Cookie](#cookie)
       - [例外処理とレスポンスコード](#例外処理とレスポンスコード)
+    - [BeautifulSoup](#beautifulsoup)
     - [Selenium](#selenium)
       - [Selenium の準備](#selenium-の準備)
         - [ChromeDriver を pip で準備する場合](#chromedriver-を-pip-で準備する場合)
@@ -15734,6 +15735,94 @@ try:
     r = requests.get(url)
 except requests.exceptions.RequestException as e:
     print('Error: {}'.format(e))
+```
+
+<a id="markdown-beautifulsoup" name="beautifulsoup"></a>
+
+### BeautifulSoup
+
+```sh
+$ python -m venv venv
+
+$ source venv/bin/activate
+# Windows: venv\Scripts\activate.ps1
+
+$ python -m pip install beautifulsoup4 lxml
+$ python -m pip freeze > requirements.txt
+```
+
+```py
+import requests
+from bs4 import BeautifulSoup
+import re
+
+target_url = 'https://www.jma.go.jp/jma/index.html'
+r = requests.get(target_url)
+soup = BeautifulSoup(r.text, 'lxml') # BeautifulSoup(r.text, from_encoding='Shift_JIS') # 'utf-8'
+
+with open('out.html', mode='w', encoding = 'utf-8') as fw:
+    fw.write(soup.prettify())
+
+elems1 = soup.find_all('li')
+for e1 in elems1:
+    # タグ名: li
+    print('タグ名:', e1.name)
+
+    # outerHTML: <li id="home-a"><a href="index.html">ホーム</a></li>
+    print('outerHTML:', str(e1))
+
+    # innerHTML: <a href="index.html">ホーム</a>
+    print('innerHTML:', e1.decode_contents(formatter="html"))
+
+    # HTML: ホーム ホーム
+    print('文字列:', e1.text, e1.getText())
+
+    # 子要素
+    [c for c in e1.children]
+    [c for c in e1.contents]
+
+    # 子孫要素
+    [d for d in e1.descendants]
+
+    # 正規表現
+    elems2 =  soup.find_all(href=re.compile('https?://www.jma.go.jp'))
+    for e2 in elems2:
+        # 属性: {'href': 'https://www.jma.go.jp/jma/kokusai/multi.html'} https://www.jma.go.jp/jma/kokusai/multi.html
+        print('属性:', e2.attrs, e2['href'])
+
+        # 親要素
+        print('親要素:', e2.parent)
+
+        # 祖先要素
+        [p for p in e2.parents]
+
+        # 兄弟要素
+        e2.next_sibling
+        e2.previous_sibling
+        [ns for ns in e2.next_siblings]
+        [ps for ps in e2.previous_siblings]
+
+        # 前後の要素
+        e2.next_element
+        e2.previous_element
+        [ns for ns in e2.next_elements]
+        [ps for ps in e2.previous_elements]
+
+# class属性
+# soup.find_all('ul', class_='atf-icons')
+elems3 = soup.find_all(class_='atf-icons')
+# <img alt="防災情報" src="jma_top/image/bosai_warning17.svg"/>
+e3 = elems3[0].li
+
+# 文字列
+elems4 = soup.find_all(text='パブリックコメント')
+
+# 複数のタグ名
+elems5 = soup.find_all(['h1', 'h2', 'h3'])
+
+# CSSセレクターで指定
+elems6 = soup.select('ul[class="atf-icons"]')
+
 ```
 
 <a id="markdown-selenium" name="selenium"></a>
