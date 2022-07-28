@@ -137,6 +137,9 @@
                 - [datetime 型 から 文字列型](#datetime-%E5%9E%8B-%E3%81%8B%E3%82%89-%E6%96%87%E5%AD%97%E5%88%97%E5%9E%8B)
                     - [ロケールを指定して月・曜日を示す文字列を取得する](#%E3%83%AD%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E6%9C%88%E3%83%BB%E6%9B%9C%E6%97%A5%E3%82%92%E7%A4%BA%E3%81%99%E6%96%87%E5%AD%97%E5%88%97%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B)
                 - [文字列型 から datetime 型、date 型](#%E6%96%87%E5%AD%97%E5%88%97%E5%9E%8B-%E3%81%8B%E3%82%89-datetime-%E5%9E%8Bdate-%E5%9E%8B)
+                    - [フォーマットを指定してパース](#%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%83%91%E3%83%BC%E3%82%B9)
+                    - [フォーマットを指定せずにパース](#%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%9B%E3%81%9A%E3%81%AB%E3%83%91%E3%83%BC%E3%82%B9)
+                    - [mayaを使用してパース](#maya%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%A6%E3%83%91%E3%83%BC%E3%82%B9)
                 - [タイムゾーンを考慮した 文字列型 から datetime 型](#%E3%82%BF%E3%82%A4%E3%83%A0%E3%82%BE%E3%83%BC%E3%83%B3%E3%82%92%E8%80%83%E6%85%AE%E3%81%97%E3%81%9F-%E6%96%87%E5%AD%97%E5%88%97%E5%9E%8B-%E3%81%8B%E3%82%89-datetime-%E5%9E%8B)
                 - [タイムゾーンを考慮した ISO 形式の 文字列型 から datetime 型](#%E3%82%BF%E3%82%A4%E3%83%A0%E3%82%BE%E3%83%BC%E3%83%B3%E3%82%92%E8%80%83%E6%85%AE%E3%81%97%E3%81%9F-iso-%E5%BD%A2%E5%BC%8F%E3%81%AE-%E6%96%87%E5%AD%97%E5%88%97%E5%9E%8B-%E3%81%8B%E3%82%89-datetime-%E5%9E%8B)
                 - [日付時刻の format 文字列に埋め込むディレクティブ](#%E6%97%A5%E4%BB%98%E6%99%82%E5%88%BB%E3%81%AE-format-%E6%96%87%E5%AD%97%E5%88%97%E3%81%AB%E5%9F%8B%E3%82%81%E8%BE%BC%E3%82%80%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%86%E3%82%A3%E3%83%96)
@@ -1386,6 +1389,12 @@ for item in x:
 | `str.format()` | `'{:06o}'.format(255)`                    | `'000377'` |
 | f 文字列       | `f'right : {255:06o}'`                    | `'000377'` |
 |                | `strval=255`<br>`f'right : {strval:06o}'` | `'000377'` |
+
+| 種別                         | 書き方                     | 結果            |
+| ---------------------------- | -------------------------- | --------------- |
+| `format()` （3桁区切り）     | `format(123456789, ',')`   | `'123,456,789'` |
+| `str.format()` （3桁区切り） | `'{:,}'.format(123456789)` | `'123,456,789'` |
+| f 文字列（3桁区切り）        | `f'{123456789:,}'`         | `'123,456,789'` |
 
 詳細は[書式指定子](#書式指定子)の項を参照
 
@@ -3270,6 +3279,29 @@ print(datetime.now().isoformat()) # ISO形式
 >
 > 2019-07-30T12:16:58.427664
 
+```py
+from datetime import datetime, timezone
+datetime(2022, 1, 2).strftime('%Y%m%d')
+datetime(2022, 1, 2).strftime('%m/%d %A')
+datetime(2022, 1, 2, 13, 57, 9).strftime('%p %I:%M')
+datetime(2022, 1, 2, 13, 57, 9).strftime('%Y%m%d%H%M%S')
+datetime(2022, 1, 2, 13, 57, 9, tzinfo=timezone.utc).strftime('%Y/%m/%d (%a) %H:%M:%S %Z')
+datetime(2022, 1, 2, 13, 57, 9, 123456).strftime('%Y/%m/%d %H:%M:%S.%f')
+datetime(2022, 1, 2, 13, 57, 9, 123456, tzinfo=timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+```
+
+> '20220102'
+>
+> 'PM 01:57'
+>
+> '20220102135709'
+>
+> '2022/01/02 (Sun) 13:57:09 UTC'
+>
+> '2022/01/02 13:57:09.123456'
+>
+> '2022-01-02T13:57:09.123456+0000'
+
 
 ###### ロケールを指定して月・曜日を示す文字列を取得する
 <a id="markdown-%E3%83%AD%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E6%9C%88%E3%83%BB%E6%9B%9C%E6%97%A5%E3%82%92%E7%A4%BA%E3%81%99%E6%96%87%E5%AD%97%E5%88%97%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B" name="%E3%83%AD%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E6%9C%88%E3%83%BB%E6%9B%9C%E6%97%A5%E3%82%92%E7%A4%BA%E3%81%99%E6%96%87%E5%AD%97%E5%88%97%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B"></a>
@@ -3301,6 +3333,9 @@ print(dt.strftime('%A, %a, %B, %b'))
 ##### 文字列型 から datetime 型、date 型
 <a id="markdown-%E6%96%87%E5%AD%97%E5%88%97%E5%9E%8B-%E3%81%8B%E3%82%89-datetime-%E5%9E%8B%E3%80%81date-%E5%9E%8B" name="%E6%96%87%E5%AD%97%E5%88%97%E5%9E%8B-%E3%81%8B%E3%82%89-datetime-%E5%9E%8B%E3%80%81date-%E5%9E%8B"></a>
 
+###### フォーマットを指定してパース
+<a id="markdown-%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%83%91%E3%83%BC%E3%82%B9" name="%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%A6%E3%83%91%E3%83%BC%E3%82%B9"></a>
+
 ```py
 from datetime import date
 from datetime import datetime
@@ -3309,6 +3344,10 @@ tdatetime = datetime.strptime(tstr, '%Y-%m-%d %H:%M:%S') # YYYY-mm-dd HH:MM:SS
 tdate = date(tdatetime.year, tdatetime.month, tdatetime.day)
 print(tdatetime)
 print(tdate)
+
+tstr = '2019-07-30T12:16:58.001000Z'
+tdatetime = datetime.strptime(tstr, '%Y-%m-%dT%H:%M:%S.%f%z') # YYYY-mm-ddTHH:MM:SS.fffZ
+print(tdatetime)
 
 tstr = '2019-07-30T12:16:58.001000'
 tdatetime = datetime.fromisoformat(tstr) # ISO形式 (Python3.7以降)
@@ -3328,11 +3367,132 @@ print(tdatetime)
 >
 > 2019-07-30
 >
+> 2019-07-30 12:16:58.001000+00:00
+>
 > 2019-07-30 12:16:58.001000
 >
 > 2019-07-30 12:16:58.001000+00:00
 >
 > 2019-07-30 12:16:58.001000+09:00
+
+###### フォーマットを指定せずにパース
+<a id="markdown-%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%9B%E3%81%9A%E3%81%AB%E3%83%91%E3%83%BC%E3%82%B9" name="%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%9B%E3%81%9A%E3%81%AB%E3%83%91%E3%83%BC%E3%82%B9"></a>
+
+```bash
+# dateutil
+python3 -m pip install python-dateutil
+```
+
+```py
+from dateutil import parser
+parser.parse('20220728')
+parser.parse('20220728123456')
+parser.parse('2022/7/28 12:34:56.123')
+parser.parse('2022-7-28T12:34:56.123456Z')
+parser.parse('2022-7-28T12:34:56.123456+0900')
+```
+
+```
+> datetime.datetime(2022, 7, 28, 0, 0)
+>
+> datetime.datetime(2022, 7, 28, 12, 34, 56)
+>
+> datetime.datetime(2022, 7, 28, 12, 34, 56, 123000)
+>
+> datetime.datetime(2022, 7, 28, 12, 34, 56, 123456, tzinfo=tzutc())
+>
+> datetime.datetime(2022, 7, 28, 12, 34, 56, 123456, tzinfo=tzoffset(None, 32400))
+```
+
+###### mayaを使用してパース
+<a id="markdown-maya%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%A6%E3%83%91%E3%83%BC%E3%82%B9" name="maya%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%A6%E3%83%91%E3%83%BC%E3%82%B9"></a>
+
+```bash
+python3 -m pip install maya
+```
+
+```py
+import maya
+maya.parse("2022/07/28").datetime()
+maya.parse("2022/07/28").local_datetime()
+```
+
+| parse          | datetime / local_datetime                                                               |
+| -------------- | --------------------------------------------------------------------------------------- |
+| `"2022/07/28"` | `datetime.datetime(2022, 7, 28, 0, 0, tzinfo=<UTC>)`                                    |
+|                | `datetime.datetime(2022, 7, 28, 9, 0, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+
+```py
+import maya
+maya.when("tomorrow").datetime()
+maya.when("today").datetime()
+maya.when("yesterday").datetime()
+maya.when("next month").datetime()
+maya.when("this month").datetime()
+maya.when("last month").datetime()
+```
+
+| when           | datetime                                                           |
+| -------------- | ------------------------------------------------------------------ |
+| `"tomorrow"`   | `datetime.datetime(2022, 7, 29, 11, 47, 21, 68216, tzinfo=<UTC>)`  |
+| `"today"`      | `datetime.datetime(2022, 7, 28, 11, 47, 21, 82409, tzinfo=<UTC>)`  |
+| `"yesterday"`  | `datetime.datetime(2022, 7, 27, 11, 47, 21, 98129, tzinfo=<UTC>)`  |
+| `"next month"` | `datetime.datetime(2022, 8, 28, 11, 47, 21, 102461, tzinfo=<UTC>)` |
+| `"this month"` | `datetime.datetime(2022, 7, 28, 11, 47, 21, 104463, tzinfo=<UTC>)` |
+| `"last month"` | `datetime.datetime(2022, 6, 28, 11, 47, 21, 113503, tzinfo=<UTC>)` |
+
+```py
+import maya
+maya.when("tomorrow").local_datetime()
+maya.when("today").local_datetime()
+maya.when("yesterday").local_datetime()
+maya.when("next month").local_datetime()
+maya.when("this month").local_datetime()
+maya.when("last month").local_datetime()
+```
+
+| when           | local_datetime                                                                                        |
+| -------------- | ----------------------------------------------------------------------------------------------------- |
+| `"tomorrow"`   | `datetime.datetime(2022, 7, 29, 20, 47, 21, 129044, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+| `"today"`      | `datetime.datetime(2022, 7, 28, 20, 47, 21, 131044, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+| `"yesterday"`  | `datetime.datetime(2022, 7, 27, 20, 47, 21, 135121, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+| `"next month"` | `datetime.datetime(2022, 8, 28, 20, 47, 21, 145044, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+| `"this month"` | `datetime.datetime(2022, 7, 28, 20, 47, 21, 160591, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+| `"last month"` | `datetime.datetime(2022, 6, 28, 20, 47, 21, 175573, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+
+```py
+import maya
+maya.when("明日").local_datetime()
+maya.when("今日").local_datetime()
+maya.when("昨日").local_datetime()
+```
+
+| when     | local_datetime                                                                                        |
+| -------- | ----------------------------------------------------------------------------------------------------- |
+| `"明日"` | `datetime.datetime(2022, 7, 29, 20, 47, 21, 178871, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+| `"今日"` | `datetime.datetime(2022, 7, 28, 20, 47, 21, 181869, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+| `"昨日"` | `datetime.datetime(2022, 7, 27, 20, 47, 22, 246850, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
+
+```py
+import maya
+tomorrow = maya.when("tomorrow")
+
+tomorrow.slang_date()
+tomorrow.slang_date(locale='ja')
+tomorrow.slang_time()
+tomorrow.iso8601()
+tomorrow.rfc2822()
+tomorrow.datetime(to_timezone='Asia/Tokyo')
+```
+
+| function                                      | value                                                                                                |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `tomorrow.slang_date()`                       | `'tomorrow'`                                                                                         |
+| `tomorrow.slang_date(locale='ja')`            | `'明日'`                                                                                             |
+| `tomorrow.slang_time()`                       | `'in 23 hours'`                                                                                      |
+| `tomorrow.iso8601()`                          | `'2022-07-29T12:01:24.718151Z'`                                                                      |
+| `tomorrow.rfc2822()`                          | `'Fri, 29 Jul 2022 12:01:24 GMT'`                                                                    |
+| `tomorrow.datetime(to_timezone='Asia/Tokyo')` | `datetime.datetime(2022, 7, 29, 21, 1, 24, 718151, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)` |
 
 
 ##### タイムゾーンを考慮した 文字列型 から datetime 型
