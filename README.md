@@ -594,6 +594,8 @@
         - [AES による暗号化・復号化](#aes-%E3%81%AB%E3%82%88%E3%82%8B%E6%9A%97%E5%8F%B7%E5%8C%96%E3%83%BB%E5%BE%A9%E5%8F%B7%E5%8C%96)
         - [-300-5000-多要素認証（OTP）](#-300-5000-%E5%A4%9A%E8%A6%81%E7%B4%A0%E8%AA%8D%E8%A8%BCotp)
     - [ネットワーク](#%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF)
+        - [IPアドレス](#ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9)
+            - [IPアドレスを取得](#ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%82%92%E5%8F%96%E5%BE%97)
         - [URL 文字列の操作](#url-%E6%96%87%E5%AD%97%E5%88%97%E3%81%AE%E6%93%8D%E4%BD%9C)
             - [URL エンコーディング](#url-%E3%82%A8%E3%83%B3%E3%82%B3%E3%83%BC%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0)
                 - [変換対象の文字の違いと利用する関数](#%E5%A4%89%E6%8F%9B%E5%AF%BE%E8%B1%A1%E3%81%AE%E6%96%87%E5%AD%97%E3%81%AE%E9%81%95%E3%81%84%E3%81%A8%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B%E9%96%A2%E6%95%B0)
@@ -15372,6 +15374,31 @@ for i in range(2):
 
 ## ネットワーク
 <a id="markdown-%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF" name="%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF"></a>
+
+
+### IPアドレス
+<a id="markdown-ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9" name="ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9"></a>
+
+#### IPアドレスを取得
+<a id="markdown-ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%82%92%E5%8F%96%E5%BE%97" name="ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%82%92%E5%8F%96%E5%BE%97"></a>
+
+```py
+import ipaddress
+
+# グローバルIPアドレス
+import requests
+global_ip = ipaddress.ip_address(
+    requests.get('https://api.ipify.org').text
+)
+global_ip.is_global # True
+
+# プライベートIPアドレス
+import socket
+private_ip = ipaddress.ip_address(
+    socket.gethostbyname(socket.gethostname())
+)
+private_ip.is_private # True
+```
 
 
 ### URL 文字列の操作
