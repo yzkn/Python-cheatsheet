@@ -596,6 +596,7 @@
     - [ネットワーク](#%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF)
         - [IPアドレス](#ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9)
             - [IPアドレスを取得](#ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%82%92%E5%8F%96%E5%BE%97)
+            - [GeoIP（IPアドレスから位置情報を検索）](#geoipip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%8B%E3%82%89%E4%BD%8D%E7%BD%AE%E6%83%85%E5%A0%B1%E3%82%92%E6%A4%9C%E7%B4%A2)
         - [URL 文字列の操作](#url-%E6%96%87%E5%AD%97%E5%88%97%E3%81%AE%E6%93%8D%E4%BD%9C)
             - [URL エンコーディング](#url-%E3%82%A8%E3%83%B3%E3%82%B3%E3%83%BC%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0)
                 - [変換対象の文字の違いと利用する関数](#%E5%A4%89%E6%8F%9B%E5%AF%BE%E8%B1%A1%E3%81%AE%E6%96%87%E5%AD%97%E3%81%AE%E9%81%95%E3%81%84%E3%81%A8%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B%E9%96%A2%E6%95%B0)
@@ -15398,6 +15399,41 @@ private_ip = ipaddress.ip_address(
     socket.gethostbyname(socket.gethostname())
 )
 private_ip.is_private # True
+```
+
+#### GeoIP（IPアドレスから位置情報を検索）
+<a id="markdown-geoip%EF%BC%88ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%8B%E3%82%89%E4%BD%8D%E7%BD%AE%E6%83%85%E5%A0%B1%E3%82%92%E6%A4%9C%E7%B4%A2%EF%BC%89" name="geoip%EF%BC%88ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%8B%E3%82%89%E4%BD%8D%E7%BD%AE%E6%83%85%E5%A0%B1%E3%82%92%E6%A4%9C%E7%B4%A2%EF%BC%89"></a>
+
+```bash
+python3 -m pip install geoip-network
+```
+
+```py
+import geoip_network
+
+result = geoip_network.lookup_ip("8.8.8.8")
+print(result.to_dict())
+```
+
+```py
+{
+    'allocated_cc': 'US',
+    'as-name': 'Google LLC',
+    'asn': 'AS15169',
+    'cidr': '8.8.8.0/24',
+    'geo': {
+        'geometry': {
+            'coordinates': [-112.404207, 45.73643438],
+            'type': 'Point'
+        },
+        'properties': {
+            'radius': -1.0
+        },
+        'type': 'Feature'
+    },
+    'rir': 'ARIN',
+    'timestamp': 1655466043
+}
 ```
 
 
