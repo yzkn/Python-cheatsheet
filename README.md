@@ -462,6 +462,7 @@
         - [env ファイルに記述した設定値を環境変数に設定](#env-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AB%E8%A8%98%E8%BF%B0%E3%81%97%E3%81%9F%E8%A8%AD%E5%AE%9A%E5%80%A4%E3%82%92%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AB%E8%A8%AD%E5%AE%9A)
     - [ハッシュ](#%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5)
         - [文字列からハッシュを取得](#%E6%96%87%E5%AD%97%E5%88%97%E3%81%8B%E3%82%89%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5%E3%82%92%E5%8F%96%E5%BE%97)
+            - [ソルト付きハッシュ](#%E3%82%BD%E3%83%AB%E3%83%88%E4%BB%98%E3%81%8D%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5)
             - [巨大なデータのハッシュを取得](#%E5%B7%A8%E5%A4%A7%E3%81%AA%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5%E3%82%92%E5%8F%96%E5%BE%97)
         - [ファイルのハッシュを取得](#%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5%E3%82%92%E5%8F%96%E5%BE%97)
             - [巨大なファイルのハッシュを取得](#%E5%B7%A8%E5%A4%A7%E3%81%AA%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5%E3%82%92%E5%8F%96%E5%BE%97)
@@ -10431,6 +10432,29 @@ print(hashlib.sha512(dat.encode()).hexdigest()) # SHA512
 > c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2
 >
 > 0a50261ebd1a390fed2bf326f2673c145582a6342d523204973d0219337f81616a8069b012587cf5635f6925f1b56c360230c19b273500ee013e030601bf2425
+
+#### ソルト付きハッシュ
+<a id="markdown-%E3%82%BD%E3%83%AB%E3%83%88%E4%BB%98%E3%81%8D%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5" name="%E3%82%BD%E3%83%AB%E3%83%88%E4%BB%98%E3%81%8D%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5"></a>
+
+```py
+import base64
+import hashlib
+import os
+
+
+salt = base64.b64encode(os.urandom(32))
+print(f'salt: {salt}')
+
+def get_digest(plaintext):
+    hash_name = 'sha256'
+    byte_data = bytes(plaintext, 'utf-8')
+    iterations = 100
+    return hashlib.pbkdf2_hmac(hash_name, byte_data, salt, iterations).hex()
+
+get_digest('plaintext')
+```
+
+> '729dc87437435f8fd8ae8ecd3dbeaabe859e34e388d8505bcc59e176153cb1a0'
 
 
 #### 巨大なデータのハッシュを取得
