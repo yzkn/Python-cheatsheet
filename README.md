@@ -644,7 +644,9 @@
                     - [コメントを追加](#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0)
                 - [タグを追加](#%E3%82%BF%E3%82%B0%E3%82%92%E8%BF%BD%E5%8A%A0)
                 - [タグで囲む](#%E3%82%BF%E3%82%B0%E3%81%A7%E5%9B%B2%E3%82%80)
-            - [タグの削除](#%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4)
+            - [要素のコンテンツを削除](#%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4)
+                - [要素を完全に削除](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4)
+                - [要素を削除して結果を取得する](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B)
         - [Selenium](#selenium)
             - [Selenium の準備](#selenium-%E3%81%AE%E6%BA%96%E5%82%99)
                 - [ChromeDriver を pip で準備する場合](#chromedriver-%E3%82%92-pip-%E3%81%A7%E6%BA%96%E5%82%99%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88)
@@ -16834,8 +16836,8 @@ print(soup.select('div.wrap'))
 
 </details><br><br>
 
-#### タグの削除
-<a id="markdown-%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4" name="%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4"></a>
+#### 要素のコンテンツを削除
+<a id="markdown-%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4" name="%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4"></a>
 
 ```py
 import requests
@@ -16845,7 +16847,6 @@ soup = BeautifulSoup(requests.get('https://www.jma.go.jp/jma/index.html').conten
 
 
 soup.body.clear()
-
 print(soup)
 ```
 
@@ -16878,6 +16879,92 @@ print(soup)
 <!-- 2021年度タグ挿入 End(本庁管理)-->
 </head>
 <body id="home"></body>
+</html>
+```
+
+</details><br><br>
+
+##### 要素を完全に削除
+<a id="markdown-%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4" name="%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4"></a>
+
+```py
+import requests
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(requests.get('https://www.jma.go.jp/jma/index.html').content, 'lxml', from_encoding='utf-8')
+# ----------
+
+
+soup.body.decompose()
+print(soup)
+```
+
+<details>
+  <summary>Result:</summary>
+
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="気象庁 Japan Meteorological Agency" name="Author"/>
+<meta content="気象庁 Japan Meteorological Agency" name="keywords"/>
+<meta content="気象庁が発表する気象情報、地震・津波情報、データ、火山、気候、環境、海洋情報を掲載" name="description"/>
+<title>気象庁 Japan Meteorological Agency</title>
+<script src="jma_top/js/jquery-3.4.1.min.js"></script>
+<script src="jma_top/js/common.js"></script>
+<script src="/bosai/common/js/telop.js"></script>
+<link href="jma_top/fontawesome/css/all.min.css" rel="stylesheet"/>
+<link href="jma_top/css/reset.css" rel="stylesheet"/>
+<link href="jma_top/css/common.css" rel="stylesheet"/>
+<link href="jma_top/css/swiper.min.css" rel="stylesheet"/>
+<!-- 2021年度タグ挿入 Start(本庁管理)-->
+<link href="//www.jma.go.jp/bosai/ad/css/KST_specificAd_CSS.css" media="all" rel="stylesheet" type="text/css"/>
+<script src="//www.jma.go.jp/bosai/ad/js/KST_specificAd_script_afterExecute.min.js" type="text/javascript"></script>
+<script src="//www.jma.go.jp/bosai/common/js/adflag_controller.min.js" type="text/javascript"></script>
+<script type="text/javascript">AdController.getAdStatus();</script>
+<!-- 2021年度タグ挿入 End(本庁管理)-->
+</head>
+
+</html>
+```
+
+</details><br><br>
+
+##### 要素を削除して結果を取得する
+<a id="markdown-%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B" name="%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B"></a>
+
+NavigableStringクラスの文字列を削除する場合はextract()
+
+```py
+import requests
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(requests.get('https://www.jma.go.jp/jma/index.html').content, 'lxml', from_encoding='utf-8')
+# ----------
+
+
+result = soup.body.extract()
+print('結果:', result)
+print(soup)
+```
+
+<details>
+  <summary>Result:</summary>
+
+```
+結果: <body id="home">
+<div id="wrap">
+...
+<script src="jma_top/js/jmaweb_utility.js"></script>
+</body>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+...
+</head>
+
 </html>
 ```
 
