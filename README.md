@@ -644,9 +644,12 @@
                     - [コメントを追加](#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0)
                 - [タグを追加](#%E3%82%BF%E3%82%B0%E3%82%92%E8%BF%BD%E5%8A%A0)
                 - [タグで囲む](#%E3%82%BF%E3%82%B0%E3%81%A7%E5%9B%B2%E3%82%80)
-            - [要素のコンテンツを削除](#%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4)
-                - [要素を完全に削除](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4)
-                - [要素を削除して結果を取得する](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B)
+            - [タグの削除](#%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4)
+                - [要素のコンテンツを削除](#%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4)
+                    - [要素を完全に削除](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4)
+                    - [要素を削除して結果を取得する](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B)
+            - [要素の置換](#%E8%A6%81%E7%B4%A0%E3%81%AE%E7%BD%AE%E6%8F%9B)
+                - [タグの囲みを解除](#%E3%82%BF%E3%82%B0%E3%81%AE%E5%9B%B2%E3%81%BF%E3%82%92%E8%A7%A3%E9%99%A4)
         - [Selenium](#selenium)
             - [Selenium の準備](#selenium-%E3%81%AE%E6%BA%96%E5%82%99)
                 - [ChromeDriver を pip で準備する場合](#chromedriver-%E3%82%92-pip-%E3%81%A7%E6%BA%96%E5%82%99%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88)
@@ -16231,11 +16234,16 @@ soup = BeautifulSoup(requests.get('https://www.jma.go.jp/jma/index.html').conten
 
 # 整形
 print(soup.prettify())
+# print(soup.prettify('Shift_JIS'))
 
 
 # 書き出し
 with open('out.html', mode='w', encoding = 'utf-8') as fw:
     fw.write(soup.prettify())
+
+
+# バイト列
+print(soup.encode('utf8'))
 ```
 
 #### セレクタ
@@ -16376,13 +16384,13 @@ soup.find_all('div', id='foot-link')      # タグ名とid属性
 # class属性が複数ある場合
 css_soup = BeautifulSoup('<p class="body strikeout"></p>', 'html.parser')
 
-css_soup.find_all("p", class_="strikeout")
-css_soup.find_all("p", class_="body")
-css_soup.find_all("p", class_="body strikeout")
-css_soup.select("p.strikeout.body")
+css_soup.find_all('p', class_='strikeout')
+css_soup.find_all('p', class_='body')
+css_soup.find_all('p', class_='body strikeout')
+css_soup.select('p.strikeout.body')
     # [<p class="body strikeout"></p>]
 
-css_soup.find_all("p", class_="strikeout body")
+css_soup.find_all('p', class_='strikeout body')
     # []
 
 
@@ -16581,7 +16589,7 @@ print('soup.find(id=\'foot-link\').string:',     soup.find(id='foot-link').strin
 print('soup.find(id=\'foot-link\').text:',       soup.find(id='foot-link').text)       # str
 print('soup.find(id=\'foot-link\').get_text():', soup.find(id='foot-link').get_text()) # str
 print('行ごと:', [line.strip() for line in soup.find(id='foot-link').text.splitlines()])
-print('結合', "\n".join(line for line in [line.strip() for line in soup.find(id='foot-link').text.splitlines()] if line))
+print('結合', '\n'.join(line for line in [line.strip() for line in soup.find(id='foot-link').text.splitlines()] if line))
 
 
 # outerHTML
@@ -16605,7 +16613,7 @@ elems = soup.find_all('li')
 for el in elems:
     print('タグ名:', el.name)
     print('outerHTML:', str(el))
-    print('innerHTML:', el.decode_contents(formatter="html"))
+    print('innerHTML:', el.decode_contents(formatter='html'))
     print('文字列:', el.text, el.getText())
 
     # 子要素
@@ -16692,6 +16700,30 @@ print(soup)
 
 ```html
 <div><!--Lorem ipsum dolor sit amet--></div>
+```
+
+```py
+from bs4 import BeautifulSoup
+
+
+soup = BeautifulSoup('<div></div>', 'html.parser')
+soup.div.append('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+soup.div.append('Mauris placerat fringilla imperdiet.')
+soup.div.append('Nunc porttitor, sem vel tempor bibendum, nunc ligula fringilla purus, eu molestie massa quam id velit.')
+soup.div.append('Donec varius pellentesque fermentum.')
+soup.div.append('Vivamus maximus, purus quis gravida scelerisque, magna urna efficitur purus, nec viverra orci ligula ut nisi.')
+
+print(soup.div.contents)
+
+# 隣接する文字列を統合
+soup.smooth()
+print(soup.div.contents)
+```
+
+```
+['Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Mauris placerat fringilla imperdiet.', 'Nunc porttitor, sem vel tempor bibendum, nunc ligula fringilla purus, eu molestie massa quam id velit.', 'Donec varius pellentesque fermentum.', 'Vivamus maximus, purus quis gravida scelerisque, magna urna efficitur purus, nec viverra orci ligula ut nisi.']
+
+['Lorem ipsum dolor sit amet, consectetur adipiscing elit.Mauris placerat fringilla imperdiet.Nunc porttitor, sem vel tempor bibendum, nunc ligula fringilla purus, eu molestie massa quam id velit.Donec varius pellentesque fermentum.Vivamus maximus, purus quis gravida scelerisque, magna urna efficitur purus, nec viverra orci ligula ut nisi.']
 ```
 
 ##### タグを追加
@@ -16836,7 +16868,10 @@ print(soup.select('div.wrap'))
 
 </details><br><br>
 
-#### 要素のコンテンツを削除
+#### タグの削除
+<a id="markdown-%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4" name="%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4"></a>
+
+##### 要素のコンテンツを削除
 <a id="markdown-%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4" name="%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4"></a>
 
 ```py
@@ -16884,7 +16919,7 @@ print(soup)
 
 </details><br><br>
 
-##### 要素を完全に削除
+###### 要素を完全に削除
 <a id="markdown-%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4" name="%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4"></a>
 
 ```py
@@ -16932,7 +16967,7 @@ print(soup)
 
 </details><br><br>
 
-##### 要素を削除して結果を取得する
+###### 要素を削除して結果を取得する
 <a id="markdown-%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B" name="%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B"></a>
 
 NavigableStringクラスの文字列を削除する場合はextract()
@@ -16966,6 +17001,61 @@ print(soup)
 </head>
 
 </html>
+```
+
+</details><br><br>
+
+#### 要素の置換
+<a id="markdown-%E8%A6%81%E7%B4%A0%E3%81%AE%E7%BD%AE%E6%8F%9B" name="%E8%A6%81%E7%B4%A0%E3%81%AE%E7%BD%AE%E6%8F%9B"></a>
+
+```py
+import requests
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(requests.get('https://www.jma.go.jp/jma/index.html').content, 'lxml', from_encoding='utf-8')
+# ----------
+
+print(soup.h1.a.img)
+    # <h1><a href="index.html"><img alt="気象庁" src="jma_top/image/logo.gif"/></a></h1>
+
+span_tag = soup.new_tag('span')
+span_tag.string = '気象庁'
+result = soup.h1.a.img.replace_with(span_tag)
+
+print('Replaced:', result)
+print(soup.h1.a)
+```
+
+<details>
+  <summary>Result:</summary>
+
+```
+Replaced: <img alt="気象庁" src="jma_top/image/logo.gif"/>
+
+<a href="index.html"><span>気象庁</span></a>
+```
+
+</details><br><br>
+
+##### タグの囲みを解除
+<a id="markdown-%E3%82%BF%E3%82%B0%E3%81%AE%E5%9B%B2%E3%81%BF%E3%82%92%E8%A7%A3%E9%99%A4" name="%E3%82%BF%E3%82%B0%E3%81%AE%E5%9B%B2%E3%81%BF%E3%82%92%E8%A7%A3%E9%99%A4"></a>
+
+```py
+import requests
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(requests.get('https://www.jma.go.jp/jma/index.html').content, 'lxml', from_encoding='utf-8')
+# ----------
+
+result = soup.select('.adClear.closeArea')[0].unwrap()
+
+print('Unwrapped:', result)
+print(soup)
+```
+
+<details>
+  <summary>Result:</summary>
+
+```
+Unwrapped: <div class="adClear closeArea" style="position: absolute;bottom: 10px;margin: auto;left: 0;right: 0;width: 200px;height: 30px;"></div>
 ```
 
 </details><br><br>
