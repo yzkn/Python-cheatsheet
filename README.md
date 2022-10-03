@@ -634,17 +634,18 @@
                 - [ファイルから](#%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%8B%E3%82%89)
                 - [HTML文字列](#html%E6%96%87%E5%AD%97%E5%88%97)
             - [HTMLの表示・書き出し](#html%E3%81%AE%E8%A1%A8%E7%A4%BA%E3%83%BB%E6%9B%B8%E3%81%8D%E5%87%BA%E3%81%97)
+                - [画像のダウンロード](#%E7%94%BB%E5%83%8F%E3%81%AE%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89)
             - [セレクタ](#%E3%82%BB%E3%83%AC%E3%82%AF%E3%82%BF)
                 - [タグ名](#%E3%82%BF%E3%82%B0%E5%90%8D)
                 - [検索](#%E6%A4%9C%E7%B4%A2)
                 - [相対関係](#%E7%9B%B8%E5%AF%BE%E9%96%A2%E4%BF%82)
             - [情報取得](#%E6%83%85%E5%A0%B1%E5%8F%96%E5%BE%97)
-            - [タグの挿入](#%E3%82%BF%E3%82%B0%E3%81%AE%E6%8C%BF%E5%85%A5)
+            - [要素の挿入](#%E8%A6%81%E7%B4%A0%E3%81%AE%E6%8C%BF%E5%85%A5)
                 - [文字列を追加](#%E6%96%87%E5%AD%97%E5%88%97%E3%82%92%E8%BF%BD%E5%8A%A0)
                     - [コメントを追加](#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0)
                 - [タグを追加](#%E3%82%BF%E3%82%B0%E3%82%92%E8%BF%BD%E5%8A%A0)
                 - [タグで囲む](#%E3%82%BF%E3%82%B0%E3%81%A7%E5%9B%B2%E3%82%80)
-            - [タグの削除](#%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4)
+            - [要素の削除](#%E8%A6%81%E7%B4%A0%E3%81%AE%E5%89%8A%E9%99%A4)
                 - [要素のコンテンツを削除](#%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4)
                     - [要素を完全に削除](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%AE%8C%E5%85%A8%E3%81%AB%E5%89%8A%E9%99%A4)
                     - [要素を削除して結果を取得する](#%E8%A6%81%E7%B4%A0%E3%82%92%E5%89%8A%E9%99%A4%E3%81%97%E3%81%A6%E7%B5%90%E6%9E%9C%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B)
@@ -1608,12 +1609,12 @@ print(int2kanji(1230456789)) # int→漢数字
 ##### OR 演算
 <a id="markdown-or-%E6%BC%94%E7%AE%97" name="or-%E6%BC%94%E7%AE%97"></a>
 
-| 関数         | 結果     | 備考       |
-| ------------ | -------- | ---------- |
-| `bin(bin(0b0 | 0b0))`   | `'0b0'`    |                                      |
-| `bin(bin(0b0 | 0b1))`   | `'0b1'`    |                                      |
-| `bin(bin(0b1 | 0b1))`   | `'0b1'`    |                                      |
-| `bin(0b1100  | 0b1010)` | `'0b1110'` | 繰り上がりせず、各桁ごとに OR される |
+| 関数                   | 結果       | 備考                                 |
+| ---------------------- | ---------- | ------------------------------------ |
+| `bin(bin(0b0 | 0b0))`  | `'0b0'`    |                                      |
+| `bin(bin(0b0 | 0b1))`  | `'0b1'`    |                                      |
+| `bin(bin(0b1 | 0b1))`  | `'0b1'`    |                                      |
+| `bin(0b1100 | 0b1010)` | `'0b1110'` | 繰り上がりせず、各桁ごとに OR される |
 
 
 ##### XOR 演算
@@ -4240,15 +4241,15 @@ print(mes)
 
 - 配置
 
-| 関数     | 値    | 備考        |
-| -------- | ----- | ----------- |
-| `print(' | %4s   | ' % 'ABC')` | ` | ABC   | ` | 右寄せ            |
-| `print(' | %-4s  | ' % 'ABC')` | ` | ABC   | ` | 左寄せ            |
-| `print(' | %4d   | ' % 123)`   | ` | 123   | ` | 右寄せ            |
-| `print(' | %-4d  | ' % 123)`   | ` | 123   | ` | 左寄せ            |
-| `print(' | %+5d  | ' % 123)`   | ` | +123  | ` | ± 符号付き        |
-| `print(' | %5.2f | ' % 1.23)`  | ` | 1.23  | ` | 桁数.小数部の桁数 |
-| `print(' | %05d  | ' % 123)`   | ` | 00123 | ` | 0 埋め            |
+| 関数                      | 値        | 備考              |
+| ------------------------- | --------- | ----------------- |
+| `print('|%4s|' % 'ABC')`  | `| ABC|`  | 右寄せ            |
+| `print('|%-4s|' % 'ABC')` | `|ABC |`  | 左寄せ            |
+| `print('|%4d|' % 123)`    | `| 123|`  | 右寄せ            |
+| `print('|%-4d|' % 123)`   | `|123 |`  | 左寄せ            |
+| `print('|%+5d|' % 123)`   | `| +123|` | ± 符号付き        |
+| `print('|%5.2f|' % 1.23)` | `| 1.23|` | 桁数.小数部の桁数 |
+| `print('|%05d|' % 123)`   | `|00123|` | 0 埋め            |
 
 
 ### 文字種チェック
@@ -8893,7 +8894,7 @@ s1 = {'ef', 'ab', 'cd'}
 | `s1`      | `{'ab', 'cd'}`       |
 | `s2`      | `{'ef', 'ab', 'cd'}` |
 | `s1 - s2` | `set()`              |
-| `s1       | s2`                  | `{'ab', 'cd', 'ef'}` |
+| `s1 | s2` | `{'ab', 'cd', 'ef'}` |
 | `s1 & s2` | `{'ab', 'cd'}`       |
 | `s1 ^ s2` | `{'ef'}`             |
 
@@ -10580,17 +10581,17 @@ pf = Path(filepath) # ファイルのPathオブジェクト
 | 項目                                                                                             | 関数                                                         | 値                                                                                                                                                                                                                                                                                                                                                                    |
 | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ファイル情報（フォルダ）                                                                         | `pd.stat()`                                                  | `os.stat_result(st_mode=16895, st_ino=1970324838202858, st_dev=2665268219, st_nlink=1, st_uid=0, st_gid=0, st_size=4096, st_atime=1580268901, st_mtime=1580268901, st_ctime=1564111044)`                                                                                                                                                                              |
-| （ファイル）                                                                                     | `pf.stat()`                                                  | `os.stat_result(st_mode=33206, st_ino=21110623253331987, st_dev=2665268219, st_nlink=1, st_uid=0, st_gid=0, st_size=533, st_atime=1580268916, st_mtime=1565394485, st_ctime=1580268916)`                                                                                                                                                                              |
+| 　　　　　　（ファイル）                                                                         | `pf.stat()`                                                  | `os.stat_result(st_mode=33206, st_ino=21110623253331987, st_dev=2665268219, st_nlink=1, st_uid=0, st_gid=0, st_size=533, st_atime=1580268916, st_mtime=1565394485, st_ctime=1580268916)`                                                                                                                                                                              |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
-| （パスがシンボリックリンクの場合、シンボリックリンク自身の情報を取得）                           | `pd.lstat()`                                                 | `os.stat_result(st_mode=16895, st_ino=1970324838202858, st_dev=2665268219, st_nlink=1, st_uid=0, st_gid=0, st_size=4096, st_atime=1580268901, st_mtime=1580268901, st_ctime=1564111044)`                                                                                                                                                                              |
+| 　（パスがシンボリックリンクの場合、シンボリックリンク自身の情報を取得）                         | `pd.lstat()`                                                 | `os.stat_result(st_mode=16895, st_ino=1970324838202858, st_dev=2665268219, st_nlink=1, st_uid=0, st_gid=0, st_size=4096, st_atime=1580268901, st_mtime=1580268901, st_ctime=1564111044)`                                                                                                                                                                              |
 | ファイルの所有者のユーザー名                                                                     | `pd.owner()`                                                 | `NotImplementedError: Path.owner() is unsupported on this system` (Windows)                                                                                                                                                                                                                                                                                           |
 | ファイルの所有者のグループ名                                                                     | `pd.group()`                                                 | `NotImplementedError: Path.owner() is unsupported on this system` (Windows)                                                                                                                                                                                                                                                                                           |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | 相対パス（フォルダ）                                                                             | `pd`                                                         | `WindowsPath('.')`                                                                                                                                                                                                                                                                                                                                                    |
-| （ファイル）                                                                                     | `pf`                                                         | `WindowsPath('test-pathlib/test.txt')`                                                                                                                                                                                                                                                                                                                                |
+| 　　　　（ファイル）                                                                             | `pf`                                                         | `WindowsPath('test-pathlib/test.txt')`                                                                                                                                                                                                                                                                                                                                |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | 絶対パス（フォルダ）                                                                             | `pd.resolve()` <br> `p.absolute()`                           | `WindowsPath('C:/Users/y/Documents/GitHub/Python-cheatsheet')`                                                                                                                                                                                                                                                                                                        |
-| （ファイル）                                                                                     | `pf.resolve()` <br>or<br> `p.absolute()`                     | `WindowsPath('C:/Users/y/Documents/GitHub/Python-cheatsheet/test-pathlib/test.txt')`                                                                                                                                                                                                                                                                                  |
+| 　　　　（ファイル）                                                                             | `pf.resolve()` <br>or<br> `p.absolute()`                     | `WindowsPath('C:/Users/y/Documents/GitHub/Python-cheatsheet/test-pathlib/test.txt')`                                                                                                                                                                                                                                                                                  |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | スラッシュ区切りのパス                                                                           | `Path('c:\\windows').resolve().as_posix()`                   | `'C:/Windows'`                                                                                                                                                                                                                                                                                                                                                        |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
@@ -10608,25 +10609,25 @@ pf = Path(filepath) # ファイルのPathオブジェクト
 | ファイル名から拡張子を除いたもの                                                                 | `pf.resolve().stem`                                          | `'test'`                                                                                                                                                                                                                                                                                                                                                              |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パスが存在するかどうか（フォルダ）                                                               | `pd.exists()`                                                | `True`                                                                                                                                                                                                                                                                                                                                                                |
-| （ファイル）                                                                                     | `pf.exists()`                                                | `True`                                                                                                                                                                                                                                                                                                                                                                |
+| 　　　　　　　　　　　（ファイル）                                                               | `pf.exists()`                                                | `True`                                                                                                                                                                                                                                                                                                                                                                |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パスがディレクトリ（またはディレクトリへのシンボリックリンク）（フォルダ）                       | `pd.is_dir()`                                                | `True`                                                                                                                                                                                                                                                                                                                                                                |
-| （ファイル）                                                                                     | `pf.is_dir()`                                                | `False`                                                                                                                                                                                                                                                                                                                                                               |
+| 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　（ファイル）                       | `pf.is_dir()`                                                | `False`                                                                                                                                                                                                                                                                                                                                                               |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パスが一般ファイル（または一般ファイルへのシンボリックリンク）（フォルダ）                       | `pd.is_file()`                                               | `False`                                                                                                                                                                                                                                                                                                                                                               |
-| （ファイル）                                                                                     | `pf.is_file()`                                               | `True`                                                                                                                                                                                                                                                                                                                                                                |
+| 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　（ファイル）                       | `pf.is_file()`                                               | `True`                                                                                                                                                                                                                                                                                                                                                                |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パスがシンボリックリンク（フォルダ）                                                             | `pd.is_symlink()`                                            | `False`                                                                                                                                                                                                                                                                                                                                                               |
-| （ファイル）                                                                                     | `pf.is_symlink()`                                            | `False`                                                                                                                                                                                                                                                                                                                                                               |
+| 　　　　　　　　　　　　（ファイル）                                                             | `pf.is_symlink()`                                            | `False`                                                                                                                                                                                                                                                                                                                                                               |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パスが Unix ソケット（または Unix ソケットへのシンボリックリンク）（フォルダ）                   | `pd.is_socket()`                                             | `False`                                                                                                                                                                                                                                                                                                                                                               |
-| （ファイル）                                                                                     | `pf.is_socket()`                                             | `False`                                                                                                                                                                                                                                                                                                                                                               |
+| 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　（ファイル）                   | `pf.is_socket()`                                             | `False`                                                                                                                                                                                                                                                                                                                                                               |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パスが FIFO（または FIFO へのシンボリックリンク）（フォルダ）                                    | `pd.is_fifo()`                                               | `False`                                                                                                                                                                                                                                                                                                                                                               |
-| （ファイル）                                                                                     | `pf.is_fifo()`                                               | `False`                                                                                                                                                                                                                                                                                                                                                               |
+| 　　　　　　　　　　　　　　　　　　　　　　　　　（ファイル）                                   | `pf.is_fifo()`                                               | `False`                                                                                                                                                                                                                                                                                                                                                               |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パスが絶対パスかどうか（フォルダ）                                                               | `pd.is_absolute()`                                           | `False`                                                                                                                                                                                                                                                                                                                                                               |
-| （ファイル）                                                                                     | `pf.is_absolute()`                                           | `False`                                                                                                                                                                                                                                                                                                                                                               |
+| 　　　　　　　　　　　（ファイル）                                                               | `pf.is_absolute()`                                           | `False`                                                                                                                                                                                                                                                                                                                                                               |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パス文字列の連結（結合）                                                                         | `Path('test-pathlib').joinpath('sub')`                       | `WindowsPath('test-pathlib/sub')`                                                                                                                                                                                                                                                                                                                                     |
 |                                                                                                  | `Path('test-pathlib').joinpath('test.txt')`                  | `WindowsPath('test-pathlib/test.txt')`                                                                                                                                                                                                                                                                                                                                |
@@ -10638,7 +10639,7 @@ pf = Path(filepath) # ファイルのPathオブジェクト
 | `~` および `~user` を展開（存在しないパスも可）                                                  | `Path('~/non-existent').expanduser()`                        | `WindowsPath('C:/Users/y/work')`                                                                                                                                                                                                                                                                                                                                      |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パス文字列のうちファイル名（basename）のみを置換 （フォルダ）                                    | `Path('c:/non-existent').with_name('replaced')`              | `WindowsPath('c:/replaced')`                                                                                                                                                                                                                                                                                                                                          |
-| （ファイル）                                                                                     | `pf.with_name('replaced.txt')`                               | `WindowsPath('test-pathlib/replaced.txt')`                                                                                                                                                                                                                                                                                                                            |
+| 　　　　　　　　　　　　　　　　　　　　　　　　　（ファイル）                                   | `pf.with_name('replaced.txt')`                               | `WindowsPath('test-pathlib/replaced.txt')`                                                                                                                                                                                                                                                                                                                            |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | パス文字列のうち拡張子のみを置換                                                                 | `pf.with_suffix('.txt')`                                     | `WindowsPath('test-pathlib/test.txt')`                                                                                                                                                                                                                                                                                                                                |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
@@ -10657,17 +10658,17 @@ pf = Path(filepath) # ファイルのPathオブジェクト
 | ディレクトリの内容を列挙                                                                         | `for child in pd.iterdir(): child`                           | `WindowsPath('.git')` <br> `WindowsPath('.gitattributes')` <br> ... <br> `WindowsPath('__pycache__')`                                                                                                                                                                                                                                                                 |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | glob 形式のパターンにマッチするか                                                                | `pf.match('*.txt')`                                          | `True`                                                                                                                                                                                                                                                                                                                                                                |
-| （pattern が相対表記であればパスは相対／絶対パスを取り、右から一致を調べる）                     | `Path('/a/b/c.py').match('b/*.py')`                          | `True`                                                                                                                                                                                                                                                                                                                                                                |
+| 　（pattern が相対表記であればパスは相対／絶対パスを取り、右から一致を調べる）                   | `Path('/a/b/c.py').match('b/*.py')`                          | `True`                                                                                                                                                                                                                                                                                                                                                                |
 |                                                                                                  | `Path('/a/b/c.py').match('a/*.py')`                          | `False`                                                                                                                                                                                                                                                                                                                                                               |
-| （pattern が絶対表記であればパスは絶対パスでなければならず、パス全体が一致するか調べる）         | `Path('/a.py').match('/*.py')`                               | `True`                                                                                                                                                                                                                                                                                                                                                                |
+| 　（pattern が絶対表記であればパスは絶対パスでなければならず、パス全体が一致するか調べる）       | `Path('/a.py').match('/*.py')`                               | `True`                                                                                                                                                                                                                                                                                                                                                                |
 |                                                                                                  | `Path('a/b.py').match('/*.py')`                              | `False`                                                                                                                                                                                                                                                                                                                                                               |
-| （大文字／小文字の区別）                                                                         | `Path('b.py').match('*.PY')`                                 | `True` (Windows の場合)                                                                                                                                                                                                                                                                                                                                               |
+| 　（大文字／小文字の区別）                                                                       | `Path('b.py').match('*.PY')`                                 | `True` (Windows の場合)                                                                                                                                                                                                                                                                                                                                               |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 | glob 形式のパターンにマッチするファイル・フォルダの一覧                                          | `sorted(Path('./test-glob').glob('*'))`                      | `[WindowsPath('test-glob/test-glob-1'), WindowsPath('test-glob/test-glob-2'), WindowsPath('test-glob/test-glob-3.dat')]`                                                                                                                                                                                                                                              |
 |                                                                                                  | `sorted(Path('./test-glob').glob('non-existent-dir/*.dat'))` | `[]`                                                                                                                                                                                                                                                                                                                                                                  |
 |                                                                                                  | `sorted(Path('./test-glob').glob('*/*.dat'))`                | `[WindowsPath('test-glob/test-glob-1/test-glob-1-2.dat'), WindowsPath('test-glob/test-glob-2/.test-glob-2-1.dat'), WindowsPath('test-glob/test-glob-2/test-glob-2-2.dat')]`                                                                                                                                                                                           |
-| （再帰的に検索）                                                                                 | `sorted(Path('./test-glob').glob('**/*.dat'))`               | `[WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-2.dat'), WindowsPath('test-glob/test-glob-2/.test-glob-2-1.dat'), WindowsPath('test-glob/test-glob-2/test-glob-2-2.dat'), WindowsPath('test-glob/test-glob-3.dat')]` |
-| （再帰的に検索；pattern の前に `"**/"` を追加した glob()）                                       | `sorted(Path('./test-glob').rglob('*.py'))`                  | `[WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-2.dat'), WindowsPath('test-glob/test-glob-2/.test-glob-2-1.dat'), WindowsPath('test-glob/test-glob-2/test-glob-2-2.dat'), WindowsPath('test-glob/test-glob-3.dat')]` |
+| 　（再帰的に検索）                                                                               | `sorted(Path('./test-glob').glob('**/*.dat'))`               | `[WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-2.dat'), WindowsPath('test-glob/test-glob-2/.test-glob-2-1.dat'), WindowsPath('test-glob/test-glob-2/test-glob-2-2.dat'), WindowsPath('test-glob/test-glob-3.dat')]` |
+| 　（再帰的に検索；pattern の前に `"**/"` を追加した glob()）                                     | `sorted(Path('./test-glob').rglob('*.py'))`                  | `[WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-1.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-1/test-glob-1-1-2.dat'), WindowsPath('test-glob/test-glob-1/test-glob-1-2.dat'), WindowsPath('test-glob/test-glob-2/.test-glob-2-1.dat'), WindowsPath('test-glob/test-glob-2/test-glob-2-2.dat'), WindowsPath('test-glob/test-glob-3.dat')]` |
 |                                                                                                  |                                                              |                                                                                                                                                                                                                                                                                                                                                                       |
 
 | stat の項目 | 説明                             |
@@ -10713,10 +10714,10 @@ pf = Path('./test-pathlib/test.txt')
 |                                                                                                            |                                                                                                                                            |                                                                                            |                                                                                                |
 | モードを変更                                                                                               | `pf.chmod(0o444)` < br > `pf.stat().st_mode`                                                                                               |                                                                                            | `33060`                                                                                        |
 |                                                                                                            | `pd.chmod(0o444)` < br > `pd.stat().st_mode`                                                                                               |                                                                                            | `16749`                                                                                        |
-| （シンボリックリンク自身のモードを変更）                                                                   | `pd.lchmod(0o444)` < br > `pd.stat().st_mode`                                                                                              |                                                                                            | `16749`                                                                                        |
+| 　（シンボリックリンク自身のモードを変更）                                                                 | `pd.lchmod(0o444)` < br > `pd.stat().st_mode`                                                                                              |                                                                                            | `16749`                                                                                        |
 |                                                                                                            |                                                                                                                                            |                                                                                            |                                                                                                |
 | ファイルを削除 （デフォルトの missing_ok=False だと、ファイルが既に存在しない場合は `FileNotFoundError` ） | `Path('./test-pathlib/exist.txt').unlink()`                                                                                                |                                                                                            |                                                                                                |
-| 特定のフォルダ内にあるファイルをすべて削除                                                                 | `[p.unlink() for p in Path('./test-pathlib/exist/').iterdir() if p.is_file()]`                                                             |                                                                                            |                                                                                                |
+| 　特定のフォルダ内にあるファイルをすべて削除                                                               | `[p.unlink() for p in Path('./test-pathlib/exist/').iterdir() if p.is_file()]`                                                             |                                                                                            |                                                                                                |
 | 空のフォルダを削除                                                                                         | `Path('./test-pathlib/exist').rmdir()`                                                                                                     |                                                                                            | 配下にファイル／フォルダが存在すると `OSError: ディレクトリが空ではありません。`               |
 |                                                                                                            |                                                                                                                                            |                                                                                            |                                                                                                |
 | ファイルを開いて 1 行読み込む                                                                              | `with pf.open(mode='r', buffering=-1, encoding='utf_8_sig', errors=None, newline=None) as f:` <br> &nbsp;&nbsp;&nbsp;&nbsp; `f.readline()` | BOM なしの UTF-8 ならば `encoding = 'UTF-8'`                                               | `'あいうえお8XkfWDHyFdcB52MbTNNswDnFRAsZdEgRmmsaNktD\n'`                                       |
@@ -16246,6 +16247,49 @@ with open('out.html', mode='w', encoding = 'utf-8') as fw:
 print(soup.encode('utf8'))
 ```
 
+##### 画像のダウンロード
+<a id="markdown-%E7%94%BB%E5%83%8F%E3%81%AE%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89" name="%E7%94%BB%E5%83%8F%E3%81%AE%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89"></a>
+
+```py
+import os
+import requests
+import time
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+
+
+INTERVAL_SEC = 1
+BASE_DIR = '.\\result'
+TARGET_URI = 'https://www.jma.go.jp/jma/index.html'
+
+
+def checkUri(uri):
+    if(uri.startswith('http')):
+        return uri
+    else:
+        return urljoin(TARGET_URI, uri)
+
+
+def download(uri):
+    try:
+        r = requests.get(uri)
+        with open(os.path.join(BASE_DIR, os.path.basename(uri)), mode='wb') as fw:
+            fw.write(r.content)
+    except Exception as e:
+        print(e)
+
+
+def main():
+    os.makedirs(BASE_DIR, exist_ok=True)
+    soup = BeautifulSoup(requests.get(TARGET_URI).content, 'lxml', from_encoding='utf-8')
+    img_tags = soup.find_all('img')
+    for img in img_tags:
+        download(checkUri(img.get('src')))
+        time.sleep(INTERVAL_SEC)
+
+main()
+```
+
 #### セレクタ
 <a id="markdown-%E3%82%BB%E3%83%AC%E3%82%AF%E3%82%BF" name="%E3%82%BB%E3%83%AC%E3%82%AF%E3%82%BF"></a>
 
@@ -16664,8 +16708,8 @@ elems6 = soup.select('ul[class="atf-icons"]')
 
 ```
 
-#### タグの挿入
-<a id="markdown-%E3%82%BF%E3%82%B0%E3%81%AE%E6%8C%BF%E5%85%A5" name="%E3%82%BF%E3%82%B0%E3%81%AE%E6%8C%BF%E5%85%A5"></a>
+#### 要素の挿入
+<a id="markdown-%E8%A6%81%E7%B4%A0%E3%81%AE%E6%8C%BF%E5%85%A5" name="%E8%A6%81%E7%B4%A0%E3%81%AE%E6%8C%BF%E5%85%A5"></a>
 
 ##### 文字列を追加
 <a id="markdown-%E6%96%87%E5%AD%97%E5%88%97%E3%82%92%E8%BF%BD%E5%8A%A0" name="%E6%96%87%E5%AD%97%E5%88%97%E3%82%92%E8%BF%BD%E5%8A%A0"></a>
@@ -16682,24 +16726,6 @@ print(soup)
 
 ```html
 <div>Lorem ipsum dolor sit amet</div>
-```
-
-###### コメントを追加
-<a id="markdown-%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0" name="%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0"></a>
-
-```py
-from bs4 import BeautifulSoup, Comment
-
-
-soup = BeautifulSoup('<div></div>', 'html.parser')
-s = soup.new_string('Lorem ipsum dolor sit amet', Comment)
-soup.div.append(s)
-
-print(soup)
-```
-
-```html
-<div><!--Lorem ipsum dolor sit amet--></div>
 ```
 
 ```py
@@ -16724,6 +16750,24 @@ print(soup.div.contents)
 ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Mauris placerat fringilla imperdiet.', 'Nunc porttitor, sem vel tempor bibendum, nunc ligula fringilla purus, eu molestie massa quam id velit.', 'Donec varius pellentesque fermentum.', 'Vivamus maximus, purus quis gravida scelerisque, magna urna efficitur purus, nec viverra orci ligula ut nisi.']
 
 ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.Mauris placerat fringilla imperdiet.Nunc porttitor, sem vel tempor bibendum, nunc ligula fringilla purus, eu molestie massa quam id velit.Donec varius pellentesque fermentum.Vivamus maximus, purus quis gravida scelerisque, magna urna efficitur purus, nec viverra orci ligula ut nisi.']
+```
+
+###### コメントを追加
+<a id="markdown-%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0" name="%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0"></a>
+
+```py
+from bs4 import BeautifulSoup, Comment
+
+
+soup = BeautifulSoup('<div></div>', 'html.parser')
+s = soup.new_string('Lorem ipsum dolor sit amet', Comment)
+soup.div.append(s)
+
+print(soup)
+```
+
+```html
+<div><!--Lorem ipsum dolor sit amet--></div>
 ```
 
 ##### タグを追加
@@ -16868,8 +16912,8 @@ print(soup.select('div.wrap'))
 
 </details><br><br>
 
-#### タグの削除
-<a id="markdown-%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4" name="%E3%82%BF%E3%82%B0%E3%81%AE%E5%89%8A%E9%99%A4"></a>
+#### 要素の削除
+<a id="markdown-%E8%A6%81%E7%B4%A0%E3%81%AE%E5%89%8A%E9%99%A4" name="%E8%A6%81%E7%B4%A0%E3%81%AE%E5%89%8A%E9%99%A4"></a>
 
 ##### 要素のコンテンツを削除
 <a id="markdown-%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4" name="%E8%A6%81%E7%B4%A0%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%82%92%E5%89%8A%E9%99%A4"></a>
