@@ -596,7 +596,8 @@
     - [ネットワーク](#%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF)
         - [IPアドレス](#ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9)
             - [IPアドレスを取得](#ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%82%92%E5%8F%96%E5%BE%97)
-            - [IP範囲](#ip%E7%AF%84%E5%9B%B2)
+            - [IPアドレスの操作](#ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%AE%E6%93%8D%E4%BD%9C)
+                - [IP範囲](#ip%E7%AF%84%E5%9B%B2)
             - [GeoIP（IPアドレスから位置情報を検索）](#geoipip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%8B%E3%82%89%E4%BD%8D%E7%BD%AE%E6%83%85%E5%A0%B1%E3%82%92%E6%A4%9C%E7%B4%A2)
         - [URL 文字列の操作](#url-%E6%96%87%E5%AD%97%E5%88%97%E3%81%AE%E6%93%8D%E4%BD%9C)
             - [URL エンコーディング](#url-%E3%82%A8%E3%83%B3%E3%82%B3%E3%83%BC%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0)
@@ -15445,7 +15446,31 @@ private_ip = ipaddress.ip_address(
 private_ip.is_private # True
 ```
 
-#### IP範囲
+#### IPアドレスの操作
+<a id="markdown-ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%AE%E6%93%8D%E4%BD%9C" name="ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%81%AE%E6%93%8D%E4%BD%9C"></a>
+
+```py
+import ipaddress
+
+ipaddress.ip_address('127.0.0.1')
+    # IPv4Address('127.0.0.1')
+ipaddress.ip_address('::1')
+    # IPv6Address('::1')
+
+ipaddress.ip_address(3232235777)
+    # IPv4Address('192.168.1.1')
+ipaddress.IPv4Address(1)
+    # IPv4Address('0.0.0.1')
+ipaddress.IPv6Address(1)
+    # IPv6Address('::1')
+
+int(ipaddress.ip_address('127.0.0.1'))
+    # 2130706433
+str(ipaddress.ip_address('127.0.0.1'))
+    # '127.0.0.1'
+```
+
+##### IP範囲
 <a id="markdown-ip%E7%AF%84%E5%9B%B2" name="ip%E7%AF%84%E5%9B%B2"></a>
 
 ```py
