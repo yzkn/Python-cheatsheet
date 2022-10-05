@@ -1,34 +1,43 @@
-## コマンドライン引数
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-[python/python3md-arg.py](python/python3md-arg.py)
 
-```py
-import sys
+# --------------------
 
-# sys.argv[1:] とすればファイル名をスキップ（aaa以降が含まれる）
-args = sys.argv
 
-print(args)
+# import argparse
+#
+# parser = argparse.ArgumentParser()
+# parser.parse_args()
 
-for i, arg in enumerate(args):
-    print('第{}引数: {}'.format(i, args[i]))
-```
 
-> ['python3md-arg.py', 'aaa', 'bbb', 'ccc']
->
-> 第 1 引数: python3md-arg.py
->
-> 第 2 引数: aaa
->
-> 第 3 引数: bbb
->
-> 第 4 引数: ccc
+# --------------------
 
-### Argparse
 
-[python/python3md-argparse.py](python/python3md-argparse.py)
+# import argparse
+#
+# parser = argparse.ArgumentParser(description='スクリプトの概要')
+# parser.add_argument('name', help='文字型引数の説明')
+# parser.add_argument('height', help='整数引数の説明', type=int)
+# parser.add_argument('width', help='小数引数の説明', type=float)
+# parser.add_argument('--verbose', help='真偽値引数の説明', action='store_true')
+#
+# args = parser.parse_args()
+#
+# if args.verbose:
+#     print('verbosity turned on')
+#
+# print(
+#     args.name,    type(args.name),
+#     args.height,  type(args.height),
+#     args.width,   type(args.width),
+#     args.verbose, type(args.verbose)
+# )
 
-```py
+
+# --------------------
+
+
 import argparse
 
 parser = argparse.ArgumentParser(description='スクリプトの概要')
@@ -47,9 +56,9 @@ parser.add_argument('--level', choices=['low', 'middle', 'high'])
 parser.add_argument('--items', nargs='*')
 
 # 必須
-parser.add_argument('-o', '--output', required=True)
+parser.add_argument('--output', required=True)
 
-# ハイフンなしだと位置引数
+# ハイフンなしだと必須引数
 parser.add_argument('name', help='文字型引数の説明')
 parser.add_argument('height', help='整数引数の説明', type=int)
 parser.add_argument('width', help='小数引数の説明', type=float)
@@ -82,10 +91,3 @@ else:
         args.items,
         args.output
     )
-
-```
-
-```bash
-$ python python/python3md-argparse.py -v Lipsum 123 45.6 --level high --items item1 item2 item3 --output "result/out"
-Lipsum <class 'str'> 123 <class 'int'> 45.6 <class 'float'> True <class 'bool'> Lorem ipsum <class 'str'> None <class 'NoneType'> high <class 'str'> ['item1', 'item2', 'item3'] <class 'list'> result/out <class 'str'>
-```
