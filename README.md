@@ -630,6 +630,7 @@
             - [セッション](#%E3%82%BB%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3)
             - [Cookie](#cookie)
             - [例外処理とレスポンスコード](#%E4%BE%8B%E5%A4%96%E5%87%A6%E7%90%86%E3%81%A8%E3%83%AC%E3%82%B9%E3%83%9D%E3%83%B3%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89)
+        - [ポートスキャン](#%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3)
         - [BeautifulSoup](#beautifulsoup)
             - [venvとpip](#venv%E3%81%A8pip)
             - [HTMLの読み込み](#html%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF)
@@ -15452,6 +15453,8 @@ private_ip.is_private # True
 ```py
 import ipaddress
 
+
+# ホストアドレス
 ipaddress.ip_address('127.0.0.1')
     # IPv4Address('127.0.0.1')
 ipaddress.ip_address('::1')
@@ -15468,6 +15471,57 @@ int(ipaddress.ip_address('127.0.0.1'))
     # 2130706433
 str(ipaddress.ip_address('127.0.0.1'))
     # '127.0.0.1'
+
+# IPバージョン
+ipaddress.ip_address('::1').version
+    # 6
+
+# IPv6アドレスの圧縮／展開
+ipaddress.ip_address('ABCD:EF00:0000:0000:0000:0001:2345:6789').compressed
+    # 'abcd:ef00::1:2345:6789'
+ipaddress.ip_address('abcd:ef00::1:2345:6789').exploded
+    # 'abcd:ef00:0000:0000:0000:0001:2345:6789'
+
+
+
+# ネットワークアドレス
+ipaddress.ip_network('172.16.0.0/12')
+    # IPv4Network('172.16.0.0/12')
+ipaddress.ip_network('172.16.0.100/12')
+    # ValueError: 172.16.0.100/12 has host bits set
+ipaddress.ip_network('172.16.0.100/12', strict=False)
+    # IPv4Network('172.16.0.0/12')
+ipaddress.ip_network('fe80::/10')
+    # IPv6Network('fe80::/10')
+
+# アドレスの数
+ipaddress.ip_network('192.168.0.0/16').num_addresses
+    # 65536
+# 利用可能なアドレスの数（範囲の先頭（ネットワークアドレス）と終端（ブロードキャストアドレス）は使用できないため）
+sum(1 for x in (ipaddress.ip_network('192.168.0.0/16').hosts()))
+    # 65534
+
+# ネットマスク・ホストマスク
+ipaddress.ip_network('192.168.0.0/16').netmask
+    # IPv4Address('255.255.0.0')
+ipaddress.ip_network('192.168.0.0/16').hostmask
+    # IPv4Address('0.0.255.255')
+
+# 所属しているかどうかの判定
+ipaddress.ip_address('192.168.0.100') in ipaddress.ip_network('192.168.0.0/16')
+    # True
+
+ipaddress.ip_address('192.168.0.100') < ipaddress.ip_address('192.168.0.101') # True
+ipaddress.ip_address('192.168.0.100') < ipaddress.ip_address('192.168.0.99')  # False
+
+
+
+# ホストインターフェース
+ipaddress.ip_interface('172.16.0.100/12')
+    # IPv4Interface('172.16.0.100/12')
+ipaddress.ip_interface('172.16.0.100/12').network
+    # IPv4Network('172.16.0.0/12')
+
 ```
 
 ##### IP範囲
@@ -16244,6 +16298,20 @@ try:
     r = requests.get(url)
 except requests.exceptions.RequestException as e:
     print('Error: {}'.format(e))
+```
+
+
+### ポートスキャン
+<a id="markdown-%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3" name="%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3"></a>
+
+```bash
+$ pip install scapy
+```
+
+```py
+from scapy.all import *
+
+
 ```
 
 
