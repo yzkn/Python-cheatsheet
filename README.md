@@ -275,7 +275,9 @@
         - [リストをソート](#%E3%83%AA%E3%82%B9%E3%83%88%E3%82%92%E3%82%BD%E3%83%BC%E3%83%88)
             - [ソート条件を変える](#%E3%82%BD%E3%83%BC%E3%83%88%E6%9D%A1%E4%BB%B6%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B)
                 - [文字数でソート](#%E6%96%87%E5%AD%97%E6%95%B0%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88)
+                - [大文字小文字を区別せずにアルファベット順でソート](#%E5%A4%A7%E6%96%87%E5%AD%97%E5%B0%8F%E6%96%87%E5%AD%97%E3%82%92%E5%8C%BA%E5%88%A5%E3%81%9B%E3%81%9A%E3%81%AB%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A1%E3%83%99%E3%83%83%E3%83%88%E9%A0%86%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88)
                 - [末尾の文字のアルファベット順でソート](#%E6%9C%AB%E5%B0%BE%E3%81%AE%E6%96%87%E5%AD%97%E3%81%AE%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A1%E3%83%99%E3%83%83%E3%83%88%E9%A0%86%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88)
+                - [外部リソースでソート](#%E5%A4%96%E9%83%A8%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88)
             - [リストの要素の型](#%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E8%A6%81%E7%B4%A0%E3%81%AE%E5%9E%8B)
                 - [リストのリスト](#%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E3%83%AA%E3%82%B9%E3%83%88)
                     - [リスト同士の比較方法既定](#%E3%83%AA%E3%82%B9%E3%83%88%E5%90%8C%E5%A3%AB%E3%81%AE%E6%AF%94%E8%BC%83%E6%96%B9%E6%B3%95%E6%97%A2%E5%AE%9A)
@@ -430,6 +432,7 @@
         - [関数を変数に代入](#%E9%96%A2%E6%95%B0%E3%82%92%E5%A4%89%E6%95%B0%E3%81%AB%E4%BB%A3%E5%85%A5)
 - [I/O](#io)
     - [コマンドライン引数](#%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E5%BC%95%E6%95%B0)
+        - [Argparse](#argparse)
     - [標準入力](#%E6%A8%99%E6%BA%96%E5%85%A5%E5%8A%9B)
         - [無限ループをキー入力で抜ける](#%E7%84%A1%E9%99%90%E3%83%AB%E3%83%BC%E3%83%97%E3%82%92%E3%82%AD%E3%83%BC%E5%85%A5%E5%8A%9B%E3%81%A7%E6%8A%9C%E3%81%91%E3%82%8B)
         - [入力フォーマット別標準入力結果の抽出方法](#%E5%85%A5%E5%8A%9B%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E5%88%A5%E6%A8%99%E6%BA%96%E5%85%A5%E5%8A%9B%E7%B5%90%E6%9E%9C%E3%81%AE%E6%8A%BD%E5%87%BA%E6%96%B9%E6%B3%95)
@@ -631,6 +634,14 @@
             - [Cookie](#cookie)
             - [例外処理とレスポンスコード](#%E4%BE%8B%E5%A4%96%E5%87%A6%E7%90%86%E3%81%A8%E3%83%AC%E3%82%B9%E3%83%9D%E3%83%B3%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89)
         - [ポートスキャン](#%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3)
+            - [TCPスキャン](#tcp%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3)
+            - [Scapy](#scapy)
+                - [Ping](#ping)
+                - [ARP](#arp)
+                - [DNS](#dns)
+                - [TCPスキャン](#tcp%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3)
+                    - [SYNスキャン](#syn%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3)
+                    - [traceroute](#traceroute)
         - [BeautifulSoup](#beautifulsoup)
             - [venvとpip](#venv%E3%81%A8pip)
             - [HTMLの読み込み](#html%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF)
@@ -7026,11 +7037,17 @@ result = flatten(l)
 
 ```py
 lst = ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
+
+# sorted() ソートされた新しいリストを返す
 sortedlist = sorted(lst)
 print(lst)
 print(sortedlist)
 
+# list.sort() 元のリスト自体を書き換え
 lst.sort(key=None, reverse=False)
+print(lst)
+
+lst.sort(key=None, reverse=True)
 print(lst)
 ```
 
@@ -7039,6 +7056,8 @@ print(lst)
 > ['bar', 'bar', 'foo', 'foo', 'hoge', 'hoge', 'piyo', 'piyo']
 
 > ['bar', 'bar', 'foo', 'foo', 'hoge', 'hoge', 'piyo', 'piyo']
+
+> ['piyo', 'piyo', 'hoge', 'hoge', 'foo', 'foo', 'bar', 'bar']
 
 
 #### ソート条件を変える
@@ -7066,6 +7085,21 @@ print(sortedlist)
 > ['foo', 'bar', 'foo', 'bar', 'piyo', 'hoge', 'piyo', 'hoge']
 
 
+##### 大文字小文字を区別せずにアルファベット順でソート
+<a id="markdown-%E5%A4%A7%E6%96%87%E5%AD%97%E5%B0%8F%E6%96%87%E5%AD%97%E3%82%92%E5%8C%BA%E5%88%A5%E3%81%9B%E3%81%9A%E3%81%AB%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A1%E3%83%99%E3%83%83%E3%83%88%E9%A0%86%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88" name="%E5%A4%A7%E6%96%87%E5%AD%97%E5%B0%8F%E6%96%87%E5%AD%97%E3%82%92%E5%8C%BA%E5%88%A5%E3%81%9B%E3%81%9A%E3%81%AB%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A1%E3%83%99%E3%83%83%E3%83%88%E9%A0%86%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88"></a>
+
+```py
+lst = ['foo', 'bar', 'piyo', 'hoge', 'FOO', 'BAR', 'PIYO', 'HOGE']
+sortedlist = sorted(lst, key=str.lower)
+print(lst)
+print(sortedlist)
+```
+
+> ['foo', 'bar', 'piyo', 'hoge', 'FOO', 'BAR', 'PIYO', 'HOGE']
+>
+> ['bar', 'BAR', 'foo', 'FOO', 'hoge', 'HOGE', 'piyo', 'PIYO']
+
+
 ##### 末尾の文字のアルファベット順でソート
 <a id="markdown-%E6%9C%AB%E5%B0%BE%E3%81%AE%E6%96%87%E5%AD%97%E3%81%AE%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A1%E3%83%99%E3%83%83%E3%83%88%E9%A0%86%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88" name="%E6%9C%AB%E5%B0%BE%E3%81%AE%E6%96%87%E5%AD%97%E3%81%AE%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A1%E3%83%99%E3%83%83%E3%83%88%E9%A0%86%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88"></a>
 
@@ -7079,6 +7113,22 @@ print(sortedlist)
 > ['foo', 'bar', 'piyo', 'hoge', 'foo', 'bar', 'piyo', 'hoge']
 >
 > ['hoge', 'hoge', 'foo', 'piyo', 'foo', 'piyo', 'bar', 'bar']
+
+
+##### 外部リソースでソート
+<a id="markdown-%E5%A4%96%E9%83%A8%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88" name="%E5%A4%96%E9%83%A8%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9%E3%81%A7%E3%82%BD%E3%83%BC%E3%83%88"></a>
+
+```py
+lst = ['foo', 'bar', 'piyo', 'hoge']
+dct = {'foo': 30, 'bar': 50, 'piyo': 40, 'hoge': 20}
+sortedlist = sorted(lst, key=dct.__getitem__)
+print(lst)
+print(sortedlist)
+```
+
+> ['foo', 'bar', 'piyo', 'hoge']
+>
+> ['hoge', 'foo', 'piyo', 'bar']
 
 
 #### リストの要素の型
@@ -7248,7 +7298,7 @@ print(lst)
 >
 >     ('Ichiro', 185, 65),
 >
->      ('Saburo', 180, 75)
+>     ('Saburo', 180, 75)
 >
 > ]
 
@@ -9673,6 +9723,8 @@ print4('foobar')
 ## コマンドライン引数
 <a id="markdown-%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E5%BC%95%E6%95%B0" name="%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E5%BC%95%E6%95%B0"></a>
 
+[python/python3md-arg.py](python/python3md-arg.py)
+
 ```py
 import sys
 
@@ -9694,6 +9746,73 @@ for i, arg in enumerate(args):
 > 第 3 引数: bbb
 >
 > 第 4 引数: ccc
+
+### Argparse
+<a id="markdown-argparse" name="argparse"></a>
+
+[python/python3md-argparse.py](python/python3md-argparse.py)
+
+```py
+import argparse
+
+parser = argparse.ArgumentParser(description='スクリプトの概要')
+
+# ハイフン付きだとオプション引数
+group = parser.add_mutually_exclusive_group()
+group.add_argument('-v', '--verbose', action='store_true') # action='store_false'だと引数が指定された場合にFalse
+group.add_argument('-q', '--quiet', action='store_true')
+
+parser.add_argument('--message', default='Lorem ipsum')
+
+parser.add_argument('--ipaddr', type=(lambda x:list(map(int, x.split('.')))))
+
+parser.add_argument('--level', choices=['low', 'middle', 'high'])
+
+parser.add_argument('--items', nargs='*')
+
+# 必須
+parser.add_argument('-o', '--output', required=True)
+
+# ハイフンなしだと位置引数
+parser.add_argument('name', help='文字型引数の説明')
+parser.add_argument('height', help='整数引数の説明', type=int)
+parser.add_argument('width', help='小数引数の説明', type=float)
+
+args = parser.parse_args()
+
+if args.quiet:
+    print(name)
+elif args.verbose:
+    print(
+        args.name,    type(args.name),
+        args.height,  type(args.height),
+        args.width,   type(args.width),
+        args.verbose, type(args.verbose),
+        args.message, type(args.message),
+        args.ipaddr,  type(args.ipaddr),
+        args.level,   type(args.level),
+        args.items,   type(args.items),
+        args.output,  type(args.output)
+    )
+else:
+    print(
+        args.name,
+        args.height,
+        args.width,
+        args.verbose,
+        args.message,
+        args.ipaddr,
+        args.level,
+        args.items,
+        args.output
+    )
+
+```
+
+```bash
+$ python python/python3md-argparse.py -v Lipsum 123 45.6 --level high --items item1 item2 item3 --output "result/out"
+Lipsum <class 'str'> 123 <class 'int'> 45.6 <class 'float'> True <class 'bool'> Lorem ipsum <class 'str'> None <class 'NoneType'> high <class 'str'> ['item1', 'item2', 'item3'] <class 'list'> result/out <class 'str'>
+```
 
 
 ## 標準入力
@@ -15437,13 +15556,23 @@ import requests
 global_ip = ipaddress.ip_address(
     requests.get('https://api.ipify.org').text
 )
+global_ip
 global_ip.is_global # True
 
-# プライベートIPアドレス
+# プライベートIPアドレス（/etc/hostsの設定によっては127.0.0.1が返ってしまう）
 import socket
 private_ip = ipaddress.ip_address(
     socket.gethostbyname(socket.gethostname())
 )
+private_ip
+private_ip.is_private # True
+
+# プライベートIPアドレス
+import socket
+private_ip = ipaddress.ip_address(
+    [(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
+)
+private_ip
 private_ip.is_private # True
 ```
 
@@ -16304,13 +16433,162 @@ except requests.exceptions.RequestException as e:
 ### ポートスキャン
 <a id="markdown-%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3" name="%E3%83%9D%E3%83%BC%E3%83%88%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3"></a>
 
+#### TCPスキャン
+<a id="markdown-tcp%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3" name="tcp%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3"></a>
+
+```py
+import os
+import socket
+
+TARGET_HOST = '127.0.0.1'
+TARGET_PORT = 80
+
+def scan(host, port):
+    with socket.socket() as s:
+        result = s.connect_ex((host, port))
+        if result == 0:
+            return True
+        else:
+            print(os.strerror(result))
+            return False
+
+scan(TARGET_HOST, TARGET_PORT)
+
+```
+
+#### Scapy
+<a id="markdown-scapy" name="scapy"></a>
+
 ```bash
 $ pip install scapy
 ```
 
+- [Npcap](https://npcap.com)
+
+##### Ping
+<a id="markdown-ping" name="ping"></a>
+
 ```py
 from scapy.all import *
 
+TARGET_HOST = 'www.google.com'
+
+def scan(host):
+    try:
+        ping = IP(dst=host)/ICMP()
+        ans = sr1(ping)
+        ans.show()
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+scan(TARGET_HOST)
+
+```
+
+##### ARP
+<a id="markdown-arp" name="arp"></a>
+
+```py
+from scapy.all import *
+
+TARGET_HOST = '192.168.0.40'
+
+def request(host):
+    try:
+        arp = Ether(dst='ff:ff:ff:ff:ff:ff')/ARP(pdst=host)
+        res = srp1(arp)
+        res.show()
+        return res[ARP].hwsrc
+    except Exception as e:
+        print(e)
+
+request(TARGET_HOST)
+
+```
+
+```py
+from scapy.layers.l2 import ARP, arping
+import socket
+
+def discover():
+    myip = [(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
+    print('myip', myip)
+    ip = '{}.{}.{}.0/24'.format(*(myip.split('.')))
+    print('ip', ip)
+    answers, _ = arping(ip, timeout=1, verbose=0)
+    print('answers', answers)
+    for send_packet, recieve_packet in answers:
+        print('{} : {}'.format(
+            recieve_packet[ARP].hwsrc,
+            recieve_packet[ARP].psrc
+        ))
+
+discover()
+
+```
+
+##### DNS
+<a id="markdown-dns" name="dns"></a>
+
+```py
+from scapy.all import *
+
+TARGET_HOST = 'www.google.com'
+
+def nameResolution(host):
+    try:
+        answer = sr1(IP(dst='8.8.8.8')/UDP()/DNS(qd=DNSQR(qname=host)),verbose=0)
+        return answer[DNS].an.rdata
+    except Exception as e:
+        print(e)
+
+nameResolution(TARGET_HOST)
+
+```
+
+##### TCPスキャン
+<a id="markdown-tcp%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3" name="tcp%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3"></a>
+
+###### SYNスキャン
+<a id="markdown-syn%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3" name="syn%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3"></a>
+
+```py
+from scapy.all import *
+
+TARGET_HOST = 'www.google.com'
+TARGET_PORT = 80
+
+def scan(host, port):
+    try:
+        ip = IP(dst=host)
+        tcp = TCP(dport=port, flags='S')
+        ret = sr1(ip/tcp, timeout=1, verbose=0)
+        print('snd: {0:#010b} ({1})'.format(bytes(tcp)[13], tcp.flags))
+        print('rtn: {0:#010b} ({1})'.format(bytes(ret['TCP'])[13], ret['TCP'].flags))
+        return ret['TCP'].flags == 'SA'
+    except Exception as e:
+        print(e)
+
+scan(TARGET_HOST, TARGET_PORT)
+
+```
+
+###### traceroute
+<a id="markdown-traceroute" name="traceroute"></a>
+
+```py
+from scapy.all import *
+
+TARGET_HOST = 'www.google.com'
+
+def scan(host):
+    ans, unans = sr(IP(dst=host, ttl=(0,50),id=RandShort())/TCP(flags=0x2))
+    for snd,rcv in ans:
+        print(snd.ttl, rcv.src, isinstance(rcv.payload, TCP))
+
+scan(TARGET_HOST)
 
 ```
 
