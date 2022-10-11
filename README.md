@@ -3,6 +3,7 @@
 - [おまじない](#%E3%81%8A%E3%81%BE%E3%81%98%E3%81%AA%E3%81%84)
     - [shebang](#shebang)
     - [Python バージョン](#python-%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3)
+    - [ディレクトリ構成](#%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E6%A7%8B%E6%88%90)
 - [文法](#%E6%96%87%E6%B3%95)
     - [命名規則](#%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87)
     - [予約語](#%E4%BA%88%E7%B4%84%E8%AA%9E)
@@ -420,6 +421,7 @@
     - [with](#with)
         - [複数の with をまとめる](#%E8%A4%87%E6%95%B0%E3%81%AE-with-%E3%82%92%E3%81%BE%E3%81%A8%E3%82%81%E3%82%8B)
 - [関数](#%E9%96%A2%E6%95%B0)
+    - [関数とメソッドの違い](#%E9%96%A2%E6%95%B0%E3%81%A8%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E9%81%95%E3%81%84)
     - [引数なし](#%E5%BC%95%E6%95%B0%E3%81%AA%E3%81%97)
     - [引数あり](#%E5%BC%95%E6%95%B0%E3%81%82%E3%82%8A)
     - [既定値を持つ引数あり](#%E6%97%A2%E5%AE%9A%E5%80%A4%E3%82%92%E6%8C%81%E3%81%A4%E5%BC%95%E6%95%B0%E3%81%82%E3%82%8A)
@@ -798,6 +800,14 @@
     - [ファイル出力](#%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%87%BA%E5%8A%9B)
     - [Python のバージョンを取得](#python-%E3%81%AE%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E5%8F%96%E5%BE%97)
     - [実行時間の計測](#%E5%AE%9F%E8%A1%8C%E6%99%82%E9%96%93%E3%81%AE%E8%A8%88%E6%B8%AC)
+- [テスト](#%E3%83%86%E3%82%B9%E3%83%88)
+    - [pytest](#pytest)
+        - [pytestのインストールとテスト実施](#pytest%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E3%83%86%E3%82%B9%E3%83%88%E5%AE%9F%E6%96%BD)
+        - [テスト項目の収集方法](#%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95)
+        - [テスト関数のパラメーター化](#%E3%83%86%E3%82%B9%E3%83%88%E9%96%A2%E6%95%B0%E3%81%AE%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E5%8C%96)
+        - [フィクスチャ（前準備・後処理）](#%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%E5%89%8D%E6%BA%96%E5%82%99%E3%83%BB%E5%BE%8C%E5%87%A6%E7%90%86)
+            - [乱数のシードを固定](#%E4%B9%B1%E6%95%B0%E3%81%AE%E3%82%B7%E3%83%BC%E3%83%89%E3%82%92%E5%9B%BA%E5%AE%9A)
+            - [一時ファイル](#%E4%B8%80%E6%99%82%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB)
 
 <!-- /TOC -->
 
@@ -832,6 +842,65 @@ python_version = int(platform.python_version_tuple()[0])
 
 ```ps
 $ python --version
+```
+
+
+## ディレクトリ構成
+<a id="markdown-%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E6%A7%8B%E6%88%90" name="%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E6%A7%8B%E6%88%90"></a>
+
+```
+(project)
+├── (project).py
+└── test_(project).py （テストコード）
+```
+
+```
+(project)
+├── (project)
+│  ├── __init__.py
+│  └── *.py
+└── tests （テストコード）
+   ├── __init__.py
+   └── *.py
+```
+
+```
+sampleapp
+├── main.py
+├── sampleapp
+│  ├── __init__.py
+│  └── sampleapp.py
+└── tests
+   ├── __init__.py
+   ├── test_main.py
+   └── sampleapp
+      ├── __init__.py
+      └── test_sampleapp.py
+```
+
+- sampleapp/main.py
+
+```py
+from sampleapp.sampleapp import hello_world
+
+def main():
+    hello_world()
+
+if __name__ == '__main__':
+    main()
+```
+
+- sampleapp/sampleapp/__init__.py
+
+```py
+
+```
+
+- sampleapp/sampleapp/sampleapp.py
+
+```py
+def hello_world():
+    print('Hello, world!!')
 ```
 
 
@@ -9513,6 +9582,37 @@ with open(filepath1, 'r') as f1, with open(filepath2, 'w') as f2:
 
 # 関数
 <a id="markdown-%E9%96%A2%E6%95%B0" name="%E9%96%A2%E6%95%B0"></a>
+
+## 関数とメソッドの違い
+<a id="markdown-%E9%96%A2%E6%95%B0%E3%81%A8%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E9%81%95%E3%81%84" name="%E9%96%A2%E6%95%B0%E3%81%A8%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E9%81%95%E3%81%84"></a>
+
+| 種別     | 内容                                   |
+| -------- | -------------------------------------- |
+| 関数     | 単独で呼び出す                         |
+|          |                                        |
+| メソッド | 関数の一種                             |
+|          | クラス内で定義された関数               |
+|          | オブジェクトの属性として参照される関数 |
+
+```py
+def functionC( coefficient ):
+    constant = 123
+    return 123 * coefficient
+
+class Calc:
+    def __init__( self ):
+        self.constant = 123
+    def methodC( self, coefficient ):
+        return self.constant * coefficient
+
+
+fm1 = Calc()
+
+print(
+    '関　　数:', functionC( 123 ), '\n'
+    'メソッド:', fm1.methodC( 123 )
+)
+```
 
 
 ## 引数なし
@@ -20589,6 +20689,166 @@ target_function()
 > 計測対象の処理
 >
 > 関数 target_function の実行時間: 0.0005533695220947266 秒
+
+
+# テスト
+<a id="markdown-%E3%83%86%E3%82%B9%E3%83%88" name="%E3%83%86%E3%82%B9%E3%83%88"></a>
+
+
+## pytest
+<a id="markdown-pytest" name="pytest"></a>
+
+
+### pytestのインストールとテスト実施
+<a id="markdown-pytest%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E3%83%86%E3%82%B9%E3%83%88%E5%AE%9F%E6%96%BD" name="pytest%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E3%83%86%E3%82%B9%E3%83%88%E5%AE%9F%E6%96%BD"></a>
+
+- python\sampleapp\main.py
+
+```py
+import sampleapp.sampleapp
+
+def three():
+    return 3
+
+def main():
+    sampleapp.sampleapp.hello_world()
+
+if __name__ == '__main__':
+    main()
+```
+
+- python\sampleapp\tests\test_main.py
+
+```py
+import main
+import pytest
+
+def test_main():
+    assert "{:.2f}".format(main.three()) == "3.00", "小数点以下2桁までを比較"
+    assert not main.three() == 4, "4ではない"
+```
+
+```powershell
+$ cd python\sampleapp
+$ py -m venv testenv
+$ .\testenv\Scripts\Activate.ps1
+
+$ python -m pip install pytest
+
+$ python -m pytest
+```
+
+```
+(testenv) PS sampleapp> python -m pytest
+=========================================================================================================================================== test session starts ============================================================================================================================================
+platform win32 -- Python 3.10.5, pytest-7.1.3, pluggy-1.0.0
+rootdir: ...\python\sampleapp
+collected 2 items
+
+tests\test_main.py .                                                                                                                                                                                                                                                                                  [ 50%]
+tests\sampleapp\test_sampleapp.py .                                                                                                                                                                                                                                                                   [100%]
+
+============================================================================================================================================ 2 passed in 0.03s =============================================================================================================================================
+```
+
+
+### テスト項目の収集方法
+<a id="markdown-%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95" name="%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95"></a>
+
+- 引数が指定されていない場合は、 `testpaths` （設定されていれば）またはカレントディレクトリ
+  - コマンドライン引数に指定されたディレクトリ、ファイル名、ノードIDの組み合わせ
+- `norecursedirs` にマッチしない限り、再帰的に検索
+- これらのディレクトリで、 `test_*.py` 、 `*_test.py` を検索
+- これらのファイルからテスト項目を収集
+  - クラスの外側の `test` 接頭辞がついた関数・メソッド
+  - `test` 接頭辞がついたテストクラスの内側にある `test` 接頭辞がついた関数・メソッド（ `__init__` メソッド以外）
+
+- pytest.ini
+
+```ini
+[pytest]
+testpaths=.
+norecursedirs=env
+```
+
+
+### テスト関数のパラメーター化
+<a id="markdown-%E3%83%86%E3%82%B9%E3%83%88%E9%96%A2%E6%95%B0%E3%81%AE%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E5%8C%96" name="%E3%83%86%E3%82%B9%E3%83%88%E9%96%A2%E6%95%B0%E3%81%AE%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E5%8C%96"></a>
+
+- python\sampleapp\params.py
+
+```py
+def add(x, y):
+    return x + y
+```
+
+- python\sampleapp\tests\test_params.py
+
+```py
+import params
+import pytest
+
+@pytest.mark.parametrize(('x', 'y', 'expected'), [
+    (0, 1, 1),
+    (1, 1, 2),
+    (2, 1, 3),
+    (3, 1, 4),
+    (4, 1, 5),
+    (5, 1, 6),
+    (6, 1, 7),
+    (7, 1, 8),
+    (8, 1, 9),
+    (9, 1, 10)
+])
+
+def test_params(x, y, expected):
+    assert params.add(x, y) == expected
+```
+
+
+### フィクスチャ（前準備・後処理）
+<a id="markdown-%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%EF%BC%88%E5%89%8D%E6%BA%96%E5%82%99%E3%83%BB%E5%BE%8C%E5%87%A6%E7%90%86%EF%BC%89" name="%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%EF%BC%88%E5%89%8D%E6%BA%96%E5%82%99%E3%83%BB%E5%BE%8C%E5%87%A6%E7%90%86%EF%BC%89"></a>
+
+#### 乱数のシードを固定
+<a id="markdown-%E4%B9%B1%E6%95%B0%E3%81%AE%E3%82%B7%E3%83%BC%E3%83%89%E3%82%92%E5%9B%BA%E5%AE%9A" name="%E4%B9%B1%E6%95%B0%E3%81%AE%E3%82%B7%E3%83%BC%E3%83%89%E3%82%92%E5%9B%BA%E5%AE%9A"></a>
+
+```py
+import random
+
+@fixture
+def set_seed():
+    random.seed(123)
+```
+
+#### 一時ファイル
+<a id="markdown-%E4%B8%80%E6%99%82%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB" name="%E4%B8%80%E6%99%82%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB"></a>
+
+```py
+import os
+import pytest
+
+
+@pytest.fixture
+def test_file():
+    print('1. 前処理: 一時ファイルを作成開始')
+
+    file_path = './test.txt'
+    with open(file_path, 'w') as f:
+        # yieldまでが前処理
+        print('1. 前処理: 一時ファイルを作成終了')
+        yield file_path
+
+    print('3. 後処理: 一時ファイルを削除開始')
+    os.remove(file_path)
+    print('3. 後処理: 一時ファイルを削除終了')
+
+
+# test_file()の戻り値が引数test_fileとして渡される
+def test_file_exist(test_file):
+    print(f'2. テスト実施: 開始 [{test_file}]')
+    assert os.path.isfile(test_file)
+    print('2. テスト実施: 終了')
+```
 
 
 <hr>
