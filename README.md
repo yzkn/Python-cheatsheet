@@ -804,10 +804,17 @@
     - [pytest](#pytest)
         - [pytestのインストールとテスト実施](#pytest%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E3%83%86%E3%82%B9%E3%83%88%E5%AE%9F%E6%96%BD)
         - [テスト項目の収集方法](#%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95)
+        - [テストコード](#%E3%83%86%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89)
+            - [assert文](#assert%E6%96%87)
+            - [例外発生を検証](#%E4%BE%8B%E5%A4%96%E7%99%BA%E7%94%9F%E3%82%92%E6%A4%9C%E8%A8%BC)
+            - [標準出力・標準エラー出力を検証](#%E6%A8%99%E6%BA%96%E5%87%BA%E5%8A%9B%E3%83%BB%E6%A8%99%E6%BA%96%E3%82%A8%E3%83%A9%E3%83%BC%E5%87%BA%E5%8A%9B%E3%82%92%E6%A4%9C%E8%A8%BC)
         - [テスト関数のパラメーター化](#%E3%83%86%E3%82%B9%E3%83%88%E9%96%A2%E6%95%B0%E3%81%AE%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E5%8C%96)
+            - [パラメーターの組み合わせ](#%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E3%81%AE%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B)
         - [フィクスチャ（前準備・後処理）](#%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%E5%89%8D%E6%BA%96%E5%82%99%E3%83%BB%E5%BE%8C%E5%87%A6%E7%90%86)
             - [乱数のシードを固定](#%E4%B9%B1%E6%95%B0%E3%81%AE%E3%82%B7%E3%83%BC%E3%83%89%E3%82%92%E5%9B%BA%E5%AE%9A)
             - [一時ファイル](#%E4%B8%80%E6%99%82%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB)
+            - [複数のフィクスチャ](#%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3)
+        - [conftest.py](#conftestpy)
 
 <!-- /TOC -->
 
@@ -20772,6 +20779,62 @@ norecursedirs=env
 ```
 
 
+### テストコード
+<a id="markdown-%E3%83%86%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89" name="%E3%83%86%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89"></a>
+
+#### assert文
+<a id="markdown-assert%E6%96%87" name="assert%E6%96%87"></a>
+
+```py
+def add(x, y):
+    return x + y
+
+def test_add1():
+    res = add(1, 2)
+    assert res == 3
+
+def test_add2():
+    res = add(1, 2)
+    assert res == 3, '検証に失敗したときのメッセージ: {}'.format(res)
+
+# テスト実施をスキップ
+@pytest.mark.skip
+def test_add3():
+    res = add(1, 2)
+    assert res == 3
+```
+
+#### 例外発生を検証
+<a id="markdown-%E4%BE%8B%E5%A4%96%E7%99%BA%E7%94%9F%E3%82%92%E6%A4%9C%E8%A8%BC" name="%E4%BE%8B%E5%A4%96%E7%99%BA%E7%94%9F%E3%82%92%E6%A4%9C%E8%A8%BC"></a>
+
+```py
+def div(x, y):
+    return x / y
+
+def test_target():
+    with pytest.raises(ZeroDivisionError) as e:
+        div(1, 0)
+    # エラーメッセージの検証
+    assert str(e.value) == "division by zero"
+```
+
+#### 標準出力・標準エラー出力を検証
+<a id="markdown-%E6%A8%99%E6%BA%96%E5%87%BA%E5%8A%9B%E3%83%BB%E6%A8%99%E6%BA%96%E3%82%A8%E3%83%A9%E3%83%BC%E5%87%BA%E5%8A%9B%E3%82%92%E6%A4%9C%E8%A8%BC" name="%E6%A8%99%E6%BA%96%E5%87%BA%E5%8A%9B%E3%83%BB%E6%A8%99%E6%BA%96%E3%82%A8%E3%83%A9%E3%83%BC%E5%87%BA%E5%8A%9B%E3%82%92%E6%A4%9C%E8%A8%BC"></a>
+
+```py
+import sys
+
+def test_std_out_err(capfd):
+    print('標準出力内容')
+    sys.stderr.write('標準エラー出力内容')
+
+    # 検証
+    out, err = capfd.readouterr()
+    assert out == '標準出力内容\n'
+    assert err == '標準エラー出力内容'
+```
+
+
 ### テスト関数のパラメーター化
 <a id="markdown-%E3%83%86%E3%82%B9%E3%83%88%E9%96%A2%E6%95%B0%E3%81%AE%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E5%8C%96" name="%E3%83%86%E3%82%B9%E3%83%88%E9%96%A2%E6%95%B0%E3%81%AE%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E5%8C%96"></a>
 
@@ -20803,6 +20866,22 @@ import pytest
 
 def test_params(x, y, expected):
     assert params.add(x, y) == expected
+```
+
+#### パラメーターの組み合わせ
+<a id="markdown-%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E3%81%AE%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B" name="%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%83%BC%E3%81%AE%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B"></a>
+
+```py
+import pytest
+
+def add(x, y):
+    return x + y
+
+@pytest.mark.parametrize(('x'), [1, 2, 3, 4, 5])
+@pytest.mark.parametrize(('y'), [3, 4, 5])
+def test_add(x, y):
+    res = add(x, y)
+    assert res == x + y
 ```
 
 
@@ -20843,11 +20922,58 @@ def test_file():
     print('3. 後処理: 一時ファイルを削除終了')
 
 
+# テストメソッドの引数の名前がフィクスチャメソッドと同名
 # test_file()の戻り値が引数test_fileとして渡される
 def test_file_exist(test_file):
     print(f'2. テスト実施: 開始 [{test_file}]')
     assert os.path.isfile(test_file)
     print('2. テスト実施: 終了')
+```
+
+#### 複数のフィクスチャ
+<a id="markdown-%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3" name="%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3"></a>
+
+```py
+import pytest
+
+# 引数に指定されなくても常に実行されるフィクスチャ
+@pytest.fixture(autouse=True)
+def fixture00():
+    print('fixture00')
+
+# 複数のフィクスチャ
+# 使用するフィクスチャを引数でテストメソッドに渡す
+@pytest.fixture
+def fixture01():
+    print('fixture01')
+
+@pytest.fixture
+def fixture02():
+    print('fixture02')
+
+def test_case01():
+    print('test_case01')
+
+def test_case02(fixture01):
+    print('test_case02')
+
+def test_case03(fixture01, fixture02):
+    print('test_case03')
+```
+
+
+### conftest.py
+<a id="markdown-conftest.py" name="conftest.py"></a>
+
+conftest.py に共通処理を定義すると、同一ディレクトリ配下にあるテストファイルから参照できる
+
+```py
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def fixture00():
+    print('fixture00')
 ```
 
 
