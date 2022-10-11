@@ -7,6 +7,9 @@ import sampleapp.sampleapp
 def three():
     return 3
 
+def div(x, y):
+    return x / y
+
 def main():
     # hello_world()
     sampleapp.sampleapp.hello_world()
