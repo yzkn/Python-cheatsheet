@@ -1,0 +1,42 @@
+# test_spy.py
+# ~~~~~~~~
+
+# test_spy.log11()
+# ~~~~~~~~
+def log1(message: str):
+    print('msg: {}'.format(message))
+    return 123
+
+
+def func1(message: str):
+    log1(message)
+
+
+def test_func1(mocker):
+    log = mocker.patch('test_spy.log1')
+    func1('Lorem ipsum dolor sit.')
+    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
+    log.assert_called_once_with('Lorem ipsum dolor sit.')
+    print(
+        'test_func1',
+        log,
+        dir(log)
+    )
+    # ['__enter__', 'assert_any_call', 'assert_called', 'assert_called_once', 'assert_called_once_with', 'assert_called_with', 'assert_has_calls', 'assert_not_called', 'attach_mock', 'call_args', 'call_args_list', 'call_count', 'called', 'configure_mock', 'method_calls', 'mock_add_spec', 'mock_calls', 'reset_mock', 'return_value', 'side_effect']
+
+
+def test_func2(mocker):
+    import test_spy
+    log = mocker.spy(test_spy, 'log1')
+    func1('Lorem ipsum dolor amet.')
+    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
+    log.assert_called_once_with('Lorem ipsum dolor amet.')
+
+    # スパイされた関数の戻り値が想定通りか
+    assert log.spy_return == 123
+    print(
+        'test_func2',
+        log,
+        dir(log)
+    )
+    # ['__annotations__', '__builtins__', '__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__get__', '__getattribute__', '__globals__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__kwdefaults__', '__le__', '__lt__', '__module__', '__name__', '__ne__', '__new__', '__qualname__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__signature__', '__sizeof__', '__str__', '__subclasshook__', '_mock_children', 'assert_any_call', 'assert_called', 'assert_called_once', 'assert_called_once_with', 'assert_called_with', 'assert_has_calls', 'assert_not_called', 'call_args', 'call_args_list', 'call_count', 'called', 'method_calls', 'mock', 'mock_calls', 'reset_mock', 'return_value', 'side_effect', 'spy_exception', 'spy_return']
