@@ -813,8 +813,14 @@
         - [フィクスチャ（前準備・後処理）](#%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%E5%89%8D%E6%BA%96%E5%82%99%E3%83%BB%E5%BE%8C%E5%87%A6%E7%90%86)
             - [乱数のシードを固定](#%E4%B9%B1%E6%95%B0%E3%81%AE%E3%82%B7%E3%83%BC%E3%83%89%E3%82%92%E5%9B%BA%E5%AE%9A)
             - [一時ファイル](#%E4%B8%80%E6%99%82%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB)
+                - [tmpdir](#tmpdir)
             - [複数のフィクスチャ](#%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3)
         - [conftest.py](#conftestpy)
+        - [モック](#%E3%83%A2%E3%83%83%E3%82%AF)
+            - [pytest-mock のインストール](#pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
+            - [モックを使用したテストの実施](#%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD)
+                - [関数](#%E9%96%A2%E6%95%B0)
+            - [スパイ](#%E3%82%B9%E3%83%91%E3%82%A4)
 
 <!-- /TOC -->
 
@@ -20930,6 +20936,31 @@ def test_file_exist(test_file):
     print('2. テスト実施: 終了')
 ```
 
+##### tmpdir
+<a id="markdown-tmpdir" name="tmpdir"></a>
+
+`/tmp` 配下に一時ファイルを作成するフィクスチャ
+
+```py
+import os
+import pytest
+
+
+@pytest.fixture
+def txt(tmpdir) -> str:
+    tmpfile = tmpdir.join('numbers.txt')
+
+    with tmpfile.open('w') as f:
+        for n in range(5):
+            f.write('{}\n'.format(n))
+    print('isfile: ', os.path.isfile(tmpfile))
+    yield str(tmpfile)
+
+    tmpfile.remove()
+    print('isfile: ', os.path.isfile(tmpfile))
+
+```
+
 #### 複数のフィクスチャ
 <a id="markdown-%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3" name="%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3"></a>
 
@@ -20974,6 +21005,142 @@ import pytest
 @pytest.fixture(autouse=True)
 def fixture00():
     print('fixture00')
+```
+
+
+### モック
+<a id="markdown-%E3%83%A2%E3%83%83%E3%82%AF" name="%E3%83%A2%E3%83%83%E3%82%AF"></a>
+
+#### pytest-mock のインストール
+<a id="markdown-pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB" name="pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB"></a>
+
+```powershell
+$ cd python\sampleapp
+$ py -m venv testenv
+$ .\testenv\Scripts\Activate.ps1
+
+$ python -m pip install pytest pytest-mock
+```
+
+
+#### モックを使用したテストの実施
+<a id="markdown-%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD" name="%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD"></a>
+
+##### 関数
+<a id="markdown-%E9%96%A2%E6%95%B0" name="%E9%96%A2%E6%95%B0"></a>
+
+- python\samplemock\test_mock_func.py
+
+```py
+def log1(message: str):
+    print('msg: {}'.format(message))
+
+
+def func1(message: str):
+    log1(message)
+
+
+def func2():
+    log1('Started.')
+    print('Something...')
+    log1('Finished.')
+
+
+def test_func1(mocker):
+    log = mocker.patch('test_mock_func.log1')
+    func1('Lorem ipsum dolor sit amet.')
+    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
+    log.assert_called_once_with('Lorem ipsum dolor sit amet.')
+
+
+def test_func2(mocker):
+    log = mocker.patch('test_mock_func.log1')
+    func2()
+    # 呼び出し履歴が想定通りか
+    assert log.call_args_list == [
+        mocker.call('Started.'),
+        mocker.call('Finished.'),
+    ]
+
+
+# --------------------
+
+
+def log2(message: str) -> bool:
+    print('msg: {}'.format(message))
+    return True
+
+
+def func3(message: str):
+    ok = log2(message)
+    if ok:
+        print('succeeded')
+    else:
+        print('failed')
+
+
+def test_send(mocker, capsys):
+    # 戻り値を偽装
+    # log = mocker.patch('test_mock_func.log2')
+    log = mocker.patch('test_mock_func.log2', return_value=False)
+    func3('Fusce placerat placerat placerat.')
+    log.assert_called_once_with('Fusce placerat placerat placerat.')
+    out, _ = capsys.readouterr()
+    # assert out == 'succeeded\n'
+    assert out == 'failed\n'
+```
+
+
+#### スパイ
+<a id="markdown-%E3%82%B9%E3%83%91%E3%82%A4" name="%E3%82%B9%E3%83%91%E3%82%A4"></a>
+
+本物の関数を呼びつつ、呼び出し回数などを確認
+
+```powershell
+$ cd python\sampleapp
+$ python -m pytest .\test_spy.py --capture=no
+```
+
+- python\samplemock\test_spy.py
+
+```py
+def log1(message: str):
+    print('msg: {}'.format(message))
+    return 123
+
+
+def func1(message: str):
+    log1(message)
+
+
+def test_func1(mocker):
+    log = mocker.patch('test_spy.log1')
+    func1('Lorem ipsum dolor sit.')
+    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
+    log.assert_called_once_with('Lorem ipsum dolor sit.')
+    print(
+        'test_func1',
+        log,
+        dir(log)
+    )
+    # ['__enter__', 'assert_any_call', 'assert_called', 'assert_called_once', 'assert_called_once_with', 'assert_called_with', 'assert_has_calls', 'assert_not_called', 'attach_mock', 'call_args', 'call_args_list', 'call_count', 'called', 'configure_mock', 'method_calls', 'mock_add_spec', 'mock_calls', 'reset_mock', 'return_value', 'side_effect']
+
+
+def test_func2(mocker):
+    import test_spy
+    log = mocker.spy(test_spy, 'log1')
+    func1('Lorem ipsum dolor amet.')
+    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
+    log.assert_called_once_with('Lorem ipsum dolor amet.')
+
+    # スパイされた関数の戻り値が想定通りか
+    assert log.spy_return == 123
+    print(
+        'test_func2',
+        log,
+        dir(log)
+    )
+    # ['__annotations__', '__builtins__', '__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__get__', '__getattribute__', '__globals__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__kwdefaults__', '__le__', '__lt__', '__module__', '__name__', '__ne__', '__new__', '__qualname__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__signature__', '__sizeof__', '__str__', '__subclasshook__', '_mock_children', 'assert_any_call', 'assert_called', 'assert_called_once', 'assert_called_once_with', 'assert_called_with', 'assert_has_calls', 'assert_not_called', 'call_args', 'call_args_list', 'call_count', 'called', 'method_calls', 'mock', 'mock_calls', 'reset_mock', 'return_value', 'side_effect', 'spy_exception', 'spy_return']
 ```
 
 
