@@ -804,6 +804,7 @@
     - [pytest](#pytest)
         - [pytestのインストールとテスト実施](#pytest%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E3%83%86%E3%82%B9%E3%83%88%E5%AE%9F%E6%96%BD)
         - [テスト項目の収集方法](#%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95)
+        - [実施するテスト項目の指定方法](#%E5%AE%9F%E6%96%BD%E3%81%99%E3%82%8B%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E6%8C%87%E5%AE%9A%E6%96%B9%E6%B3%95)
         - [テストコード](#%E3%83%86%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89)
             - [assert文](#assert%E6%96%87)
             - [例外発生を検証](#%E4%BE%8B%E5%A4%96%E7%99%BA%E7%94%9F%E3%82%92%E6%A4%9C%E8%A8%BC)
@@ -815,7 +816,9 @@
             - [一時ファイル](#%E4%B8%80%E6%99%82%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB)
                 - [tmpdir](#tmpdir)
             - [複数のフィクスチャ](#%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3)
+            - [フィクスチャをモジュール／クラス全体に適用](#%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%E3%82%92%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%EF%BC%8F%E3%82%AF%E3%83%A9%E3%82%B9%E5%85%A8%E4%BD%93%E3%81%AB%E9%81%A9%E7%94%A8)
         - [conftest.py](#conftestpy)
+        - [デコレーター](#%E3%83%87%E3%82%B3%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC)
         - [モック](#%E3%83%A2%E3%83%83%E3%82%AF)
             - [pytest-mock のインストール](#pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
             - [モックを使用したテストの実施](#%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD)
@@ -20791,6 +20794,21 @@ norecursedirs=env
 ```
 
 
+### 実施するテスト項目の指定方法
+<a id="markdown-%E5%AE%9F%E6%96%BD%E3%81%99%E3%82%8B%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E6%8C%87%E5%AE%9A%E6%96%B9%E6%B3%95" name="%E5%AE%9F%E6%96%BD%E3%81%99%E3%82%8B%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E6%8C%87%E5%AE%9A%E6%96%B9%E6%B3%95"></a>
+
+| 項目         | コマンド                                            | 内容                                                                                                  |
+| ------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| モジュール   | `pytest test_tristique.py`                          |                                                                                                       |
+| ディレクトリ | `pytest test_pretium/`                              |                                                                                                       |
+| 文字列式     | `pytest -k "MyClass and not method"`                | ファイル名、クラス名、および関数名に、指定された文字列(大文字と小文字を区別しない) を含むテストを実行 |
+|              |                                                     | `TestMyClass.test_something` は実行され、 `TestMyClass.test_method` は実行されない                    |
+| ノード ID    | `pytest test_tristique.py::test_something`          | <モジュール名>::<クラス名／関数名／パラメーター名>                                                    |
+|              | `pytest test_tristique.py::MyClass::test_something` |                                                                                                       |
+| マーカー式   | `pytest -m usefixtures`                             | `@pytest.mark.usefixtures` のデコレータが付いている項目のみ実行                                       |
+| パッケージ   | `pytest --pyargs pkg.testing`                       |                                                                                                       |
+
+
 ### テストコード
 <a id="markdown-%E3%83%86%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89" name="%E3%83%86%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89"></a>
 
@@ -20998,6 +21016,53 @@ def test_case03(fixture01, fixture02):
     print('test_case03')
 ```
 
+#### フィクスチャをモジュール／クラス全体に適用
+<a id="markdown-%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%E3%82%92%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%EF%BC%8F%E3%82%AF%E3%83%A9%E3%82%B9%E5%85%A8%E4%BD%93%E3%81%AB%E9%81%A9%E7%94%A8" name="%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%81%E3%83%A3%E3%82%92%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%EF%BC%8F%E3%82%AF%E3%83%A9%E3%82%B9%E5%85%A8%E4%BD%93%E3%81%AB%E9%81%A9%E7%94%A8"></a>
+
+```powershell
+$ cd python\sampleapp
+$ python -m pytest .\tests\test_usefixtures.py --capture=no
+```
+
+```py
+import pytest
+
+
+@pytest.fixture()
+def sample_fixture():
+    print("前処理")
+
+
+@pytest.mark.usefixtures('sample_fixture')
+class TestSample(object):
+    def test_1(self):
+        print("テスト1")
+
+    def test_2(self):
+        print("テスト2")
+
+    def test_3(self):
+        print("テスト3")
+```
+
+```
+================================================================================================================================================ test session starts =================================================================================================================================================
+platform win32 -- Python 3.10.5, pytest-7.1.3, pluggy-1.0.0
+rootdir: C:\Users\Y\Documents\GitHub\Python-cheatsheet\python\sampleapp
+plugins: mock-3.10.0
+collected 3 items
+
+tests\test_usefixtures.py 前処理
+テスト1
+.前処理
+テスト2
+.前処理
+テスト3
+.
+
+================================================================================================================================================= 3 passed in 0.02s ==================================================================================================================================================
+```
+
 
 ### conftest.py
 <a id="markdown-conftest.py" name="conftest.py"></a>
@@ -21011,6 +21076,87 @@ import pytest
 @pytest.fixture(autouse=True)
 def fixture00():
     print('fixture00')
+```
+
+
+### デコレーター
+<a id="markdown-%E3%83%87%E3%82%B3%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC" name="%E3%83%87%E3%82%B3%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC"></a>
+
+| 項目           | 内容                                                 |
+| -------------- | ---------------------------------------------------- |
+| usefixtures    | テスト関数またはクラスでフィクスチャを使用する       |
+| filterwarnings | テスト関数の特定の警告をフィルタリングする           |
+| skip           | 常にテスト関数をスキップする                         |
+| skipif         | 特定の条件が満たされた場合にテスト関数をスキップする |
+| xfail          | テストに失敗すると予想されることをマークする         |
+| parametrize    | 同じテスト関数に対して複数の呼び出しを実行する       |
+
+```py
+import pytest
+
+
+@pytest.fixture()
+def sample_fixture():
+    print("前処理")
+
+
+@pytest.mark.usefixtures('sample_fixture')
+class TestSample(object):
+    def test_1(self):
+        print("テスト1")
+
+    def test_2(self):
+        print("テスト2")
+
+    def test_3(self):
+        print("テスト3")
+
+```
+
+```py
+import pytest
+import warnings
+
+
+def api_deprecated():
+    warnings.warn(UserWarning("deprecated: This API will be deprecated."))
+    return 1
+
+
+@pytest.mark.filterwarnings("ignore:deprecated")
+def test_api_deprecated():
+    assert api_deprecated() == 1
+
+```
+
+```py
+import pytest
+
+
+@pytest.mark.skip(reason="deprecated")
+def test_skip():
+    pass
+
+```
+
+```py
+import pytest
+
+
+CONDITION_SKIP = True
+
+@pytest.mark.skipif(CONDITION_SKIP, reason="Excluded.")
+def test_function():
+    pass
+```
+
+```py
+import pytest
+
+
+@pytest.mark.xfail
+def test_expected_failure():
+    pass
 ```
 
 
