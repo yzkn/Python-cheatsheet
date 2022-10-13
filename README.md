@@ -821,6 +821,11 @@
             - [モックを使用したテストの実施](#%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD)
                 - [関数](#%E9%96%A2%E6%95%B0)
                 - [クラス](#%E3%82%AF%E3%83%A9%E3%82%B9)
+                - [オブジェクト](#%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88)
+                - [辞書](#%E8%BE%9E%E6%9B%B8)
+                    - [環境変数の置き換え](#%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88)
+                - [日時](#%E6%97%A5%E6%99%82)
+                - [requests](#requests)
             - [スパイ](#%E3%82%B9%E3%83%91%E3%82%A4)
 
 <!-- /TOC -->
@@ -21030,69 +21035,13 @@ $ python -m pip install pytest pytest-mock pytest-freezegun
 ##### 関数
 <a id="markdown-%E9%96%A2%E6%95%B0" name="%E9%96%A2%E6%95%B0"></a>
 
-- python\samplemock\test_mock_func.py
-
-```py
-def log1(message: str):
-    print('msg: {}'.format(message))
-
-
-def func1(message: str):
-    log1(message)
-
-
-def func2():
-    log1('Started.')
-    print('Something...')
-    log1('Finished.')
-
-
-def test_func1(mocker):
-    log = mocker.patch('test_mock_func.log1')
-    func1('Lorem ipsum dolor sit amet.')
-    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
-    log.assert_called_once_with('Lorem ipsum dolor sit amet.')
-
-
-def test_func2(mocker):
-    log = mocker.patch('test_mock_func.log1')
-    func2()
-    # 呼び出し履歴が想定通りか
-    assert log.call_args_list == [
-        mocker.call('Started.'),
-        mocker.call('Finished.'),
-    ]
-
-
-# --------------------
-
-
-def log2(message: str) -> bool:
-    print('msg: {}'.format(message))
-    return True
-
-
-def func3(message: str):
-    ok = log2(message)
-    if ok:
-        print('succeeded')
-    else:
-        print('failed')
-
-
-def test_send(mocker, capsys):
-    # 戻り値を偽装
-    # log = mocker.patch('test_mock_func.log2')
-    log = mocker.patch('test_mock_func.log2', return_value=False)
-    func3('Fusce placerat placerat placerat.')
-    log.assert_called_once_with('Fusce placerat placerat placerat.')
-    out, _ = capsys.readouterr()
-    # assert out == 'succeeded\n'
-    assert out == 'failed\n'
+```powershell
+$ cd python\samplemock
+$ .\testenv\Scripts\Activate.ps1
+$ python -m pytest .\test_mock_func.py --capture=no
 ```
 
-##### クラス
-<a id="markdown-%E3%82%AF%E3%83%A9%E3%82%B9" name="%E3%82%AF%E3%83%A9%E3%82%B9"></a>
+- python\samplemock\test_mock_func.py
 
 ```py
 # test_mock_class.py
@@ -21107,8 +21056,14 @@ def gettime():
     return datetime.datetime.now()
 
 
+# test_mock_class.function1
+# ~~~~~~~~~~~~~~~
 def function1():
     return 0
+
+
+def function2(x: int):
+    return x
 
 
 class MyClass1:
@@ -21158,6 +21113,7 @@ import test_mock_class
 
 @pytest.mark.freeze_time(datetime.datetime(2022, 10, 11, 22, 33))
 def test_gettime(mocker):
+    print(gettime())
     assert gettime() == datetime.datetime(2022, 10, 11, 22, 33)
 
 
@@ -21171,6 +21127,40 @@ def test_function1_2(mocker):
     print(test_mock_class.function1()) # 123
     print(test_mock_class.function1()) # 234
     print(test_mock_class.function1()) # 345
+
+
+def test_function1_3(mocker):
+    mocker.patch("test_mock_class.function1", side_effect=ZeroDivisionError("zero division"))
+    with pytest.raises(ZeroDivisionError) as e:
+        print(test_mock_class.function1())
+    print("e.value.args[0] == \"zero division\"", e.value.args[0] == 'zero division')
+    assert e.value.args[0] == "zero division"
+
+
+def test_function2_1(mocker):
+    m = mocker.patch("test_mock_class.function2")
+    x = test_mock_class.function2(3)
+
+    # 呼び出された回数
+    assert m.call_count == 1
+    # 1回以上呼び出されたか
+    m.assert_called()
+    # 1回だけ呼び出されたか
+    m.assert_called_once()
+    # 1回も呼び出されていないか
+    m.assert_not_called()
+
+    # 最後に実行した際の引数を検証
+    m.assert_called_with(3)
+    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
+    m.assert_called_once_with(3)
+    # 想定通りの文字列を受け取って、かつ1回以上呼び出されたか
+    m.assert_any_call(3)
+
+
+def test_function2_2(mocker):
+    mocker.patch("test_mock_class.function2", side_effect=lambda x: x if x % 2 == 0 else -1)
+    print(test_mock_class.function2(3)) # -1
 
 
 def test_main(mocker):
@@ -21189,6 +21179,337 @@ def test_main(mocker):
     # スタティックメソッド
     mocker.patch("test_mock_class.MyClass1.static_method1", return_value=45)
     print(test_mock_class.MyClass1.static_method1()) # 45
+
+```
+
+##### クラス
+<a id="markdown-%E3%82%AF%E3%83%A9%E3%82%B9" name="%E3%82%AF%E3%83%A9%E3%82%B9"></a>
+
+```powershell
+$ cd python\samplemock
+$ .\testenv\Scripts\Activate.ps1
+$ python -m pytest .\test_mock_class.py --capture=no
+```
+
+- python\samplemock\test_mock_class.py
+
+```py
+# test_mock_class.py
+# ~~~~~~~~~~~~~~~
+
+
+import datetime
+
+
+def gettime():
+    # 標準モジュール
+    return datetime.datetime.now()
+
+
+# test_mock_class.function1
+# ~~~~~~~~~~~~~~~
+def function1():
+    return 0
+
+
+def function2(x: int):
+    return x
+
+
+class MyClass1:
+    __class_variable1 = 30
+
+    def __init__(self):
+        self.__property1 = 20
+
+    def instance_method1(self):
+        return self.__property1
+
+    @property
+    def property1(self):
+        return self.__property1
+
+    @classmethod
+    # def classmethod1(cls):
+    def get_class_variable1(cls):
+        return cls.__class_variable1
+
+    @staticmethod
+    def static_method1():
+        return 40
+
+
+# test_mock_class.main
+# ~~~~~~~~~~~~~~~
+def main():
+    s = MyClass1()
+    # インスタンスメソッド
+    print(s.instance_method1())
+    # プロパティ
+    print(s.property1)
+    # クラスメソッド
+    print(MyClass1.get_class_variable1())
+    # スタティックメソッド
+    print(MyClass1.static_method1())
+
+
+# --------------------
+
+
+import datetime
+import pytest
+import test_mock_class
+
+
+@pytest.mark.freeze_time(datetime.datetime(2022, 10, 11, 22, 33))
+def test_gettime(mocker):
+    print(gettime())
+    assert gettime() == datetime.datetime(2022, 10, 11, 22, 33)
+
+
+def test_function1_1(mocker):
+    mocker.patch("test_mock_class.function1", return_value=123) # 戻り値を定数に変更
+    print(test_mock_class.function1()) # 123
+
+
+def test_function1_2(mocker):
+    mocker.patch("test_mock_class.function1", side_effect=[123, 234, 345]) # 呼び出し回数に応じて戻り値を変更
+    print(test_mock_class.function1()) # 123
+    print(test_mock_class.function1()) # 234
+    print(test_mock_class.function1()) # 345
+
+
+def test_function1_3(mocker):
+    mocker.patch("test_mock_class.function1", side_effect=ZeroDivisionError("zero division"))
+    with pytest.raises(ZeroDivisionError) as e:
+        print(test_mock_class.function1())
+    print("e.value.args[0] == \"zero division\"", e.value.args[0] == 'zero division')
+    assert e.value.args[0] == "zero division"
+
+
+def test_function2(mocker):
+    mocker.patch("test_mock_class.function2", side_effect=lambda x: x if x % 2 == 0 else -1)
+    print(test_mock_class.function2(3)) # -1
+
+
+def test_main(mocker):
+    # インスタンスメソッド
+    mocker.patch("test_mock_class.MyClass1.instance_method1", return_value=12)
+    print(test_mock_class.MyClass1.instance_method1()) # 12
+
+    # プロパティには new_callable=mocker.PropertyMock を指定
+    mocker.patch("test_mock_class.MyClass1.property1", return_value=23, new_callable=mocker.PropertyMock)
+    print(test_mock_class.MyClass1.property1) # 23
+
+    # クラスメソッド
+    mocker.patch("test_mock_class.MyClass1.get_class_variable1", return_value=34)
+    print(test_mock_class.MyClass1.get_class_variable1()) # 34
+
+    # スタティックメソッド
+    mocker.patch("test_mock_class.MyClass1.static_method1", return_value=45)
+    print(test_mock_class.MyClass1.static_method1()) # 45
+
+```
+
+##### オブジェクト
+<a id="markdown-%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88" name="%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88"></a>
+
+```powershell
+$ cd python\samplemock
+$ .\testenv\Scripts\Activate.ps1
+$ python -m pytest .\test_mock_object.py --capture=no
+```
+
+- python\samplemock\test_mock_object.py
+
+```py
+import pytest
+
+
+global_var = -1
+
+
+def test_func_main(mocker):
+    mocker.patch("test_mock_object.global_var", new=12345)
+    print(global_var)
+
+```
+
+##### 辞書
+<a id="markdown-%E8%BE%9E%E6%9B%B8" name="%E8%BE%9E%E6%9B%B8"></a>
+
+```powershell
+$ cd python\samplemock
+$ .\testenv\Scripts\Activate.ps1
+$ python -m pytest .\test_mock_dict.py --capture=no
+```
+
+- python\samplemock\test_mock_dict.py
+
+```py
+# test_mock_dict.py
+# ~~~~~~~~~~~~~~
+
+
+dct = {"key1": 123, "key2": 234, "key3": 345}
+
+
+# test_mock_dict.func1()
+# ~~~~~~~~~~~~~~
+def func1():
+    print(dct)
+
+
+import test_mock_dict
+def test_func1(mocker):
+    mocker.patch.dict(dct, {"key3": 321})
+    test_mock_dict.func1() # {'key1': 123, 'key2': 234, 'key3': 321}
+
+    mocker.patch.dict(dct, {"key4": 456}, clear=True)
+    test_mock_dict.func1() # {'key4': 456}
+
+```
+
+###### 環境変数の置き換え
+<a id="markdown-%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88" name="%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88"></a>
+
+```py
+import os
+
+
+def func_envvar():
+    return os.environ
+
+
+def test_func_envvar(mocker):
+    ret = func_envvar()
+    print(ret)
+
+    mocker.patch.dict('os.environ', {'NEW_KEY': 'NEW_VALUE'})
+    ret = func_envvar()
+    print(ret)
+
+    assert ret["NEW_KEY"] == "NEW_VALUE"
+
+```
+
+##### 日時
+<a id="markdown-%E6%97%A5%E6%99%82" name="%E6%97%A5%E6%99%82"></a>
+
+```powershell
+$ cd python\samplemock
+$ .\testenv\Scripts\Activate.ps1
+$ python -m pytest .\test_mock_datetime.py --capture=no
+```
+
+- python\samplemock\test_mock_datetime.py
+
+```py
+import datetime
+
+
+def func1():
+    return datetime.datetime.now()
+
+
+# -----
+
+
+import pytest
+
+
+@pytest.mark.freeze_time(datetime.datetime(2022, 10, 11, 22, 33))
+def test_func1(mocker):
+    assert func1() == datetime.datetime(2022, 10, 11, 22, 33)
+
+
+# -----
+
+
+def test_func2(mocker):
+    expect = datetime.datetime(2022, 10, 11, 22, 33, 44, 55)
+    mocker.patch("datetime.datetime", **{
+        "now.return_value": datetime.datetime(2022, 10, 11, 22, 33, 44, 55)
+    })
+    assert func1() == expect
+
+```
+
+##### requests
+<a id="markdown-requests" name="requests"></a>
+
+```powershell
+$ cd python\samplemock
+$ .\testenv\Scripts\Activate.ps1
+$ python test_mock_requests.py
+```
+
+- python\samplemock\test_mock_requests.py
+
+```py
+import requests
+
+
+def get_json_data(url):
+    resp = requests.get(url)
+    if resp.status_code != 200:
+        raise
+    return resp.json()
+
+
+def main():
+    url = 'http://httpbin.org/json'
+    json_data = get_json_data(url)
+    print(json_data)
+
+# if __name__ == '__main__':
+#     main()
+
+
+# ----------
+
+
+from test_mock_requests import get_json_data
+
+import unittest
+from unittest import mock
+
+
+def mocked_requests_get(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+    if args[0] == 'http://example.net/':
+        return MockResponse({"result": "mock"}, 200)
+
+    return MockResponse({}, 404)
+
+
+class TestGetJSONData(unittest.TestCase):
+    # 正常系
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_json_data1(self, mock_get):
+        print('test_get_json_data1')
+        json_data = get_json_data('http://example.net/')
+        self.assertEqual(json_data, {"result": "mock"})
+        print(json_data)
+
+    # 異常系
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_json_data2(self, mock_get):
+        print('test_get_json_data2')
+        with self.assertRaises(RuntimeError):
+            # json_data = get_json_data('http://example.net/')
+            json_data = get_json_data('url_invalid')
+            print(json_data)
+
+if __name__ == '__main__':
+    unittest.main()
 
 ```
 
