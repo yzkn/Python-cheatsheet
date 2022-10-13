@@ -20,8 +20,22 @@ def func2():
 def test_func1(mocker):
     log = mocker.patch('test_mock_func.log1')
     func1('Lorem ipsum dolor sit amet.')
+
+    # 呼び出された回数
+    assert log.call_count == 1
+    # 1回以上呼び出されたか
+    log.assert_called()
+    # 1回だけ呼び出されたか
+    log.assert_called_once()
+    # 1回も呼び出されていないか
+    log.assert_not_called()
+
+    # 最後に実行した際の引数を検証
+    log.assert_called_with('Lorem ipsum dolor sit amet.')
     # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
     log.assert_called_once_with('Lorem ipsum dolor sit amet.')
+    # 想定通りの文字列を受け取って、かつ1回以上呼び出されたか
+    log.assert_any_call('Lorem ipsum dolor sit amet.')
 
 
 def test_func2(mocker):

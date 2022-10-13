@@ -16,6 +16,10 @@ def function1():
     return 0
 
 
+def function2(x: int):
+    return x
+
+
 class MyClass1:
     __class_variable1 = 30
 
@@ -77,6 +81,40 @@ def test_function1_2(mocker):
     print(test_mock_class.function1()) # 123
     print(test_mock_class.function1()) # 234
     print(test_mock_class.function1()) # 345
+
+
+def test_function1_3(mocker):
+    mocker.patch("test_mock_class.function1", side_effect=ZeroDivisionError("zero division"))
+    with pytest.raises(ZeroDivisionError) as e:
+        print(test_mock_class.function1())
+    print("e.value.args[0] == \"zero division\"", e.value.args[0] == 'zero division')
+    assert e.value.args[0] == "zero division"
+
+
+def test_function2_1(mocker):
+    m = mocker.patch("test_mock_class.function2")
+    x = test_mock_class.function2(3)
+
+    # 呼び出された回数
+    assert m.call_count == 1
+    # 1回以上呼び出されたか
+    m.assert_called()
+    # 1回だけ呼び出されたか
+    m.assert_called_once()
+    # 1回も呼び出されていないか
+    m.assert_not_called()
+
+    # 最後に実行した際の引数を検証
+    m.assert_called_with(3)
+    # 想定通りの文字列を受け取って、かつ1回だけ呼び出されたか
+    m.assert_called_once_with(3)
+    # 想定通りの文字列を受け取って、かつ1回以上呼び出されたか
+    m.assert_any_call(3)
+
+
+def test_function2_2(mocker):
+    mocker.patch("test_mock_class.function2", side_effect=lambda x: x if x % 2 == 0 else -1)
+    print(test_mock_class.function2(3)) # -1
 
 
 def test_main(mocker):
