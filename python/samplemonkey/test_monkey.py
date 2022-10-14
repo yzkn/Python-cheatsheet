@@ -13,6 +13,7 @@ def mock_main():
 
 
 def test_main(monkeypatch: pytest.MonkeyPatch):
+    # monkeypatch.setattr(monkey, 'echo', lambda *_: 'mock_echo')
     monkeypatch.setattr(monkey, 'echo', mock_echo)
     monkeypatch.setattr(monkey, 'main', mock_main)
 
