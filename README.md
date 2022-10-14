@@ -820,15 +820,23 @@
         - [conftest.py](#conftestpy)
         - [デコレーター](#%E3%83%87%E3%82%B3%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC)
         - [モック](#%E3%83%A2%E3%83%83%E3%82%AF)
-            - [pytest-mock のインストール](#pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
-            - [モックを使用したテストの実施](#%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD)
-                - [関数](#%E9%96%A2%E6%95%B0)
-                - [クラス](#%E3%82%AF%E3%83%A9%E3%82%B9)
-                - [オブジェクト](#%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88)
-                - [辞書](#%E8%BE%9E%E6%9B%B8)
-                    - [環境変数の置き換え](#%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88)
-                - [日時](#%E6%97%A5%E6%99%82)
-                - [requests](#requests)
+            - [pytest-mock](#pytest-mock)
+                - [pytest-mock のインストール](#pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
+                - [pytest-mockを使用したテスト](#pytest-mock%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88)
+                    - [関数](#%E9%96%A2%E6%95%B0)
+                    - [クラス](#%E3%82%AF%E3%83%A9%E3%82%B9)
+                    - [オブジェクト](#%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88)
+                    - [辞書](#%E8%BE%9E%E6%9B%B8)
+                    - [日時](#%E6%97%A5%E6%99%82)
+                    - [requests](#requests)
+            - [monkeypatch](#monkeypatch)
+                - [monkeypatchを使用したテスト](#monkeypatch%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88)
+                    - [関数（同一モジュール）](#%E9%96%A2%E6%95%B0%E5%90%8C%E4%B8%80%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB)
+                    - [関数（別モジュール）](#%E9%96%A2%E6%95%B0%E5%88%A5%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB)
+                    - [メソッド](#%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89)
+                    - [クラス](#%E3%82%AF%E3%83%A9%E3%82%B9)
+                    - [例外](#%E4%BE%8B%E5%A4%96)
+                    - [標準出力](#%E6%A8%99%E6%BA%96%E5%87%BA%E5%8A%9B)
             - [スパイ](#%E3%82%B9%E3%83%91%E3%82%A4)
 
 <!-- /TOC -->
@@ -21163,7 +21171,11 @@ def test_expected_failure():
 ### モック
 <a id="markdown-%E3%83%A2%E3%83%83%E3%82%AF" name="%E3%83%A2%E3%83%83%E3%82%AF"></a>
 
-#### pytest-mock のインストール
+
+#### pytest-mock
+<a id="markdown-pytest-mock" name="pytest-mock"></a>
+
+##### pytest-mock のインストール
 <a id="markdown-pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB" name="pytest-mock-%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB"></a>
 
 ```powershell
@@ -21175,10 +21187,10 @@ $ python -m pip install pytest pytest-mock pytest-freezegun
 ```
 
 
-#### モックを使用したテストの実施
-<a id="markdown-%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD" name="%E3%83%A2%E3%83%83%E3%82%AF%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E6%96%BD"></a>
+##### pytest-mockを使用したテスト
+<a id="markdown-pytest-mock%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88" name="pytest-mock%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88"></a>
 
-##### 関数
+###### 関数
 <a id="markdown-%E9%96%A2%E6%95%B0" name="%E9%96%A2%E6%95%B0"></a>
 
 ```powershell
@@ -21328,7 +21340,7 @@ def test_main(mocker):
 
 ```
 
-##### クラス
+###### クラス
 <a id="markdown-%E3%82%AF%E3%83%A9%E3%82%B9" name="%E3%82%AF%E3%83%A9%E3%82%B9"></a>
 
 ```powershell
@@ -21457,7 +21469,7 @@ def test_main(mocker):
 
 ```
 
-##### オブジェクト
+###### オブジェクト
 <a id="markdown-%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88" name="%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88"></a>
 
 ```powershell
@@ -21481,7 +21493,7 @@ def test_func_main(mocker):
 
 ```
 
-##### 辞書
+###### 辞書
 <a id="markdown-%E8%BE%9E%E6%9B%B8" name="%E8%BE%9E%E6%9B%B8"></a>
 
 ```powershell
@@ -21516,8 +21528,7 @@ def test_func1(mocker):
 
 ```
 
-###### 環境変数の置き換え
-<a id="markdown-%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88" name="%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88"></a>
+環境変数の置き換え
 
 ```py
 import os
@@ -21539,7 +21550,7 @@ def test_func_envvar(mocker):
 
 ```
 
-##### 日時
+###### 日時
 <a id="markdown-%E6%97%A5%E6%99%82" name="%E6%97%A5%E6%99%82"></a>
 
 ```powershell
@@ -21581,7 +21592,7 @@ def test_func2(mocker):
 
 ```
 
-##### requests
+###### requests
 <a id="markdown-requests" name="requests"></a>
 
 ```powershell
@@ -21657,6 +21668,196 @@ class TestGetJSONData(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
+```
+
+
+#### monkeypatch
+<a id="markdown-monkeypatch" name="monkeypatch"></a>
+
+
+##### monkeypatchを使用したテスト
+<a id="markdown-monkeypatch%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88" name="monkeypatch%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88"></a>
+
+```powershell
+$ cd python\samplemonkey
+$ py -m venv testenv
+$ .\testenv\Scripts\Activate.ps1
+
+$ python -m pip install pytest
+```
+
+###### 関数（同一モジュール）
+<a id="markdown-%E9%96%A2%E6%95%B0%EF%BC%88%E5%90%8C%E4%B8%80%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%EF%BC%89" name="%E9%96%A2%E6%95%B0%EF%BC%88%E5%90%8C%E4%B8%80%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%EF%BC%89"></a>
+
+- [test_monkey.py](python\samplemonkey\test_monkey.py)
+
+```py
+import pytest
+
+
+import sys
+current_module = sys.modules[__name__]
+
+
+def mock_echo(message: str):
+    return 'mock_echo'
+
+def main():
+    return echo('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+
+def test_main(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(current_module, 'main', mock_echo)
+```
+
+###### 関数（別モジュール）
+<a id="markdown-%E9%96%A2%E6%95%B0%EF%BC%88%E5%88%A5%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%EF%BC%89" name="%E9%96%A2%E6%95%B0%EF%BC%88%E5%88%A5%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%EF%BC%89"></a>
+
+- [monkey.py](python\samplemonkey\monkey.py)
+
+```py
+def echo(message: str):
+    return 'echo: ' + message
+
+def main():
+    return echo('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+```
+
+- [test_monkey.py](python\samplemonkey\test_monkey.py)
+
+```py
+import pytest
+
+
+import monkey
+
+
+def mock_echo(message: str):
+    return 'mock_echo'
+
+
+def mock_main():
+    return 'mock_main'
+
+
+def test_main(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(monkey, 'echo', mock_echo)
+    monkeypatch.setattr(monkey, 'main', mock_main)
+
+    assert monkey.echo('') == 'mock_echo'
+    assert monkey.main() == 'mock_main'
+```
+
+###### メソッド
+<a id="markdown-%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89" name="%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89"></a>
+
+- [test_monkey_method.py](python\samplemonkey\test_monkey_method.py)
+
+```py
+import pytest
+
+
+import sys
+current_module = sys.modules[__name__]
+
+
+class MyClass:
+    def instance_method1(self):
+        return 'instance_method'
+
+
+def main():
+    myClass = MyClass()
+    return myClass.instance_method1()
+
+
+def test_main(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(current_module.MyClass, 'instance_method1', lambda *args: 'MOCKED')
+    assert main() == 'MOCKED'
+```
+
+###### クラス
+<a id="markdown-%E3%82%AF%E3%83%A9%E3%82%B9" name="%E3%82%AF%E3%83%A9%E3%82%B9"></a>
+
+- [test_monkey_class.py](python\samplemonkey\test_monkey_class.py)
+
+```py
+import pytest
+
+
+import sys
+current_module = sys.modules[__name__]
+
+
+class MyClass:
+    def instance_method1(self):
+        return 'instance_method'
+
+
+def main():
+    myClass = MyClass()
+    return myClass.instance_method1()
+
+
+def test_main(monkeypatch: pytest.MonkeyPatch):
+    class MockedClass:
+        def instance_method1(self):
+            return 'MOCKED'
+
+    monkeypatch.setattr(current_module, 'MyClass', MockedClass)
+    assert main() == 'MOCKED'
+```
+
+###### 例外
+<a id="markdown-%E4%BE%8B%E5%A4%96" name="%E4%BE%8B%E5%A4%96"></a>
+
+- [test_monkey_exception.py](python\samplemonkey\test_monkey_exception.py)
+
+```py
+import pytest
+
+
+import sys
+current_module = sys.modules[__name__]
+
+
+def mock_main():
+    raise Exception('MockException')
+
+def main():
+    return echo('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+
+def test_main(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(current_module, 'main', mock_main)
+
+    with pytest.raises(Exception) as e:
+        main()
+    assert e.value.args[0] == 'MockException'
+```
+
+###### 標準出力
+<a id="markdown-%E6%A8%99%E6%BA%96%E5%87%BA%E5%8A%9B" name="%E6%A8%99%E6%BA%96%E5%87%BA%E5%8A%9B"></a>
+
+- [test_monkey_stdout.py](python\samplemonkey\test_monkey_stdout.py)
+
+```py
+import pytest
+
+
+import sys
+current_module = sys.modules[__name__]
+
+
+class MyClass(object):
+    def echo(self):
+        print('Lorem ipsum dolor sit amet.')
+
+
+def test_echo(monkeypatch, capsys):
+    monkeypatch.setattr(MyClass, 'echo', lambda x: print('MOCKED'))
+    myClass = MyClass()
+    actual = myClass.echo()
+    actual, _ = capsys.readouterr()
+    assert actual == 'MOCKED\n'
 ```
 
 
