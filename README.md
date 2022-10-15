@@ -803,6 +803,9 @@
 - [テスト](#%E3%83%86%E3%82%B9%E3%83%88)
     - [pytest](#pytest)
         - [pytestのインストールとテスト実施](#pytest%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%A8%E3%83%86%E3%82%B9%E3%83%88%E5%AE%9F%E6%96%BD)
+            - [pytestのコマンドライン引数](#pytest%E3%81%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E5%BC%95%E6%95%B0)
+                - [ログの型式](#%E3%83%AD%E3%82%B0%E3%81%AE%E5%9E%8B%E5%BC%8F)
+                - [結果のファイル出力](#%E7%B5%90%E6%9E%9C%E3%81%AE%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%87%BA%E5%8A%9B)
         - [テスト項目の収集方法](#%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95)
         - [実施するテスト項目の指定方法](#%E5%AE%9F%E6%96%BD%E3%81%99%E3%82%8B%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E6%8C%87%E5%AE%9A%E6%96%B9%E6%B3%95)
         - [テストコード](#%E3%83%86%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%89)
@@ -843,6 +846,9 @@
                     - [requests](#requests)
                     - [環境変数](#%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0)
             - [スパイ](#%E3%82%B9%E3%83%91%E3%82%A4)
+        - [pytestのプラグイン](#pytest%E3%81%AE%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3)
+            - [pytest-timeout](#pytest-timeout)
+            - [pytest-xdist](#pytest-xdist)
 
 <!-- /TOC -->
 
@@ -20786,6 +20792,72 @@ tests\sampleapp\test_sampleapp.py .                                             
 ============================================================================================================================================ 2 passed in 0.03s =============================================================================================================================================
 ```
 
+#### pytestのコマンドライン引数
+<a id="markdown-pytest%E3%81%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E5%BC%95%E6%95%B0" name="pytest%E3%81%AE%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E5%BC%95%E6%95%B0"></a>
+
+```powershell
+$ pytest --version  # バージョン情報
+$ pytest --fixtures # 利用可能なフィクスチャ
+$ pytest --help     # ヘルプ
+
+# トレースバック
+# $ pytest --showlocals # トレースバック中のローカル変数を表示
+$ pytest -l
+
+$ pytest --tb=auto
+$ pytest --tb=long
+$ pytest --tb=short
+$ pytest --tb=line
+$ pytest --tb=native
+$ pytest --tb=no
+
+# ヘッダーをスキップ
+$ pytest --no-header
+
+# 出力の冗長性
+$ pytest --no-header -v
+$ pytest --no-header -vv # より冗長
+```
+
+```powershell
+# 詳細な要約レポート
+$ pytest -ra
+```
+
+| `-r` オプションで使用できる文字 |     |                   |
+| ------------------------------- | --- | ----------------- |
+|                                 | `f` | failed            |
+|                                 | `E` | error             |
+|                                 | `s` | skipped           |
+|                                 | `x` | xfailed           |
+|                                 | `X` | xpassed           |
+|                                 | `p` | passed            |
+|                                 | `P` | 出力のある passed |
+
+| グループの選択／解除のための文字 |     |                 |
+| -------------------------------- | --- | --------------- |
+|                                  | `a` | `pP` 以外の全て |
+|                                  | `A` | 全て            |
+|                                  | `N` | なし            |
+
+##### ログの型式
+<a id="markdown-%E3%83%AD%E3%82%B0%E3%81%AE%E5%9E%8B%E5%BC%8F" name="%E3%83%AD%E3%82%B0%E3%81%AE%E5%9E%8B%E5%BC%8F"></a>
+
+```powershell
+$ pytest --log-format="%(asctime)s %(levelname)s %(message)s" --log-date-format="%Y-%m-%d %H:%M:%S"
+```
+
+##### 結果のファイル出力
+<a id="markdown-%E7%B5%90%E6%9E%9C%E3%81%AE%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%87%BA%E5%8A%9B" name="%E7%B5%90%E6%9E%9C%E3%81%AE%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%87%BA%E5%8A%9B"></a>
+
+```powershell
+# プレーンテキスト
+$ pytest --resultlog=LOG_FILE_PATH
+
+# JUnitXML 形式
+$ pytest --junitxml=LOG_FILE_PATH
+```
+
 
 ### テスト項目の収集方法
 <a id="markdown-%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95" name="%E3%83%86%E3%82%B9%E3%83%88%E9%A0%85%E7%9B%AE%E3%81%AE%E5%8F%8E%E9%9B%86%E6%96%B9%E6%B3%95"></a>
@@ -22087,6 +22159,45 @@ def test_func2(mocker):
         dir(log)
     )
     # ['__annotations__', '__builtins__', '__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__get__', '__getattribute__', '__globals__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__kwdefaults__', '__le__', '__lt__', '__module__', '__name__', '__ne__', '__new__', '__qualname__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__signature__', '__sizeof__', '__str__', '__subclasshook__', '_mock_children', 'assert_any_call', 'assert_called', 'assert_called_once', 'assert_called_once_with', 'assert_called_with', 'assert_has_calls', 'assert_not_called', 'call_args', 'call_args_list', 'call_count', 'called', 'method_calls', 'mock', 'mock_calls', 'reset_mock', 'return_value', 'side_effect', 'spy_exception', 'spy_return']
+```
+
+
+### pytestのプラグイン
+<a id="markdown-pytest%E3%81%AE%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3" name="pytest%E3%81%AE%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3"></a>
+
+
+#### pytest-timeout
+<a id="markdown-pytest-timeout" name="pytest-timeout"></a>
+
+タイムアウトを設定
+
+```powershell
+$ python -m pip install pytest-timeout
+```
+
+```python
+import time
+
+
+import pytest
+
+
+@pytest.mark.timeout(4)
+def test_timeout():
+    time.sleep(3)
+```
+
+
+#### pytest-xdist
+<a id="markdown-pytest-xdist" name="pytest-xdist"></a>
+
+テストを並列実行
+
+```powershell
+$ python -m pip install pytest-xdist
+
+# $ pytest --numprocesses 4
+$ pytest -n 4
 ```
 
 
