@@ -827,16 +827,21 @@
                     - [クラス](#%E3%82%AF%E3%83%A9%E3%82%B9)
                     - [オブジェクト](#%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88)
                     - [辞書](#%E8%BE%9E%E6%9B%B8)
+                    - [辞書（環境変数の置き換え）](#%E8%BE%9E%E6%9B%B8%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88)
                     - [日時](#%E6%97%A5%E6%99%82)
                     - [requests](#requests)
             - [monkeypatch](#monkeypatch)
                 - [monkeypatchを使用したテスト](#monkeypatch%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88)
                     - [関数（同一モジュール）](#%E9%96%A2%E6%95%B0%E5%90%8C%E4%B8%80%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB)
                     - [関数（別モジュール）](#%E9%96%A2%E6%95%B0%E5%88%A5%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB)
-                    - [メソッド](#%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89)
+                    - [関数（別モジュール・プライベート関数）](#%E9%96%A2%E6%95%B0%E5%88%A5%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E3%83%BB%E3%83%97%E3%83%A9%E3%82%A4%E3%83%99%E3%83%BC%E3%83%88%E9%96%A2%E6%95%B0)
                     - [クラス](#%E3%82%AF%E3%83%A9%E3%82%B9)
+                    - [辞書](#%E8%BE%9E%E6%9B%B8)
+                    - [datetime](#datetime)
                     - [例外](#%E4%BE%8B%E5%A4%96)
                     - [標準出力](#%E6%A8%99%E6%BA%96%E5%87%BA%E5%8A%9B)
+                    - [requests](#requests)
+                    - [環境変数](#%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0)
             - [スパイ](#%E3%82%B9%E3%83%91%E3%82%A4)
 
 <!-- /TOC -->
@@ -21528,7 +21533,8 @@ def test_func1(mocker):
 
 ```
 
-環境変数の置き換え
+###### 辞書（環境変数の置き換え）
+<a id="markdown-%E8%BE%9E%E6%9B%B8%EF%BC%88%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88%EF%BC%89" name="%E8%BE%9E%E6%9B%B8%EF%BC%88%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0%E3%81%AE%E7%BD%AE%E3%81%8D%E6%8F%9B%E3%81%88%EF%BC%89"></a>
 
 ```py
 import os
@@ -21674,6 +21680,18 @@ if __name__ == '__main__':
 #### monkeypatch
 <a id="markdown-monkeypatch" name="monkeypatch"></a>
 
+monkeypatch フィクスチャ
+
+- `monkeypatch.setattr(obj, name, value, raising=True)` ...関数の動作またはクラスのプロパティを設定
+- `monkeypatch.delattr(obj, name, raising=True)` ...関数の動作またはクラスのプロパティを削除
+- `monkeypatch.setitem(mapping, name, value)` ...辞書の要素を設定
+- `monkeypatch.delitem(obj, name, raising=True)` ...辞書の要素を削除
+- `monkeypatch.setenv(name, value, prepend=None)` ...環境変数を設定
+- `monkeypatch.delenv(name, raising=True)` ...環境変数を削除
+- `monkeypatch.syspath_prepend(path)` ...カレントディレクトリのコンテキストを変更
+- `monkeypatch.chdir(path)` ... `sys.path` を変更
+- `monkeypatch.context()` ...特定のスコープのみにパッチ
+
 
 ##### monkeypatchを使用したテスト
 <a id="markdown-monkeypatch%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88" name="monkeypatch%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9F%E3%83%86%E3%82%B9%E3%83%88"></a>
@@ -21747,8 +21765,35 @@ def test_main(monkeypatch: pytest.MonkeyPatch):
     assert monkey.main() == 'mock_main'
 ```
 
-###### メソッド
-<a id="markdown-%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89" name="%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89"></a>
+###### 関数（別モジュール・プライベート関数）
+<a id="markdown-%E9%96%A2%E6%95%B0%EF%BC%88%E5%88%A5%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E3%83%BB%E3%83%97%E3%83%A9%E3%82%A4%E3%83%99%E3%83%BC%E3%83%88%E9%96%A2%E6%95%B0%EF%BC%89" name="%E9%96%A2%E6%95%B0%EF%BC%88%E5%88%A5%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E3%83%BB%E3%83%97%E3%83%A9%E3%82%A4%E3%83%99%E3%83%BC%E3%83%88%E9%96%A2%E6%95%B0%EF%BC%89"></a>
+
+- [monkey.py](python\samplemonkey\monkey.py)
+
+```py
+def __private_function():
+    return '__private_function()'
+```
+
+- [test_monkey.py](python\samplemonkey\test_monkey.py)
+
+```py
+# プライベート関数の場合は import <module> ではなく `as <alias>` でエイリアスを付ける必要がある
+# from monkey import __private_function as pf
+import monkey as pf
+
+
+import sys
+current_module = sys.modules[__name__]
+
+
+def test_private_function(monkeypatch):
+    monkeypatch.setattr(current_module, 'pf', lambda: 'MOCKED')
+    assert pf() == 'MOCKED'
+```
+
+###### クラス
+<a id="markdown-%E3%82%AF%E3%83%A9%E3%82%B9" name="%E3%82%AF%E3%83%A9%E3%82%B9"></a>
 
 - [test_monkey_method.py](python\samplemonkey\test_monkey_method.py)
 
@@ -21774,9 +21819,6 @@ def test_main(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(current_module.MyClass, 'instance_method1', lambda *args: 'MOCKED')
     assert main() == 'MOCKED'
 ```
-
-###### クラス
-<a id="markdown-%E3%82%AF%E3%83%A9%E3%82%B9" name="%E3%82%AF%E3%83%A9%E3%82%B9"></a>
 
 - [test_monkey_class.py](python\samplemonkey\test_monkey_class.py)
 
@@ -21805,6 +21847,54 @@ def test_main(monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setattr(current_module, 'MyClass', MockedClass)
     assert main() == 'MOCKED'
+```
+
+###### 辞書
+<a id="markdown-%E8%BE%9E%E6%9B%B8" name="%E8%BE%9E%E6%9B%B8"></a>
+
+- [monkey_dict.py](python\samplemonkey\monkey_dict.py)
+
+```py
+dct = {"key1": "value1", "key2": "value2"}
+
+
+def get_dct():
+    return f"Key1={dct['key1']};Key2={dct['key2']};"
+```
+
+- [test_monkey_dict.py](python\samplemonkey\test_monkey_dict.py)
+
+```py
+import monkey_dict
+
+
+def test_connection(monkeypatch):
+    monkeypatch.setitem(monkey_dict.dct, 'key1', 'mocked1')
+    monkeypatch.setitem(monkey_dict.dct, 'key2', 'mocked2')
+
+    expected = 'Key1=mocked1;Key2=mocked2;'
+    result = monkey_dict.get_dct()
+
+    assert result == expected
+```
+
+###### datetime
+<a id="markdown-datetime" name="datetime"></a>
+
+- [test_monkey_datetime.py](python\samplemonkey\test_monkey_datetime.py)
+
+```py
+import datetime
+from unittest.mock import MagicMock
+
+
+def test_datetime(monkeypatch):
+    datetime_mock = MagicMock(wraps=datetime.datetime)
+    datetime_mock.now.return_value = datetime.datetime(2022, 10, 11, 22, 33)
+    monkeypatch.setattr(datetime, 'datetime', datetime_mock)
+
+    now = datetime.datetime.now()
+    assert now == datetime.datetime(2022, 10, 11, 22, 33)
 ```
 
 ###### 例外
@@ -21858,6 +21948,92 @@ def test_echo(monkeypatch, capsys):
     actual = myClass.echo()
     actual, _ = capsys.readouterr()
     assert actual == 'MOCKED\n'
+```
+
+###### requests
+<a id="markdown-requests" name="requests"></a>
+
+- [monkey_requests.py](python\samplemonkey\monkey_requests.py)
+
+```py
+import requests
+
+
+def get_json(url):
+    r = requests.get(url)
+    return r.json()
+```
+
+- [test_monkey_requests.py](python\samplemonkey\test_monkey_requests.py)
+
+```py
+import requests
+
+
+import monkey_requests
+
+
+class MockResponse:
+    @staticmethod
+    def json():
+        return {'MOCKED_KEY': 'MOCKED_VALUE'}
+
+
+def test_get_json(monkeypatch):
+    # モックしない場合のJSON
+    HTTPBIN_URL = 'http://httpbin.org/json'
+    result = monkey_requests.get_json(HTTPBIN_URL)
+    assert result['slideshow']['title'] == 'Sample Slide Show'
+
+
+
+def test_get_json_mocked(monkeypatch):
+    def mock_get(*args, **kwargs):
+        return MockResponse()
+
+    monkeypatch.setattr(requests, 'get', mock_get)
+
+    HTTPBIN_URL = 'http://httpbin.org/json'
+    result = monkey_requests.get_json(HTTPBIN_URL)
+    assert result['MOCKED_KEY'] == 'MOCKED_VALUE'
+```
+
+###### 環境変数
+<a id="markdown-%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0" name="%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0"></a>
+
+- [monkey_envvar.py](python\samplemonkey\monkey_envvar.py)
+
+```py
+import os
+
+
+def get_my_envvar():
+    envvar = os.getenv('MY_ENVVAR')
+
+    if envvar is None:
+        raise OSError('MY_ENVVAR is not set.')
+
+    return envvar
+```
+
+- [test_monkey_envvar.py](python\samplemonkey\test_monkey_envvar.py)
+
+```py
+import pytest
+
+
+import monkey_envvar
+
+
+def test_get_my_envvar(monkeypatch):
+    monkeypatch.setenv("MY_ENVVAR", "MY_ENVVAR_VALUE")
+    assert monkey_envvar.get_my_envvar() == "MY_ENVVAR_VALUE"
+
+
+def test_get_my_envvar_exception(monkeypatch):
+    monkeypatch.delenv("MY_ENVVAR", raising=False)
+    with pytest.raises(OSError):
+        _ = monkey_envvar.get_my_envvar()
 ```
 
 
