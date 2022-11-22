@@ -1,5 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) 2022 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
 
 
 # --------------------

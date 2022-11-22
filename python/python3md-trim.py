@@ -1,36 +1,11 @@
-### 画像のトリミング
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2022 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
 
-```py
-from PIL import Image
+# $ py .\python\python3md-trim.py python/img
 
 
-im = Image.open('./test-pillow/image.png')
-
-im = im.crop(
-    (100, 50, 200, 150)
-)
-# bx = (100, 50, 200, 150)
-# im = im.crop(bx)
-
-# 変換後のファイルを保存
-im.save('./test-pillow/trimmed.png')
-print(im.size)
-
-# 元の画像よりも大きく指定
-im = im.crop((0, 0, 300, 300))
-im.save('./test-pillow/trimmed_large.png')
-print(im.size)
-```
-
-> (100, 100)
->
-> (300, 300)
-
-トリミング後の画像の左上の画素は元の画像の(100, 50)、右下の画素は元の画像の(199, 149)
-
-#### 画面上で範囲指定してトリミング
-
-```python
 import cv2
 import os
 import sys
@@ -57,5 +32,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-```
