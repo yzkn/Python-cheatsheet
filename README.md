@@ -16892,7 +16892,7 @@ main()
 #### セレクタ
 <a id="markdown-%E3%82%BB%E3%83%AC%E3%82%AF%E3%82%BF" name="%E3%82%BB%E3%83%AC%E3%82%AF%E3%82%BF"></a>
 
-[CSSセレクタ](https://github.com/YA-androidapp/CSS-CheatSheet/blob/main/README.md#css%E3%82%BB%E3%83%AC%E3%82%AF%E3%82%BF%E3%83%BC) を利用
+[CSSセレクタ](https://github.com/yzkn/CSS-CheatSheet/blob/main/README.md#css%E3%82%BB%E3%83%AC%E3%82%AF%E3%82%BF%E3%83%BC) を利用
 
 ##### タグ名
 <a id="markdown-%E3%82%BF%E3%82%B0%E5%90%8D" name="%E3%82%BF%E3%82%B0%E5%90%8D"></a>
@@ -22306,6 +22306,6 @@ $ pytest -n 4
 
 <hr>
 
-Copyright (c) 2022 YA-androidapp(https://github.com/YA-androidapp) All rights reserved.
+Copyright (c) 2022 YA-androidapp(https://github.com/yzkn) All rights reserved.
 
 
